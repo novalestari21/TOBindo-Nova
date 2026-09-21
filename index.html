@@ -22,6 +22,7 @@
     .nav-tabs .nav-link.active { color: #4338ca; border-bottom: 3px solid #4338ca; }
     .stat-card { background: #fff; border-radius: 10px; padding: 20px; border-left: 5px solid #4338ca; }
     .soal-item-card { border-left: 4px solid #4338ca; background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+    .img-opsi-preview { max-height: 100px; border-radius: 6px; border: 1px solid #ddd; margin-top: 6px; display: block; }
   </style>
 </head>
 <body>
@@ -68,9 +69,13 @@
             <label class="form-label fw-semibold">Nama Lengkap</label>
             <input type="text" id="namaSiswa" class="form-control" required placeholder="Masukkan Nama Lengkap">
           </div>
-          <div class="mb-4">
+          <div class="mb-3">
             <label class="form-label fw-semibold">Nomor Ujian / Kelas</label>
             <input type="text" id="kelasSiswa" class="form-control" required placeholder="Contoh: 9A">
+          </div>
+          <div class="alert alert-info py-2 small mb-4 d-flex align-items-center">
+            <i class="bi bi-clock-history fs-5 me-2"></i>
+            <div>Durasi Pengerjaan: <b id="textDurasiInformasi">15</b> Menit</div>
           </div>
           <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white" style="background:#4338ca">Mulai Ujian</button>
         </form>
@@ -190,19 +195,29 @@
       <div class="card card-cbt p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <div>
-            <h5 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Stimulus Gambar</h5>
-            <p class="text-muted small mb-0">Anda dapat langsung menekan tombol <b>Edit Soal</b> pada butir soal di bawah ini untuk mengubah teks, kunci, dan mengunggah gambar!</p>
+            <h5 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Gambar</h5>
+            <p class="text-muted small mb-0">Ubah teks, upload gambar pada soal/opsi, atur durasi pengerjaan, dan preview soal.</p>
           </div>
-          <a id="btnEditFormDirect" href="#" target="_blank" class="btn btn-outline-primary fw-bold px-3 py-2">
-            <i class="bi bi-box-arrow-up-right me-1"></i> Buka Google Form
-          </a>
+          <div class="d-flex gap-2 align-items-center">
+            <!-- PENGATURAN DURASI -->
+            <div class="input-group input-group-sm" style="width:200px">
+              <span class="input-group-text bg-light fw-bold"><i class="bi bi-clock me-1"></i> Durasi</span>
+              <input type="number" id="inputDurasiWaktu" class="form-control text-center fw-bold" value="15" min="1">
+              <span class="input-group-text">mnt</span>
+              <button class="btn btn-primary btn-sm" onclick="simpanDurasiWaktu()" title="Simpan Durasi"><i class="bi bi-check-lg"></i></button>
+            </div>
+
+            <a id="btnEditFormDirect" href="#" target="_blank" class="btn btn-outline-primary btn-sm fw-bold">
+              <i class="bi bi-box-arrow-up-right me-1"></i> Google Form
+            </a>
+          </div>
         </div>
       </div>
 
       <div id="listSoalGuruContainer">
         <div class="text-center py-5 card card-cbt">
           <div class="spinner-border text-primary mb-2" role="status"></div>
-          <div class="text-muted fw-bold">Memuat daftar soal & gambar stimulus...</div>
+          <div class="text-muted fw-bold">Memuat daftar soal...</div>
         </div>
       </div>
     </div>
@@ -235,7 +250,7 @@
   </div>
 </div>
 
-<!-- MODAL EDIT SOAL & UPLOAD GAMBAR -->
+<!-- MODAL EDIT SOAL & GAMBAR OPSI -->
 <div class="modal fade" id="modalEditSoal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow">
@@ -250,20 +265,20 @@
 
           <div class="mb-3">
             <label class="form-label fw-bold small">Teks Pertanyaan / Soal</label>
-            <textarea id="editSoalTeks" class="form-control" rows="4" required></textarea>
+            <textarea id="editSoalTeks" class="form-control" rows="3" required></textarea>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold small">Unggah Gambar Stimulus (Opsional)</label>
-            <input type="file" id="editSoalGambar" class="form-control" accept="image/*">
+            <label class="form-label fw-bold small">Unggah Gambar Soal Stimulus (Opsional)</label>
+            <input type="file" id="editSoalGambar" class="form-control form-control-sm" accept="image/*">
             <div id="previewGambarModal" class="mt-2 d-none">
-              <small class="text-muted">Gambar terpasang saat ini:</small><br>
-              <img id="imgModalPreview" src="" class="img-fluid border rounded" style="max-height:150px">
+              <small class="text-muted">Gambar stimulus saat ini:</small><br>
+              <img id="imgModalPreview" src="" class="img-fluid border rounded" style="max-height:120px">
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold small">Pilihan Jawaban & Kunci</label>
+            <label class="form-label fw-bold small">Pilihan Jawaban, Kunci & Upload Gambar Opsi</label>
             <div id="editPilihanContainer"></div>
           </div>
 
@@ -277,6 +292,28 @@
   </div>
 </div>
 
+<!-- MODAL PREVIEW SOAL -->
+<div class="modal fade" id="modalPreview" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-dark text-white">
+        <h6 class="modal-title fw-bold text-white"><i class="bi bi-eye me-2"></i>Preview Tampilan Siswa - Soal No. <span id="prevNoSoal">1</span></h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div id="prevSoalImgContainer" class="mb-3 text-center d-none">
+          <img id="prevSoalImg" src="" class="img-fluid rounded border" style="max-height: 250px;">
+        </div>
+        <div id="prevSoalTeks" class="fs-5 mb-4 fw-medium"></div>
+        <div id="prevPilihanContainer"></div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary btn-sm fw-bold" data-bs-dismiss="modal">Tutup Preview</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   // PASTE URL WEB APP APPS SCRIPT ANDA DI SINI
@@ -285,13 +322,26 @@
   let bankSoal = [];
   let jawabanSiswa = [];
   let currentSoalIndex = 0;
+  let durasiMenitGlobal = 15;
   let sisaWaktu = 15 * 60; 
   let timerInterval;
-  let modalLoginObj, modalEditObj;
+  let modalLoginObj, modalEditObj, modalPreviewObj;
 
   document.addEventListener("DOMContentLoaded", function() {
     modalLoginObj = new bootstrap.Modal(document.getElementById('modalLogin'));
     modalEditObj = new bootstrap.Modal(document.getElementById('modalEditSoal'));
+    modalPreviewObj = new bootstrap.Modal(document.getElementById('modalPreview'));
+    
+    // Ambil info durasi awal
+    fetch(`${API_URL}?action=getBankSoal`)
+    .then(res => res.json())
+    .then(res => {
+      if(res.durasi) {
+        durasiMenitGlobal = res.durasi;
+        document.getElementById('textDurasiInformasi').innerText = durasiMenitGlobal;
+        document.getElementById('inputDurasiWaktu').value = durasiMenitGlobal;
+      }
+    });
   });
 
   function showModalLogin() {
@@ -355,6 +405,26 @@
     }
   }
 
+  function simpanDurasiWaktu() {
+    const durasi = document.getElementById('inputDurasiWaktu').value;
+    if(!durasi || durasi < 1) return alert("Durasi tidak valid");
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'updateDurasi', durasi: durasi })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if(res.success) {
+        durasiMenitGlobal = durasi;
+        document.getElementById('textDurasiInformasi').innerText = durasi;
+        alert("Durasi pengerjaan berhasil diubah menjadi " + durasi + " menit!");
+      } else {
+        alert("Gagal mengubah durasi: " + res.error);
+      }
+    });
+  }
+
   function loadDataRekapGuru() {
     fetch(`${API_URL}?action=getDataGuru`)
     .then(res => res.json())
@@ -400,6 +470,12 @@
       const data = res.data;
       bankSoal = data;
 
+      if(res.durasi) {
+        durasiMenitGlobal = res.durasi;
+        document.getElementById('inputDurasiWaktu').value = durasiMenitGlobal;
+        document.getElementById('textDurasiInformasi').innerText = durasiMenitGlobal;
+      }
+
       if (!data || data.length === 0) {
         container.innerHTML = `<div class="alert alert-warning card card-cbt">
           <b>Soal Tidak Ditemukan!</b> Pastikan ID Google Form pada Code.gs sudah diisi dengan benar.
@@ -412,20 +488,28 @@
         let optionsHtml = '';
         item.pilihan.forEach((p, pIdx) => {
           let isBenar = pIdx === item.jawabanBenar;
-          optionsHtml += `<div class="small mb-1 ${isBenar ? 'text-success fw-bold' : 'text-muted'}">
-            ${String.fromCharCode(65 + pIdx)}. ${p} ${isBenar ? '<span class="badge bg-success ms-1">Kunci Jawaban</span>' : ''}
+          let imgOpsi = item.pilihanGambar && item.pilihanGambar[pIdx] ? `<br><img src="${item.pilihanGambar[pIdx]}" class="img-opsi-preview">` : '';
+          
+          optionsHtml += `<div class="small mb-2 ${isBenar ? 'text-success fw-bold' : 'text-muted'}">
+            ${String.fromCharCode(65 + pIdx)}. ${p} ${isBenar ? '<span class="badge bg-success ms-1">Kunci</span>' : ''}
+            ${imgOpsi}
           </div>`;
         });
 
         html += `<div class="soal-item-card shadow-sm mb-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h6 class="fw-bold mb-0" style="color:#4338ca">Soal No. ${idx + 1}</h6>
-            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEditSoal(${idx})">
-              <i class="bi bi-pencil-square me-1"></i> Edit Soal & Gambar
-            </button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="previewSoal(${idx})">
+                <i class="bi bi-eye me-1"></i> Preview
+              </button>
+              <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEditSoal(${idx})">
+                <i class="bi bi-pencil-square me-1"></i> Edit Soal & Gambar
+              </button>
+            </div>
           </div>
           <p class="fw-medium mb-3">${item.soal}</p>
-          ${item.imageUrl ? `<div class="mb-3"><img src="${item.imageUrl}" class="img-fluid rounded border" style="max-height:200px"></div>` : ''}
+          ${item.imageUrl ? `<div class="mb-3"><img src="${item.imageUrl}" class="img-fluid rounded border" style="max-height:180px"></div>` : ''}
           <div class="bg-light p-3 rounded">
             ${optionsHtml}
           </div>
@@ -434,6 +518,33 @@
 
       container.innerHTML = html;
     });
+  }
+
+  function previewSoal(idx) {
+    const item = bankSoal[idx];
+    document.getElementById('prevNoSoal').innerText = idx + 1;
+    document.getElementById('prevSoalTeks').innerText = item.soal;
+
+    const imgContainer = document.getElementById('prevSoalImgContainer');
+    const soalImg = document.getElementById('prevSoalImg');
+    if (item.imageUrl) {
+      soalImg.src = item.imageUrl;
+      imgContainer.classList.remove('d-none');
+    } else {
+      imgContainer.classList.add('d-none');
+    }
+
+    let htmlPilihan = '';
+    item.pilihan.forEach((pil, pIdx) => {
+      let imgOpsi = item.pilihanGambar && item.pilihanGambar[pIdx] ? `<br><img src="${item.pilihanGambar[pIdx]}" class="img-fluid rounded border mt-2" style="max-height:120px">` : '';
+      htmlPilihan += `<div class="option-card mb-2">
+        <strong>${String.fromCharCode(65 + pIdx)}.</strong> ${pil}
+        ${imgOpsi}
+      </div>`;
+    });
+    document.getElementById('prevPilihanContainer').innerHTML = htmlPilihan;
+
+    modalPreviewObj.show();
   }
 
   function bukaModalEditSoal(idx) {
@@ -455,12 +566,22 @@
     let pilHtml = '';
     item.pilihan.forEach((p, pIdx) => {
       let isChecked = pIdx === item.jawabanBenar ? 'checked' : '';
-      pilHtml += `<div class="input-group mb-2">
-        <div class="input-group-text">
-          <input class="form-check-input mt-0" type="radio" name="modalKunci" value="${pIdx}" ${isChecked} title="Pilih sebagai kunci jawaban">
+      let existingImg = item.pilihanGambar && item.pilihanGambar[pIdx] ? item.pilihanGambar[pIdx] : '';
+
+      pilHtml += `<div class="card p-2 mb-2 bg-light border">
+        <div class="input-group mb-2">
+          <div class="input-group-text">
+            <input class="form-check-input mt-0" type="radio" name="modalKunci" value="${pIdx}" ${isChecked} title="Pilih kunci jawaban">
+          </div>
+          <span class="input-group-text fw-bold">${String.fromCharCode(65 + pIdx)}</span>
+          <input type="text" class="form-control modal-pilihan-input" value="${p}" required>
         </div>
-        <span class="input-group-text fw-bold">${String.fromCharCode(65 + pIdx)}</span>
-        <input type="text" class="form-control modal-pilihan-input" value="${p}" required>
+        <div class="d-flex align-items-center gap-2">
+          <small class="fw-bold text-muted" style="min-width:90px">Gambar Opsi:</small>
+          <input type="file" class="form-control form-control-sm modal-pilihan-file" accept="image/*" data-index="${pIdx}">
+          <input type="hidden" class="modal-pilihan-existing" value="${existingImg}">
+        </div>
+        ${existingImg ? `<div class="mt-1"><small class="text-muted">Ada Gambar:</small> <a href="${existingImg}" target="_blank" class="small">Lihat Gambar Opsi</a></div>` : ''}
       </div>`;
     });
     document.getElementById('editPilihanContainer').innerHTML = pilHtml;
@@ -483,30 +604,60 @@
       pilihanArr.push(input.value);
     });
 
-    const fileInput = document.getElementById('editSoalGambar');
-    const file = fileInput.files[0];
+    let pilihanGambarExisting = [];
+    document.querySelectorAll('.modal-pilihan-existing').forEach(input => {
+      pilihanGambarExisting.push(input.value || null);
+    });
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(evt) {
+    // Proses Pembacaan File Gambar Opsi (Base64)
+    const fileOpsiInputs = document.querySelectorAll('.modal-pilihan-file');
+    let pilihanGambarBase64 = [null, null, null, null];
+    let filePromises = [];
+
+    fileOpsiInputs.forEach((input, pIdx) => {
+      if (input.files[0]) {
+        let promise = new Promise((resolve) => {
+          let reader = new FileReader();
+          reader.onload = function(evt) {
+            pilihanGambarBase64[pIdx] = evt.target.result;
+            resolve();
+          };
+          reader.readAsDataURL(input.files[0]);
+        });
+        filePromises.push(promise);
+      }
+    });
+
+    Promise.all(filePromises).then(() => {
+      const fileInputSoal = document.getElementById('editSoalGambar');
+      const fileSoal = fileInputSoal.files[0];
+
+      if (fileSoal) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          kirimUpdateKeBackend({
+            itemId: itemId,
+            soal: soalTeks,
+            pilihan: pilihanArr,
+            jawabanBenar: kunciIdx,
+            pilihanGambarBase64: pilihanGambarBase64,
+            pilihanGambarExisting: pilihanGambarExisting,
+            imageBase64: evt.target.result,
+            imageName: fileSoal.name
+          });
+        };
+        reader.readAsDataURL(fileSoal);
+      } else {
         kirimUpdateKeBackend({
           itemId: itemId,
           soal: soalTeks,
           pilihan: pilihanArr,
           jawabanBenar: kunciIdx,
-          imageBase64: evt.target.result,
-          imageName: file.name
+          pilihanGambarBase64: pilihanGambarBase64,
+          pilihanGambarExisting: pilihanGambarExisting
         });
-      };
-      reader.readAsDataURL(file);
-    } else {
-      kirimUpdateKeBackend({
-        itemId: itemId,
-        soal: soalTeks,
-        pilihan: pilihanArr,
-        jawabanBenar: kunciIdx
-      });
-    }
+      }
+    });
   }
 
   function kirimUpdateKeBackend(payload) {
@@ -524,7 +675,7 @@
 
       if (res.success) {
         modalEditObj.hide();
-        alert("Soal berhasil diperbarui!");
+        alert("Soal dan gambar berhasil diperbarui!");
         loadBankSoalGuru();
       } else {
         alert("Gagal memperbarui soal: " + res.error);
@@ -557,6 +708,8 @@
       }
       bankSoal = data;
       jawabanSiswa = new Array(bankSoal.length).fill(null);
+      if(res.durasi) durasiMenitGlobal = res.durasi;
+      sisaWaktu = durasiMenitGlobal * 60;
 
       document.getElementById('section-identitas').classList.add('d-none');
       document.getElementById('section-ujian').classList.remove('d-none');
@@ -586,8 +739,11 @@
     let htmlPilihan = '';
     bankSoal[index].pilihan.forEach((pil, pIdx) => {
       let isSelected = jawabanSiswa[index] === pIdx ? 'selected' : '';
+      let imgOpsi = bankSoal[index].pilihanGambar && bankSoal[index].pilihanGambar[pIdx] ? `<br><img src="${bankSoal[index].pilihanGambar[pIdx]}" class="img-fluid rounded border mt-2" style="max-height:130px">` : '';
+
       htmlPilihan += `<div class="option-card ${isSelected}" onclick="pilihJawaban(${pIdx})">
         <strong>${String.fromCharCode(65 + pIdx)}.</strong> ${pil}
+        ${imgOpsi}
       </div>`;
     });
     document.getElementById('pilihanContainer').innerHTML = htmlPilihan;
