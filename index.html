@@ -167,7 +167,10 @@
       <div class="card card-cbt p-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h6 class="fw-bold mb-0">Daftar Nilai Peserta Didik</h6>
-          <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV()"><i class="bi bi-download me-1"></i> Unduh Sheet Nilai (CSV)</button>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV()"><i class="bi bi-download me-1"></i> Unduh Sheet Nilai (CSV)</button>
+            <button class="btn btn-danger btn-sm fw-bold" onclick="konfirmasiResetNilai()"><i class="bi bi-trash me-1"></i> Reset Nilai</button>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="table table-hover align-middle" id="tabelNilaiGuru">
@@ -332,7 +335,6 @@
     modalEditObj = new bootstrap.Modal(document.getElementById('modalEditSoal'));
     modalPreviewObj = new bootstrap.Modal(document.getElementById('modalPreview'));
     
-    // Ambil info durasi awal
     fetch(`${API_URL}?action=getBankSoal`)
     .then(res => res.json())
     .then(res => {
@@ -452,6 +454,26 @@
       }
       document.getElementById('bodyNilaiGuru').innerHTML = html;
     });
+  }
+
+  function konfirmasiResetNilai() {
+    if (confirm("Apakah Anda yakin ingin menghapus/mereset seluruh data nilai siswa? Tindakan ini tidak dapat dibatalkan!")) {
+      document.getElementById('bodyNilaiGuru').innerHTML = `<tr><td colspan="7" class="text-center text-muted">Mereset data nilai...</td></tr>`;
+      
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'resetNilai' })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if(res.success) {
+          alert("Seluruh data nilai berhasil direset!");
+          loadDataRekapGuru();
+        } else {
+          alert("Gagal mereset nilai: " + res.error);
+        }
+      });
+    }
   }
 
   function loadBankSoalGuru() {
@@ -609,7 +631,6 @@
       pilihanGambarExisting.push(input.value || null);
     });
 
-    // Proses Pembacaan File Gambar Opsi (Base64)
     const fileOpsiInputs = document.querySelectorAll('.modal-pilihan-file');
     let pilihanGambarBase64 = [null, null, null, null];
     let filePromises = [];
