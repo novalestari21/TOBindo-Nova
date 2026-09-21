@@ -68,7 +68,7 @@
           <input type="text" id="input-name" required placeholder="Contoh: Ahmad Rizki" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Nomor Ujan / Kelas</label>
+          <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Nomor Ujian / Kelas</label>
           <input type="text" id="input-id" required placeholder="Contoh: 01 / IX-A" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
         </div>
         <div class="pt-2">
@@ -97,23 +97,17 @@
           </label>
         </div>
 
-        <!-- Question Body (Stimulus + Options) -->
+        <!-- Question Body -->
         <div class="p-6 flex-1 overflow-y-auto custom-scrollbar max-h-[calc(100vh-250px)] space-y-6">
           
           <!-- Stimulus Block -->
-          <div id="q-stimulus" class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm leading-relaxed text-slate-700 overflow-x-auto">
-            <!-- Stimulus HTML inserted dynamically -->
-          </div>
+          <div id="q-stimulus" class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm leading-relaxed text-slate-700 overflow-x-auto"></div>
 
           <!-- Question Text -->
-          <div id="q-text" class="text-base font-semibold text-slate-800 leading-snug">
-            <!-- Question text inserted dynamically -->
-          </div>
+          <div id="q-text" class="text-base font-semibold text-slate-800 leading-snug"></div>
 
           <!-- Options -->
-          <div id="q-options" class="space-y-3 pt-2">
-            <!-- Options inserted dynamically -->
-          </div>
+          <div id="q-options" class="space-y-3 pt-2"></div>
         </div>
 
         <!-- Question Footer Navigation -->
@@ -150,71 +144,121 @@
         </div>
 
         <!-- Matrix -->
-        <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-80 overflow-y-auto custom-scrollbar p-1">
-          <!-- Buttons generated dynamically -->
-        </div>
+        <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-80 overflow-y-auto custom-scrollbar p-1"></div>
       </div>
     </section>
 
-    <!-- VIEW 3: PANEL GURU / DASHBOARD NILAI -->
+    <!-- VIEW 3: PANEL GURU / DASHBOARD NILAI & BANK SOAL -->
     <section id="view-teacher" class="hidden flex-1 flex flex-col space-y-6">
-      <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-800">Panel Pengelola CBT (Guru)</h2>
-          <p class="text-sm text-slate-500">Rekapitulasi hasil ujian peserta didik & unduh berkas nilai.</p>
+      
+      <!-- TAB NAVIGATION -->
+      <div class="flex border-b border-slate-200 space-x-4">
+        <button id="tab-btn-results" onclick="switchTeacherTab('results')" class="pb-2 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          <span>Rekap Hasil Nilai</span>
+        </button>
+        <button id="tab-btn-questions" onclick="switchTeacherTab('questions')" class="pb-2 font-bold text-sm text-slate-500 border-b-2 border-transparent hover:text-slate-700 flex items-center space-x-2">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Kelola Bank Soal & Gambar</span>
+        </button>
+      </div>
+
+      <!-- SUB-TAB 1: REKAP HASIL NILAI -->
+      <div id="teacher-tab-results" class="space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">Panel Pengelola CBT (Guru)</h2>
+            <p class="text-sm text-slate-500">Rekapitulasi hasil ujian peserta didik & unduh berkas nilai.</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="downloadCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg text-sm shadow flex items-center space-x-2">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Unduh Sheet Nilai (CSV/Excel)</span>
+            </button>
+            <button onclick="clearResults()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold px-4 py-2 rounded-lg text-sm flex items-center space-x-2">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span>Reset Data Nilai</span>
+            </button>
+          </div>
         </div>
-        <div class="flex flex-wrap gap-3">
-          <button onclick="downloadCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg text-sm shadow flex items-center space-x-2">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Unduh Sheet Nilai (CSV/Excel)</span>
-          </button>
-          <button onclick="clearResults()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-semibold px-4 py-2 rounded-lg text-sm flex items-center space-x-2">
-            <i data-lucide="trash-2" class="w-4 h-4"></i>
-            <span>Reset Data Nilai</span>
-          </button>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-white p-5 rounded-xl shadow border border-slate-200">
+            <p class="text-xs text-slate-500 font-semibold uppercase">Total Peserta Selesai</p>
+            <p id="stat-total-students" class="text-3xl font-extrabold text-indigo-600 mt-1">0</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl shadow border border-slate-200">
+            <p class="text-xs text-slate-500 font-semibold uppercase">Rata-rata Nilai</p>
+            <p id="stat-avg-score" class="text-3xl font-extrabold text-emerald-600 mt-1">0</p>
+          </div>
+          <div class="bg-white p-5 rounded-xl shadow border border-slate-200">
+            <p class="text-xs text-slate-500 font-semibold uppercase">Nilai Tertinggi</p>
+            <p id="stat-max-score" class="text-3xl font-extrabold text-amber-500 mt-1">0</p>
+          </div>
+        </div>
+
+        <!-- Table Results -->
+        <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+          <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-slate-700 text-sm">
+            Daftar Nilai Peserta Didik
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-100 text-xs text-slate-700 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="px-4 py-3">No</th>
+                  <th class="px-4 py-3">Nama Peserta</th>
+                  <th class="px-4 py-3">No. Ujian / Kelas</th>
+                  <th class="px-4 py-3">Waktu Selesai</th>
+                  <th class="px-4 py-3 text-center">Benar</th>
+                  <th class="px-4 py-3 text-center">Salah</th>
+                  <th class="px-4 py-3 text-center">Nilai (0-100)</th>
+                </tr>
+              </thead>
+              <tbody id="teacher-table-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- Stats -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white p-5 rounded-xl shadow border border-slate-200">
-          <p class="text-xs text-slate-500 font-semibold uppercase">Total Peserta Selesai</p>
-          <p id="stat-total-students" class="text-3xl font-extrabold text-indigo-600 mt-1">0</p>
+      <!-- SUB-TAB 2: EDITOR BANK SOAL & UPLOAD GAMBAR -->
+      <div id="teacher-tab-questions" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800">Manajemen Bank Soal & Gambar</h2>
+            <p class="text-xs text-slate-500">Edit stimulus, pertanyaan, opsi pilihan ganda, kunci jawaban, dan unggah gambar.</p>
+          </div>
+          <div class="flex space-x-2">
+            <button onclick="resetDefaultQuestions()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border flex items-center space-x-1">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Reset ke Soal Bawaan</span>
+            </button>
+            <button onclick="openQuestionModal(null)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow flex items-center space-x-1">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Tambah Soal Baru</span>
+            </button>
+          </div>
         </div>
-        <div class="bg-white p-5 rounded-xl shadow border border-slate-200">
-          <p class="text-xs text-slate-500 font-semibold uppercase">Rata-rata Nilai</p>
-          <p id="stat-avg-score" class="text-3xl font-extrabold text-emerald-600 mt-1">0</p>
-        </div>
-        <div class="bg-white p-5 rounded-xl shadow border border-slate-200">
-          <p class="text-xs text-slate-500 font-semibold uppercase">Nilai Tertinggi</p>
-          <p id="stat-max-score" class="text-3xl font-extrabold text-amber-500 mt-1">0</p>
+
+        <!-- Question List Table -->
+        <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
+          <div class="overflow-x-auto max-h-[500px] custom-scrollbar">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-100 text-xs text-slate-700 uppercase border-b sticky top-0 z-10">
+                <tr>
+                  <th class="px-4 py-3 w-16 text-center">No</th>
+                  <th class="px-4 py-3">Pertanyaan & Stimulus</th>
+                  <th class="px-4 py-3 w-32 text-center">Kunci Jawaban</th>
+                  <th class="px-4 py-3 w-28 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="teacher-questions-table-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- Table Results -->
-      <div class="bg-white rounded-xl shadow border border-slate-200 overflow-hidden flex-1">
-        <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-slate-700 text-sm">
-          Daftar Nilai Peserta Didik
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-600">
-            <thead class="bg-slate-100 text-xs text-slate-700 uppercase border-b border-slate-200">
-              <tr>
-                <th class="px-4 py-3">No</th>
-                <th class="px-4 py-3">Nama Peserta</th>
-                <th class="px-4 py-3">No. Ujian / Kelas</th>
-                <th class="px-4 py-3">Waktu Selesai</th>
-                <th class="px-4 py-3 text-center">Benar</th>
-                <th class="px-4 py-3 text-center">Salah</th>
-                <th class="px-4 py-3 text-center">Nilai (0-100)</th>
-              </tr>
-            </thead>
-            <tbody id="teacher-table-body">
-              <!-- Rows inserted dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
     </section>
 
   </main>
@@ -252,647 +296,160 @@
     </div>
   </div>
 
+  <!-- MODAL EDIT / TAMBAH SOAL -->
+  <div id="modal-question-editor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 id="modal-editor-title" class="text-lg font-bold text-slate-800">Edit Soal</h3>
+        <button onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form onsubmit="saveQuestion(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="edit-q-index">
+
+        <!-- Upload Gambar -->
+        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+          <label class="block text-xs font-bold uppercase text-slate-700">Unggah Gambar Soal / Stimulus (Opsional)</label>
+          <input type="file" id="edit-q-image-file" accept="image/*" onchange="previewUploadedImage(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+          <div id="edit-q-image-preview" class="hidden relative mt-2 w-full max-h-48 overflow-hidden rounded border bg-slate-100 flex items-center justify-center">
+            <img id="preview-img-element" src="" class="max-h-44 object-contain">
+            <button type="button" onclick="removeUploadedImage()" class="absolute top-2 right-2 bg-rose-600 text-white p-1 rounded-full text-xs shadow"><i data-lucide="trash" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+
+        <!-- Stimulus Teks (HTML) -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Stimulus / Teks Wacana (Mendukung Format HTML):</label>
+          <textarea id="edit-q-stimulus" rows="3" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-xs font-mono" placeholder="Masukkan bacaan/tabel/wacana..."></textarea>
+        </div>
+
+        <!-- Pertanyaan -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Kalimat Pertanyaan:</label>
+          <textarea id="edit-q-question" rows="2" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-xs" placeholder="Tuliskan pertanyaan..."></textarea>
+        </div>
+
+        <!-- Opsi Pilihan Ganda -->
+        <div class="space-y-2">
+          <label class="block text-xs font-semibold text-slate-700">Pilihan Jawaban:</label>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-xs w-5 text-center">A</span>
+            <input type="text" id="edit-opt-0" required class="flex-1 p-2 border rounded-lg text-xs">
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-xs w-5 text-center">B</span>
+            <input type="text" id="edit-opt-1" required class="flex-1 p-2 border rounded-lg text-xs">
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-xs w-5 text-center">C</span>
+            <input type="text" id="edit-opt-2" required class="flex-1 p-2 border rounded-lg text-xs">
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-xs w-5 text-center">D</span>
+            <input type="text" id="edit-opt-3" required class="flex-1 p-2 border rounded-lg text-xs">
+          </div>
+        </div>
+
+        <!-- Kunci Jawaban -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Kunci Jawaban Benar:</label>
+          <select id="edit-q-answer" class="w-full p-2 border rounded-lg text-xs font-bold text-indigo-700">
+            <option value="0">Pilihan A</option>
+            <option value="1">Pilihan B</option>
+            <option value="2">Pilihan C</option>
+            <option value="3">Pilihan D</option>
+          </select>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="flex space-x-3 pt-3 border-t">
+          <button type="button" onclick="closeQuestionModal()" class="flex-1 py-2 bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs">Batal</button>
+          <button type="submit" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-xs shadow">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- SCRIPT BANK SOAL & LOGIKA CBT -->
   <script>
-    // 50 SOAL BAHASA INDONESIA PERSIS DARI DOKUMEN WORD
-    const rawQuestions = [
-      {
-        id: 1,
-        stimulus: `<p class="font-semibold text-center text-indigo-900 mb-2">Pekan Raya Jakarta</p><p>Pekan Raya Jakarta (PRJ) adalah acara tahunan yang diselenggarakan sebelum, saat, dan sesudah hari ulang tahun kota Jakarta yang jatuh pada tanggal 22 Juni. Acara ini pertama kali diadakan tahun 1968 di kawasan Monas, sebelum akhirnya dipindahkan ke Kemayoran sejak 1992 sampai sekarang. Pekan Raya Jakarta menghadirkan ribuan merek lokal dan internasional, mulai dari pakaian, gadget, otomotif, aksesoris, makanan, minuman, hingga obat-obatan dengan harga miring. Tak ketinggalan acara hiburan seperti pesta kembang api dan penampilan dari musisi tanah air.</p>`,
-        question: `Isi paragraf teks deskripsi tersebut yang paling tepat adalah …`,
-        options: [
-          `Pekan Raya Jakarta (PRJ) adalah acara tahunan yang diselenggarakan sebelum, saat, dan sesudah hari ulang tahun kota Jakarta yang jatuh pada tanggal 22 Juni.`,
-          `Pekan Raya pertama kali diadakan tahun1968 did kawasan monas sebelum akhirnya dipindahkan ke Kemayoran.`,
-          `Pekan Raya Jakarta menghadirkan ribuan merek lokal dan internasional, mulai dari pakaian, gadget, otomotif, aksesoris, makanan, minuman, hingga obat-obatan dengan harga miring.`,
-          `Pekan Raya Jakarta juga menghadirkan acara hiburan seperti pesta kembang api dan penampilan dari musisi tanah air.`
-        ],
-        answer: 2
-      },
-      {
-        id: 2,
-        stimulus: `<p>Congklak, atau yang sering dikenal dengan nama dakon di beberapa daerah, adalah permainan ....... Indonesia yang telah ada sejak zaman nenek moyang. Permainan ini biasanya dimainkan oleh dua orang, menggunakan papan congklak yang terdiri dari satu garis panjang dengan lubang-lubang kecil di setiap sisinya.</p>`,
-        question: `Istilah yang tepat untuk mengisi bagian yang rumpang adalah....`,
-        options: [`fenomenal`, `tradisional`, `digital`, `modern`],
-        answer: 1
-      },
-      {
-        id: 3,
-        stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div class="border p-2 rounded bg-white"><strong>TEKS I:</strong> Indonesia merupakan negara agraris, memiliki hamparan lahan pertanian yang sangat luas. Hampir di semua kabupaten yang ada di Indonesia memiliki sawah dan 42% sawah terbanyak ada di pulau Jawa. Statistik menunjukkan bahwa mayoritas dari sawah yang ada digunakan sebagai lahan untuk menanam padi. Sawah di Indonesia ada banyak bentuknya, ada yang datar atau horisontal, dan ada yang dibuat jenjang atau berupa terasering. Tujuan bentuk terasering ini adalah untuk membantu sistem irigasi air pada pertanian, contohnya sawah yang ada di Bali.</div>
-          <div class="border p-2 rounded bg-white"><strong>TEKS II:</strong> Gunung berapi ada beberapa bentuk. Gunung berapi yang aktif mungkin berubah menjadi separuh aktif, istirahat, sebelum akhirnya menjadi tidak aktif. Gunung berapi mampu istirahat dalam waktu 610 tahun sebelum berubah menjadi aktif kembali. Karena itu, sulit menentukan keadaan sebenarnya dari sebuah gunung berapi, apakah berada dalam keadaan istirahat atau telah mati. Letusan gunung berapi terjadi apabila magma naik melintasi kerak bumi dan muncul di atas permukaan. Apabila gunung berapi meletus, magma yang terkandung di dalam kamar magma di bawah gunung berapi keluar sebagai lahar atau lava.</div>
-        </div>`,
-        question: `Perbedaan penggunaan bahasa kedua teks tersebut yang paling tepat adalah…`,
-        options: [
-          `Teks I diawali deskripsi objek | Teks II diawali deskripsi objek`,
-          `Teks I menggunakan istilah pertanian | Teks II menggunakan istilah geofisika`,
-          `Teks I menggunakan kata bermajas | Teks II tidak menggunakan kata bermajas`,
-          `Teks I menggunakan kalimat langsung | Teks II menggunakan kalimat penjelasan`
-        ],
-        answer: 1
-      },
-      {
-        id: 4,
-        stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div class="border p-2 rounded bg-white"><strong>Teks I:</strong> Sekolah saya memiliki lingkungan yang sangat bersih dengan tempat parkir yang luas dan lapangan upacara. Sekolah saya memiliki tiga bangunan utama sebagai tempat belajar siswa, yaitu gedung A, B, dan C. Sekolah saya terletak tepat di tengah sawah, membuat suasana sekolah sejuk dan segar. Semua lantai kelas menggunakan keramik. Sekolah saya memiliki ruangan besar yang biasanya digunakan untuk acara-acara seperti wisuda, pernikahan, olahraga dan lainnya...</div>
-          <div class="border p-2 rounded bg-white"><strong>Teks II:</strong> Nama saya Andini. Sekarang saya duduk di kelas XI. Sekolah saya adalah sekolah yang cukup terkenal di daerah saya. Rata-rata, siswa yang hadir di sini adalah orang-orang yang tinggal di daerah saya. Selain dekat, ada pengurangan biaya untuk siswa yang tinggal dekat dengan sekolah. Sekolah saya memiliki tiga lantai dan dicat hijau tosca...</div>
-        </div>`,
-        question: `Perbedaan pola penyajian kedua teks tersebut adalah ..`,
-        options: [
-          `Teks I diawali dengan bagaimana | Teks II diawali dengan siapa`,
-          `Teks I diawali dengan apa | Teks II diawali dengan bagaimana`,
-          `Teks I diawali dengan apa | Teks II diawali dengan siapa`,
-          `Teks I diawali dengan mengapa | Teks II diawali dengan apa`
-        ],
-        answer: 2
-      },
-      {
-        id: 5,
-        stimulus: `<p class="font-semibold mb-1">Cara Menarik uang di mesin ATM</p>
-        <ol class="list-decimal list-inside space-y-1 text-xs">
-          <li>Masukkan pin ATM. Pastikan untuk mengetikan angka yang benar sebab jika salah sebanyak 3x kartu Anda akan terblokir.</li>
-          <li>Tunggu transaksi diproses terlebih dahulu. Kemudian uang dan bukti transaksi akan keluar. Beberapa mesin ATM tidak mengeluarkan kertas bukti transaksi, jadi tidak mengapa jika Anda tidak mendapatkannya.</li>
-          <li>Pilih tarik tunai pada menu di layar. Sesuaikan jumlah nominal yang ingin diambil.</li>
-          <li>Terakhir, jangan lupa untuk mengecek jumlah uang yang diterima dan ambil kartu ATM.</li>
-          <li>Masukan kartu ke dalam mesin ATM. Pilihlah bahasa yang ingin Anda gunakan.</li>
-          <li>Setelah selesai, layar akan menampilkan pilihan “Apakah Anda ingin melanjutkan transaksi?” Pilih tidak untuk mengeluarkan Kartu ATM.</li>
-        </ol>`,
-        question: `Urutan cara menarik uang di mesin ATM yang tepat adalah …`,
-        options: [`1-2-3-4-5-6`, `5-1-3-4-2-6`, `5-1-3-2-6-4`, `5-1-3-2-4-6`],
-        answer: 2
-      },
-      {
-        id: 6,
-        stimulus: `<p class="font-semibold mb-1">Panduan mencuci tangan menurut WHO</p>
-        <ol class="list-decimal list-inside space-y-1 text-xs">
-          <li>Gunakan air bersih mengalir.</li>
-          <li>Basahkan kedua tangan menggunakan air bersih mengalir tersebut.</li>
-          <li>....................................</li>
-          <li>Gosok kedua telapak tangan hingga tertutup sabun.</li>
-          <li>Bersihkan sela-sela jari dan punggung tangan.</li>
-          <li>Genggam dan basuhlah ibu jari dengan cara memutar.</li>
-          <li>Gosokkan ujung jari ke telapak tangan supaya bagian kuku dapat dibersihkan dengan sabun.</li>
-          <li>Bilas sabun dari kedua tangan menggunakan air bersih mengalir.</li>
-          <li>Keringkan tangan menggunakan tisu atau kain yang higienis.</li>
-        </ol>`,
-        question: `Kalimat yang tepat untuk mengisi bagian yang rumpang adalah...`,
-        options: [
-          `Dahulukan tangan sebelah kanan.`,
-          `Tuangkan sabun antibakteri seperlunya ke telapak tangan.`,
-          `Gunakanlah sabun antibakteri agar lebih higienis.`,
-          `Virus dan bakteri akan mati dengan penggunaan sabun.`
-        ],
-        answer: 1
-      },
-      {
-        id: 7,
-        stimulus: `<p>(1) Setelah menggunakan laboratorium, pastikan Anda membersihkan banyak sampah-sampah yang berserakan. (2) Hal ini berfungsi untuk mensterilkan laboratorium sehingga siap digunakan kembali.</p>`,
-        question: `Kesalahan yang terdapat pada kalimat bernomor 1 pada kutipan teks prosedur tersebut adalah....`,
-        options: [
-          `Pengguanaan konjungsi setelah tidak tepat.`,
-          `Penggunaan kata Anda yang diawali huruf kapital.`,
-          `Penggunaan kata mensterilkan seharusnya menyeterilkan.`,
-          `Penggunaan kata banyak bersifat mubazir karena sapah-sampah sudah bermakna banyak.`
-        ],
-        answer: 3
-      },
-      {
-        id: 8,
-        stimulus: `<p class="text-xs">Assalamualaikum wr.wb, (1) Ibu Yuni yang saya sayangi, nama saya Ghani Alqarni. (2) Saya adalah siswa di SMA Budi Bangsa, kelas 12 IPA-1. (3) Melalui surat ini saya ingin mengucapkan terimakasih yang sebesar-besarnya atas bantuan dan bimbingan Ibu sehingga saya bisa direkomendasikan oleh kepala sekolah untuk mengikuti program pertukaran pelajar di Malaysia. (4) Saya mohon doa dari Ibu semoga kegiatan belajar saya selama disini bisa berjalan dengan lancar sesuai dengan harapan.</p>`,
-        question: `Kalimat tidak efektif pada kutipan surat tersebut ditandai nomor…`,
-        options: [`1`, `2`, `3`, `4`],
-        answer: 0
-      },
-      {
-        id: 9,
-        stimulus: `<div class="p-2 border rounded bg-white text-xs">
-          Bandarlampung, 10 Juni 2025<br>
-          Salam rindu sahabatku,<br>
-          Bagaimana kabarmu, semoga Tuhan selalu melimpahkan kesehatan dan karunia-Nya untukmu dan Bapak/Ibu, serta keluarga besarmu. Lewat surat ini aku ingin mengabarkan bahwa liburan sekolah yang akan datang aku akan berkunjung ke tempatmu. ...
-        </div>`,
-        question: `Alasan kesalahan penggunaan tanda baca dalam surat tersebut adalah …`,
-        options: [
-          `Tanda koma setelah kata Bandarlampung seharusnya dihilangkan dan setelah 2025 diberi tanda titik.`,
-          `Tanda koma setelah kata kabarmu seharusnya diganti tanda tanya karena kalimat diawali dengan kata tanya bagaimana.`,
-          `Tanda titik setelah kata serta keluarga besarmu seharusnya diganti tanda koma karena kalimat di bawahnya adalah kalimat lanjutan.`,
-          `Huruf kapital pada kata karunia-Nya seharusnya diganti huruf kecil menjadi karunia-nya.`
-        ],
-        answer: 1
-      },
-      {
-        id: 10,
-        stimulus: `<div class="p-2 border rounded bg-white text-xs">
-          Bandar Lampung, 10 Maret 2025<br>
-          Yth. Ibu Wali Kelas 7C SMP N 23 Bandung<br>
-          di tempat<br><br>
-          Dengan hormat,<br>
-          Melalui surat ini saya mengabari bahwa anak saya yang bernama Siti Zulaikha kelas 7C tidak bisa mengikuti pelajaran sebagai mana biasanya karena sakit. Berdasarkan diagnosa dokter dan hasil laboratorium anak saya menderita tipus. Maka dari itu saya mohon izin.<br>
-          Demikian surat ini, atas perhatian Ibu saya mengucapkan terima kasih.<br><br>
-          Hormat Saya,<br>
-          Muhammad Soleh
-        </div>`,
-        question: `Perbaikan kata yang tidak baku pada cuplikan surat tersebut adalah...`,
-        options: [
-          `Di tempat seharusnya ditempat`,
-          `Diagnosa seharusnya diagnosis`,
-          `Karena seharusny dikarenakan`,
-          `Mengucapkan seharusnya ucapkan`
-        ],
-        answer: 1
-      },
-      {
-        id: 11,
-        stimulus: `<p>(1) Pada Minggu (26/1/2025), operasi modifikasi cuaca terus dilakukan untuk mencegah terulangnya bencana banjir di Lampung. (2) Pesawat yang digunakan untuk operasi tersebut diterbangkan dari Bandara Radin Inten II, Kabupaten Lampung Selatan. (3) Selain menerjunkan empat personel untuk memantau pelaksanaan operasi modifikasi cuaca di Lampung, BNPB juga menunjuk 10 orang profesional, yang terdiri dari pilot, kopilot, ilmuwan, dan penabur garam, untuk melaksanakan operasi modifikasi cuaca dari udara. (4) Banyak berton-ton garam itu ditebar dari ketinggian 10 ribu sampai 12 ribu kaki.</p>`,
-        question: `Kalimat tidak efektif dalam teks tersebut terdapat pada kalimat bernomor …`,
-        options: [`(1)`, `(2)`, `(3)`, `(4)`],
-        answer: 3
-      },
-      {
-        id: 12,
-        stimulus: `<p class="font-semibold mb-1">Data Korban Banjir Kelurahan Way Lunik Kota Bandar Lampung (Jumat, 17 Januari 2025)</p>
-        <table class="w-full text-center text-xs border border-slate-300 mb-2">
-          <tr class="bg-slate-100 font-bold border-b">
-            <td class="p-1 border-r">Bangunan Rusak</td>
-            <td class="p-1 border-r">Korban jiwa</td>
-            <td class="p-1 border-r">Korban luka berat</td>
-            <td class="p-1">Korban luka ringan</td>
-          </tr>
-          <tr>
-            <td class="p-1 border-r">10</td>
-            <td class="p-1 border-r">1</td>
-            <td class="p-1 border-r">5</td>
-            <td class="p-1">21</td>
-          </tr>
-        </table>`,
-        question: `Berita yang sesuai berdasarkan ilustrasi data tersebut adalah...`,
-        options: [
-          `Sebanyak 21 rumah di KelurahanWay Lunik, Panjang mengalami kerusakan parah setelah diterjang banjir Jumat, 17 Januari 2025.`,
-          `Banjir yang menerjang Bandar Lampung pada Jumat, 17 Januari 2025 lalu menelan korban jiwa sebanyak 5 orang.`,
-          `Berdasarkan pantauan wartawan di lokasi kejadian banjir, Kelurahan Way Lunik, Panjang mengalami kerusakan yang cukup parah. Sedikitnya10 bangunan rusak berat, terdapat 1 korban jiwa, 21 orang korban luka berat, Dan 5 orang korban luka ringan. Semua korban luka telah dievakuasi ke rumah sakit terdekat.`,
-          `Banjir yang menerjang Bandar Lampung pada Jumat, 17 Januari 2025 lalu menyisakan kerusakan dan korban yang cukup banyak. Seperti di Kelurahan Way Lunik, Panjang terdapat 10 bangunan yang mengalami kerusakan. Selain itu ada setidaknya 21 korban luka ringan, 5 orang luka berat, Dan 1 korban jiwa pada banjir kali ini.`
-        ],
-        answer: 3
-      },
-      {
-        id: 13,
-        stimulus: `<div class="p-2 border rounded bg-amber-50 text-xs">
-          <strong>Dijual</strong><br>
-          Laptop second merek Lenovo tipe E15 gen4 warna body merah. Tangan pertama. Spesifikasi Layar 15.6 inch, prosesor intel core i5, ram16GB.<br>
-          8 juta boleh negosiasi. Minat hub. Eko 0898 65748584
-        </div>`,
-        question: `Perbaikan kesalahan penulisan ejaan pada teks iklan baris tersebut yang paling tepat adalah …`,
-        options: [
-          `DiJual -> Di jual`,
-          `Merek -> Merk`,
-          `Body -> Bodi`,
-          `Negosiasi -> Negoisasi`
-        ],
-        answer: 2
-      },
-      {
-        id: 14,
-        stimulus: `<div class="p-2 border rounded bg-amber-50 text-xs font-mono">
-          TANAH DIJUAL BANDAR LAMPUNG Jl Jendral Sudirman no. 76 LT370m bgs hdp timur 184m²&180m² jln lebar aks tol dkt CP 0816271181 085672316753
-        </div>`,
-        question: `Iklan baris tersebut jika dilengkapi dengan tanda baca yang paling tepat adalah …`,
-        options: [
-          `TANAH DIJUAL BANDAR LAMPUNG Jl. Jendral Sudirman no.76 LT370m bgs hdp timur 184m²&180m² jln lebar aks tol dkt CP. 0816271181 085672316753`,
-          `TANAH DIJUAL BANDAR LAMPUNG Jl. Jendral Sudirman no. 76 LT.370m. bgs. hdp timur.184m²&180m². jln. lebar aks. tol dkt. CP. 0816271181, 085672316753.`,
-          `TANAH DIJUAL BANDAR LAMPUNG Jl. Jendral Sudirman no. 76 LT 370m. bgs. hdp timur.184m²&180m². jlnlebar aks. tol dkt. CP. 0816271181 085672316753.`,
-          `TANAH DIJUAL BANDAR LAMPUNG Jl Jendral Sudirman no. 76 LT.370m. bgs. hdp timur.184m²&180m². jln. lebar aks. tol dkt. CP. 0816271181, 085672316753.`
-        ],
-        answer: 1
-      },
-      {
-        id: 15,
-        stimulus: `<p>Banjir yang terjadi akhir-akhir ini di Bandar Lampung salah satunya disebabkan oleh sampah. Pembuangan sampah di DAS membuat sungai tersumbat sampah. Jika air melimpah, air akan keluar dari sungai karena daya tampung saluran berkurang. Kawasan padat penduduk di sepanjang sungai atau sepanjang <strong>drainase</strong> dapat menjadi penghambat aliran dan daya tampung sungai. Masalah kawasan kumuh dikenal sangat penting sebagai faktor sosial terhadap masalah banjir daerah perkotaan.</p>`,
-        question: `Makna kata drainase pada teks tersebut adalah …`,
-        options: [`saluran irigasi`, `jalan utama`, `saluran air`, `jalur sungai`],
-        answer: 2
-      },
-      {
-        id: 16,
-        stimulus: `<p>Gempa dahsyat pernah terjadi di Aceh, 26 Desember 2004, pada pukul 17.58 WIB. Pusat gempa terletak di sebelah barat Aceh dengan kedalaman 10 km. Bencana ini merupakan gempa bumi terdahsyat dalam kurun waktu 40 tahun terakhir. Dampak kerusakan, meliputi Aceh, Sumatera Utara, Pantai Barat Semenanjung Malaysia, Thailand, Pantai Timur India, Sri Lanka, bahkan sampai Pantai Timur Afrika. Gempa ini mengakibatkan gelombang laut setinggi 9 meter. Kekuatan gempa pada penghujung tahun 2004 itu mencapai 9.0 richter dengan korban tewas mencapai 283.100, 14.000 orang hilang dan 1.126.900 kehilangan tempat tinggal. Gempa bumi yang disertai gelombang tsunami itu merupakan bencana yang mengakibatkan kematian terbesar sepanjang sejarah.</p>`,
-        question: `Informasi tersurat yang sesuai dengan teks eksplanasi tersebut adalah ….`,
-        options: [
-          `Gempa Aceh menduduki peringkat gempa terdahsyat no 1 di dunia.`,
-          `Gempa Aceh mengakibatkan tsunami setinggi 9 meter sehingga menyebabkan korban jiwa terbanyak di dunia.`,
-          `Gempa dahsyat pernah terjadi di Aceh pada 26 Desember 2004 merupakan gempa bumi terdahsyat dalam kurun waktu 40 tahun terakhir.`,
-          `Gempa Aceh disebabkan oleh pergeseran lempeng bumi yang menimbulkan getaran yang tidak hanya terasa di Indonesia.`
-        ],
-        answer: 2
-      },
-      {
-        id: 17,
-        stimulus: `<p>Menurut sebuah studi yang dikutip dari situs Alodokter, berolahraga jalan kaki selama 30 menit ternyata mampu menurunkan risiko penyakit jantung sebanyak 40 persen. Berdasarkan data tersebut, berarti olahraga jalan kaki dapat memicu jantung untuk terus berdenyut lebih kencang, sehingga jantung pun menguat, dan sirkulasi darah pun kian meningkat. Selain itu, berjalan kaki secara teratur juga dapat menurunkan kolesterol dalam tubuh. Hal ini dikarenakan berjalan kaki akan menuntut tubuh bergerak secara konstan yang mengakibatkan lemak dan kolesterol pun akan semakin menurun.</p>`,
-        question: `Ide pokok kutipan teks persuasi tersebut adalah…`,
-        options: [
-          `Berolahraga jalan kaki selama 30 menit ternyata mampu menurunkan risiko penyakit jantung sebanyak 40 persen.`,
-          `Berolahraga jalan kaki dapat memicu jantung untuk terus berdenyut lebih kencang, sehingga jantung pun menguat, dan sirkulasi darah pun kian meningkat.`,
-          `Berjalan kaki secara teratur juga dapat menurunkan kolesterol dalam tubuh.`,
-          `Berjalan kaki akan menuntut tubuh bergerak secara konstan yang mengakibatkan lemak dan kolesterol pun akan semakin menurun.`
-        ],
-        answer: 0
-      },
-      {
-        id: 18,
-        stimulus: `<p>Perilaku bullying merupakan tindakan yang perlu ditindak secara tegas dan tidak bisa dibiarkan berlarut-larut. Perilaku menjijikan tersebut dapat berdampak sangat serius pada masa depan mereka yang menjadi korban pembulian. Sejak usia yang masih sangat muda, tak sedikit anak-anak yang sudah menghadapi begitu banyak beban, salah satunya adalah dengan menerima perilaku bullying dari lingkungannya. Mulai dari lingkungan rumah tangga, lingkungan rumahnya hingga sekolah.</p>`,
-        question: `Simpulan isi teks persuasi tersebut yang paling tepat adalah …`,
-        options: [
-          `Bullying terjadi di semua lingkungan, mulai dari lingkungan rumah tangga hingga lingkungan sekolah.`,
-          `Tak sedikit anak yang menjadi korban bullying pada akhirnya juga menjadi pelaku pada korban yang usianya lebih muda.`,
-          `Bullying adalah perilaku yang mengintimidasi seseorang baik secara fisik maupun verbal.`,
-          `Perilaku bullying merupakan tindakan yang perlu ditindak secara tegas dan tidak bisa dibiarkan berlarut-larut karena dapat berdampak sangat serius pada masa depan mereka yang menjadi korban.`
-        ],
-        answer: 3
-      },
-      {
-        id: 19,
-        stimulus: `<p class="text-xs leading-relaxed">Dayang Sumbi adalah putri dari kerajaan di Jawa Barat. Ia terusir dari kerajaan akibat kesalahan yang pernah diperbuat. Ia memiliki seorang anak lelaki bernama Sangkuriang. Sangkuriang senang berburu ke hutan dengan anjing setianya si Tumang. Suatu hari, karena tidak mendapat hewan buruan, Sangkuriang memutuskan untuk membunuh si Tumang... Sangkuriang yang marah kemudian menendang perahu yang sudah dibuatnya hingga terbalik menjadi gunung tangkuban perahu.</p>`,
-        question: `Keunggulan kutipan cerita fiksi tersebut yang paling tepat adalah …`,
-        options: [
-          `Cerita fiksi tersebut berasal dari daerah Jawa Barat sehingga sangat menarik untuk dibaca.`,
-          `Kisah yang disampaikan dalam cerita fiksi tersebut sangat menarik karena memuat kisah percintaan yang jarang terjadi`,
-          `Cerita fiksi tersebut menyajikan sejarah terbentuknya Gunung Tangkuban Perahu sehingga layak dibaca.`,
-          `Cerita fiksi tersebut disajikan dengan bahasa yang sederhana sehingga mudah dipahami.`
-        ],
-        answer: 3
-      },
-      {
-        id: 20,
-        stimulus: `<p class="text-xs leading-relaxed">Bumi manusia adalah mahakarya yang ditulis dengan penuh perhatian terhadap setiap detail peristiwa dan alur yang diarahkan. Novel ini berlatar Hindia Belanda, sebelum Indonesia merdeka pada akhir abad 18. Pram menampilkan suasana kolonial dengan sangat apik dan detail. Lokasi yang digambarkan adalah Wonokromo yang merupakan kawasan perkebunan tebu, Surabaya, Blora...</p>`,
-        question: `Komentar terhadap isi teks tanggapan tersebut yang paling tepat adalah …`,
-        options: [
-          `Meskipun berlatar Hindia Belanda di akhir abad 18, novel ini berhasil menggambarkan suasana kolonial yang sangat apik dan detail sehingga pembaca dapat merasakan suasana romantisme novel. Tak salah jika novel ini menjadi salah satu novel yang wajib Anda nikmati.`,
-          `Novel ini berlatar Hindia Belanda sehingga pembaca cukup kesulitan menyelami cerita melalui penggambaran latar. Maka sebaiknya penulis perlu mengubah latar cerita.`,
-          `Novel ini memiliki kombinasi teknik penulisan yang di luar akal sehat. Sebaiknya pembaca tidak membaca novel ini untuk menghindari salah penafsiran.`,
-          `Novel merupakan novel fenomenal yang hanya pantas dibaca oleh orang-orang berwawasan luas dan berpikiran kritis.`
-        ],
-        answer: 0
-      },
-      {
-        id: 21,
-        stimulus: `<p class="text-xs">Assalamualaikum wr. wb. Selamat pagi dan salam sejahtera untuk Bapak/Ibu Guru, serta teman-teman semuanya. Hari ini 17 Agustus 2020, kita memperingati Hari Kemerdekaan ke-73 negara kita Republik Indonesia. Setiap tahunsetiap 17 Agustus kita melaksanakan upacara untuk merayakan Hari Kemerdekaan. 17 Agustus adalah hari di mana Indonesia dan seluruh warganya bergembira dalam rasa syukur karena berkat rahmat Allah SWT kita merdeka. Dalam kesempatan ini pula, saya mengajak ibu/Baoak Guru serta teman-teman untuk mengenang, menghargai, dan meneruskan perjuangan para pahlawan…</p>`,
-        question: `Penggunaan kata di mana pada teks pidato tersebut tidak tepat karena …`,
-        options: [
-          `Tidak baku karena seharusnya penulisannya diserangkaikan.`,
-          `Tidak baku. Seharusnya kata di mana diganti kata saatnya.`,
-          `Tidak efektif. Kata di mana adalah kata untuk menyampaikan pertanyaan.`,
-          `Tidak efektif. Jika kata tersebut dihilangkan, tidak akan mengubah makna.`
-        ],
-        answer: 2
-      },
-      {
-        id: 22,
-        stimulus: `<p class="text-xs">Kampung Eforbia layak mendapat penghargaan sebagai kampung terbersih. Lingkungan yang asri dan bersih membuat kampung ini nyaman. Semua ini terwujud karena hasil binaan dari para tokoh-tokoh masyarakat dan semua elemen masyarakat yang terlibat. Namun, yang terpenting adalah kerja sama dan kekompakan warga untuk mempertahankan predikat tersebut.</p>`,
-        question: `Kalimat tidak efektif di dalam kutipan teks pidato tersebut adalah…`,
-        options: [
-          `Kampung Eforbia layak mendapat penghargaan sebagai kampung terbersih`,
-          `Lingkungan yang asri dan bersih membuat kampung ini nyaman.`,
-          `Semua ini terwujud karena hasil binaan dari para tokoh-tokoh masyarakat dan semua elemen masyarakat yang terlibat.`,
-          `Namun, yang terpenting adalah kerja sama dan kekompakan warga untuk mempertahankan predikat tersebut.`
-        ],
-        answer: 2
-      },
-      {
-        id: 23,
-        stimulus: `<p class="text-xs">(1) Saudara-saudara yang saya hormati, kebersihan kampung kita harus kita tingkatkan. (2) Usaha yang bisa kita lakukan antara lain, membuat jadwal kerja bakti setiap pekan, membuat program menanam tanaman di rumah warga, dan juga membuat program pengolahan sampah. (3) Usaha pengolahan sampah bisa mendatangkan banyak keuntungan secara ekonomi. (4) Oleh karena itu, kesadaran dan partisipasi warga terhadap kebersihan berperan penting dalam menyuksekan program-program ini.</p>`,
-        question: `Paragraf kutipan teks pidato tersebut tidak padu karena …`,
-        options: [
-          `Kalimat (1), (2), dan (4) membahas tentang kebersihan kampung, sedangkan kalimat (3) menjelaskan usaha pengolahan sampah.`,
-          `Kalimat (1), (2), dan (4) membahas tentang usaha yang menghasilkan uang, sedangkan kalimat (3) menjelaskan usaha pengolahan sampah.`,
-          `Kalimat (1), (2), dan (4) membahas tentang meningkatkan usaha di kampung, sedangkan kalimat (3) menjelaskan tentang pembuangan sampah.`,
-          `Kalimat (1), (2), dan (4) membahas tentang meningkatkan kebersihan di kampung, sedangkan kalimat (3) menjelaskan tentang cara mendapatkan keuntungan.`
-        ],
-        answer: 3
-      },
-      {
-        id: 24,
-        stimulus: `<p class="text-xs">Hadirin yang saya hormati dalam kesempatan ini saya akan membahas “Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”.</p>`,
-        question: `Perbaikan tanda baca pada cuplikan kalimat pidato tersebut yang tepat adalah…`,
-        options: [
-          `Hadirin yang saya hormati dalam kesempatan ini saya akan membahas “ Pentingnya Pengendalian Emosi Bagi Anak Usia Dini” .`,
-          `Hadirin yang saya hormati dalam kesempatan ini saya akan membahas, “ Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”`,
-          `Hadirin yang saya hormati, dalam kesempatan ini saya akan membahas “Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”.`,
-          `Hadirin yang saya hormati dalam kesempatan ini saya, akan membahas “Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”.`
-        ],
-        answer: 2
-      },
-      {
-        id: 25,
-        stimulus: `<p class="text-xs">Oleh karena itu, dalam kesempatan ini saya mengajak seluruh anggota dan jajaran Gerakan Pramuka untuk terus berupaya meningkatkan kemampuan diri, beramal bhakti bagi kepentingan masyarakat, bangsa, negara, dan dunia, sesuai tingkat kemampuannya masing-masing. Mengakhiri sambutan ini, perkenankan kami atas nama Gerakan pramuka menyampaikan penghargaan dan terima kasih sebesar-besarnya kepada seluruh masyarakat yang telah memberikan dorongan, dukungan, dan bantuannya, baik moril, materiil, maupun finansial.</p>`,
-        question: `Kesalahan penulisan ejaan dalam kutipan teks pidato tersebut adalah ….`,
-        options: [
-          `bhakti seharusnya bakti`,
-          `mengakhiri seharusnya mengahiri`,
-          `materiil seharusnya materil`,
-          `finansial seharusnya pinansial`
-        ],
-        answer: 0
-      },
-      {
-        id: 26,
-        stimulus: `<p class="text-xs">Hadirin yang berbahagia, merokok memiliki banyak dampak negatif. Merokok dapat mengakibatkan gangguan kesehatan yang serius, seperti masalah pernapasan, penyakit jantung, kanker dan berbagai penyakit lainnya. Kebiasaan merokok juga dapat mempengaruhi kualitas hidup secara sosial, ekonomi, dan psikologis.</p>`,
-        question: `Alasan ketidaktepatan penggunaan tanda baca pada teks tersebut adalah…`,
-        options: [
-          `Setelah kata kanker seharusnya diberi tanda koma.`,
-          `Tanda koma setelah kata ekonomi seharusnya dihilangkan.`,
-          `Tanda koma setelah kata pernapasan seharusnya dihilangkan.`,
-          `Setelah kata kualitas hidup seharusnya diberi tanda koma.`
-        ],
-        answer: 0
-      },
-      {
-        id: 27,
-        stimulus: `<p class="text-xs">Aku akhirnya memutuskan berkelana ke negeri seberang. Tak perduli dengan anggapan orang-orang. Aku harus menjadi orang sukses yang bisa mengangkat derajat keluargaku. Aku akan pulang dengan membawa kesuksesan.</p>`,
-        question: `Makna kata berkelana dalam kutipan cerpen tersebut adalah….`,
-        options: [`menyeberang`, `diam di tempat`, `bepergian`, `menetap`],
-        answer: 2
-      },
-      {
-        id: 28,
-        stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-          <div class="border p-2 rounded bg-white"><strong>Teks 1:</strong> Di bawah terik matahari, Erwin dan Rusto bertengkar. Mereka merasa saling dirugikan oleh ulah masing-masing. Tiba-tiba segerombolan siswa keluar dari gerbang sekolah dan membuat mereka menghentikan perdebatan.</div>
-          <div class="border p-2 rounded bg-white"><strong>Teks 2:</strong> Angin bertiup sejuk. Cuaca cerah cemerlang terkena sinar rembulan. Bintang bertaburan di langit laksana permata berserakan di atas permadani. Di sana melancarlah biduk nelayan yang sedang mengadu untung, menantang gelombang yang penuh marabahaya.</div>
-        </div>`,
-        question: `Latar tempat pada kutipan dua teks cerpen tersebut adalah….`,
-        options: [
-          `teks 1 di pinggir jalan dan teks 2 di pantai`,
-          `teks 1 di halaman sekolah dan teks 2 di pantai`,
-          `teks 1 di laut dan teks 2 di depan gerbang sekolah`,
-          `teks 1 di depan gerbang sekolah dan teks 2 di laut`
-        ],
-        answer: 3
-      },
-      {
-        id: 29,
-        stimulus: `<p class="text-xs">Tiba-tiba Ani menangis. Ia mulai terisak-isak menumpahkan perasaannya. Wajahnya merah padam. Ia geram pada dirinya sendiri. Ia juga merasa terpuruk karena gagal masuk universitas impiannya.</p>`,
-        question: `Makna simbol wajahnya merah padam dalam kutipan cerpen tersebut adalah….`,
-        options: [`senang dan gembira`, `marah dan bahagia`, `malu dan terluka`, `marah dan kecewa`],
-        answer: 3
-      },
-      {
-        id: 30,
-        stimulus: `<p class="text-xs">“Kamu kenapa, Do? Tanya ibu.<br>“Maafkan Dodo, Bu, tadi Dodo di sekolah mendapat nilai kecil saat ulangan,” kata Dodo dengan wajah sedih.<br>“Dodo semalam sudah belajar?” tanya Ibu.<br>“Sudah, Bu, tapi nilai Dodo masih kecil,” jawab Dodo.<br>“Tidak apa-apa Nak, yang penting Dodo sudah berusaha. Ibu tidak marah atau kecewa. Ibu yakin Dodo akan dapat nilai bagus saat ulangan berikutnya,” ujar Ibu menguatkan Dodo.</p>`,
-        question: `Watak tokoh ibu pada kutipan cerpen tersebut adalah…`,
-        options: [`periang`, `pemarah`, `bijaksana`, `dermawan`],
-        answer: 2
-      },
-      {
-        id: 31,
-        stimulus: `<p class="text-xs">Dita masuk ke kelasnya. Tiba-tiba semua teman di kelasnya terdiam. Mereka memandangi Dita dengan tatapan sinis. Dita hanya menunduk. Ia tahu mereka menganggap beasiswa yang ia terima tidak pantas ia dapatkan karena ia diduga menyontek saat ujian tulis. Dita rasanya ingin berteriak dan menjelaskan kepada mereka. Namun beban di hatinya terlalu berat sehingga ia sulit mengucapkan kata-kata. Ia hanya ingin segera membuktikan bahwa semua dugaan itu salah.</p>`,
-        question: `Penyebab konflik dalam kutipan cerpen tersebut adalah…`,
-        options: [
-          `Dita sedih dan mempertanyakan perbuatan teman-temannya pada dirinya sendiri.`,
-          `Dita merasa bebannya begitu berat sehingga ia tidak sanggup berkata-kata.`,
-          `Dita dianggap tidak pantas mendapat beasiswa karena ia diduga menyontek saat ujian.`,
-          `Dita ingin segera membuktikan bahwa semua tuduhan teman-temannya salah.`
-        ],
-        answer: 2
-      },
-      {
-        id: 32,
-        stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-          <div class="border p-2 rounded bg-white"><strong>Cerpen 1:</strong> Ayah Dika sudah meninggal setahun lalu. Sudah seminggu ini, ibunya yang seorang buruh cuci, terbaring sakit. Dika yang masih SMP itu tak sempat bermain dengan teman-temannya. Ia harus berusaha mencari nafkah yang halal buat ibu dan adik-adiknya dengan bekerja serabutan. Terkadang, pagi-pagi sekali ia mendapat upah dari mencuci mobil Pak Trisno tetangganya. Sepulang sekolah, ia berjualan pisang goreng keliling kampung.</div>
-          <div class="border p-2 rounded bg-white"><strong>Cerpen 2:</strong> Aku seorang anak SMP yang memiliki hobi memancing. Mungkin banyak orang menganggap hobiku seperti hobi orang tua. Tetapi aku memang sangat suka memancing ikan. Saat memancing aku memiliki waktu untuk menyendiri dan berpikir dengan bijak. Meresapi alur kehidupan. Penatku pun hilang. Semua masalah perlahan memudar. Aku seakan memiliki energi besar untuk menghadapi aral melintang.</div>
-        </div>`,
-        question: `Perbedaan penggunaan bahasa kedua kutipan cerpen tersebut adalah…`,
-        options: [
-          `Cerpen 1 menggunakan kata ganti orang ketiga dan bahasa yang lugas (apa adanya), sedangkan cerpen 2 menggunakan kata ganti orang pertama dan bahasa yang bermajas.`,
-          `Cerpen 1 menggunakan kata ganti orang ketiga dan istilah ilmiah, sedangkan cerpen 2 menggunakan kata ganti orang pertama dan istilah bidang kedokteran.`,
-          `Cerpen 1 menggunakan kata ganti orang pertama dan bahasa yang bermajas, sedangkan cerpen 2 menggunakan kata ganti orang ketiga dan bahasa yang lugas (apa adanya).`,
-          `Cerpen 1 menggunakan kata ganti orang ketiga dan istilah bidang kedokteran, sedangkan cerpen 2 menggunakan kata ganti orang pertama dan istilah ilmiah.`
-        ],
-        answer: 0
-      },
-      {
-        id: 33,
-        stimulus: `<p class="text-xs">(1) Aku bangun dalam keadaan terkejut. (2) Kuperhatikan ruangan di sekelilingku yang berwarna putih. (3) Bau obat-obatan perlahan menerobos indera penciumanku. (4) Aku mulai menyadari bahwa ini adalah ruangan di rumah sakit. (5) Tiba-tiba kepalaku sakit. (6) Aku teringat kejadian sebelumnya yang menyebabkan aku ada di sini. Mobilku menabrak pembatas jalan, lalu aku terperosok jurang, dan akhirnya aku tak sadarkan diri. (7) Aku ingat bahwa aku sedang dalam perjalanan ke bandara menjemput orang tuaku. (8) Cahaya matahari yang masuk melalu jendela menyadarkanku dari lamunan.</p>`,
-        question: `Bukti latar tempat dan waktu dalam kutipan cerpen tersebut terdapat pada kalimat bertanda nomor…`,
-        options: [`(1), (3), (5)`, `(2), (4), (8)`, `(6), (7), (8)`, `(2), (4), (6)`],
-        answer: 1
-      },
-      {
-        id: 34,
-        stimulus: `<p class="text-xs">Aku seorang anak SMP yang memiliki hobi memancing. Mungkin banyak orang menganggap hobiku seperti hobi orang tua. Tetapi aku memang sangat suka memancing ikan. Saat memancing aku memiliki waktu untuk menyendiri dan berpikir dengan tenang. Meresapi alur kehidupan. Penatku pun hilang. Semua masalah perlahan memudar. Aku seakan memiliki energi besar untuk menghadapi aral melintang.</p>`,
-        question: `Watak tokoh Aku dalam kutipan cerpen tersebut ditunjukkan pada kalimat….`,
-        options: [
-          `Aku seorang anak SMP yang memiliki hobi memancing.`,
-          `Semua masalah perlahan memudar.`,
-          `Mungkin banyak orang menganggap hobiku seperti hobi orang tua.`,
-          `Saat memancing aku memiliki waktu untuk menyendiri dan berpikir dengan bijak.`
-        ],
-        answer: 3
-      },
-      {
-        id: 35,
-        stimulus: `<p class="text-xs">“Aldo, selamat ya! Kamu memang berhak menjadi juara umum. Nilaimu bagus-bagus dan kau juga masih memiliki waktu untuk aktif berorganisasi. Aku ingin bisa belajar mengatur waktu sepertimu!” ujar Ridho.<br>Aldo tersenyum.<br>[ ... ]<br>Teman-teman Aldo semakin mengagumi sosok Aldo yang dianggap berhasil. Mereka tahu usaha dan kerja keras Aldo. Meski Aldo berasal dari keluarga tidak mampu, ia tidak pernah menyerah memperjuangkan mimpinya.</p>`,
-        question: `Kalimat yang sesuai untuk melengkapi bagian yang rumpang dalam kutipan cerpen tersebut adalah…`,
-        options: [
-          `“Terima kasih Ridho. Memang aku kan paling rajin di kelas ini. Dari dulu bahkan aku tidak pernah membolos. Tidak seperti kalian!“ jawab Aldo dengan suara keras.`,
-          `“Ridho,kamu memang sahabatku yang baik. Akan kuingat selalu nasihatmu,” jawab Aldo sambil tersenyum ramah.`,
-          `“Terima kasih Ridho. Semua yang aku raih ini tidak lepas dari doa orang tuaku dan bantuan kalian. Kalian juga selalu memberiku semangat untuk terus berjuang. Terima kasih teman-teman,” ujar Aldo sambil tersenyum.`,
-          `“Kamu pikir kamu siapa? Berani-beraninya menasihati aku!” bentak Aldo sambil berlalu meninggalkan kelas.`
-        ],
-        answer: 2
-      },
-      {
-        id: 36,
-        stimulus: `<p class="text-xs">Monalisa, lukisan ikonik karya Leonardo da Vinci, merupakan sebuah karya seni yang menarik dan penuh misteri. Lukisan ini berhasil menangkap perhatian dunia selama berabad-abad dan terus menjadi sumber inspirasi bagi seniman dan pengagum seni rupa lainnya. Daya tarik utama lukisan Monalisa terletak pada senyum misterius yang terpahat di wajah wanita itu... Selanjutnya, penggunaan teknik sfumato oleh da Vinci memberikan kesan realisme dan kelembutan yang luar biasa pada lukisan...</p>`,
-        question: `Informasi yang sesuai dengan kutipan teks tanggapan tersebut adalah…`,
-        options: [
-          `Penggunaan teknik sfumato oleh da Vinci memberikan kesan khayalan dan kelembutan yang luar biasa pada lukisan.`,
-          `Lukisan Monalisa merupakan salah satu lukisan termahal di dunia dan menjadi mahakarya yang dikenal di seluruh dunia.`,
-          `Monalisa menjadi sumber insirasi bagi seniman dan pengagum seni rupa selama berabad-abad.`,
-          `Daya tarik lukisan Monalisa terletak pada perpaduan warna yang ada di dalam lukisan tersebut.`
-        ],
-        answer: 2
-      },
-      {
-        id: 37,
-        stimulus: `<p class="text-xs">Salah satu aspek yang paling menonjol dari film ini adalah kemampuan sutradara dan para pemeran dalam membawakan suasana romansa yang hangat dan tulus. Selain itu, penyutradaraan yang cerdas dan sinematografi yang apik memberikan sentuhan visual yang memukau. Pemilihan lokasi yang autentik dan pemakaian musik era 90-an turut menyumbangkan nuansa nostalgia yang menyentuh hati.</p>`,
-        question: `Informasi dalam kutipan teks tanggapan tersebut termasuk kategori….`,
-        options: [`kritik`, `pujian`, `sanggahan`, `saran`],
-        answer: 1
-      },
-      {
-        id: 38,
-        stimulus: `<p class="text-xs">Penggunaan galon sekali pakai yang beredar luas di kalangan masyarakat ternyata menyebabkan peningkatan sampah plastik. Selama ini, bumi kita sudah cukup kesakitan akibat berbagai pencemaran lingkungan dan pemanasan global yang setiap tahunnya semakin memburuk. Dilansir dari NASA, tercatat suhu permukaan rata-rata bumi telah meningkat sekitar 2,05 derajat Fahrenheit (1,14 derajat Celcius) sejak akhir abad ke-19.</p>`,
-        question: `Konjungsi yang digunakan dalam kutipan teks tanggapan tersebut adalah….`,
-        options: [`penggunaan, cukup`, `telah, memburuk`, `semakin, berbagai`, `akibat, dan`],
-        answer: 3
-      },
-      {
-        id: 39,
-        stimulus: `<p class="text-xs">Dalam cerpen ini, tokoh utama tidak memiliki pendirian tetap dan selalu menyesali perbuatannya sendiri. Cerpen ini mempunyai cerita yang menarik dan tidak membosankan. Akan tetapi, di dalam cerpen ini terdapat banyak istilah kekinian yang sulit dipahami. Meskipun demikian, tetap ada pelajaran moral yang terkandung di dalamnya, yakni persahabatan yang didasari dengan kasih sayang.</p>`,
-        question: `Berdasarkan strukturnya, kutipan teks tanggapan tersebut termasuk bagian….`,
-        options: [`evaluasi (penilaian)`, `deskripsi`, `penegasan`, `konteks`],
-        answer: 0
-      },
-      {
-        id: 40,
-        stimulus: `<p class="text-xs">Siger Lampung dikenal sebagai mahkota pengantin perempuan suku Lampung dalam acara pernikahan atau upacara adat lainnya. Bahan pembuatannnya berasal dari lempengan tembaga, kuningan, atau logam lainnya yang dicat warna emas. Bahkan dahulu bahan Siger Lampung menggunakan emas asli. Selain sebagai mahkota pengantin, siger digunakan sebagai benda perhiasan sehari-hari. Bentuk Siger Lampung berupa segitiga berwarna emas yang biasanya memiliki cabang yang berjumlah sembilan atau tujuh.</p>`,
-        question: `Ide pokok paragraf kutipan teks tanggapan tersebut adalah….`,
-        options: [
-          `ciri khas Siger Lampung`,
-          `bahan pembuatan Siger Lampung`,
-          `makna Siger Lampung`,
-          `perkenalan tentang Siger Lampung`
-        ],
-        answer: 3
-      },
-      {
-        id: 41,
-        stimulus: `<p class="text-xs">Minat membaca buku di Indonesia dinilai masih sangat rendah. Faktanya UNESCO menyebut indeks minat baca masyarakat Indonesia hanya diangka 0,001% atau dari 1.000 orang Indonesia, hanya 1 orang yang rajin membaca. Kemenkominfo dalam laman resminya juga merilis hasil riset yang menyatakan Indonesia menduduki peringkat ke-60 dari 61 negara soal minat membaca...</p>`,
-        question: `Simpulan teks tanggapan tersebut yang paling tepat adalah…`,
-        options: [
-          `Kualitas bangsa harus diperbaiki melalui minat baca.`,
-          `Masih banyak hal yang harus dibenahi dalam pendidikan.`,
-          `Minat membaca buku di Indonesia masih sangat rendah.`,
-          `Permasalahan negeri ini semakin banyak terutama masalah pendidikan.`
-        ],
-        answer: 2
-      },
-      {
-        id: 42,
-        stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
-          <div class="border p-1.5 rounded"><strong>(1)</strong> Minyak kayu putih dipakai di badan / Rasanya akan menjadi hangat / Jagalah kebersihan lingkungan / Lingkungan bersih membuat kita sehat</div>
-          <div class="border p-1.5 rounded"><strong>(2)</strong> Ibu dan ayah pergi ke pasar / Membeli buah dan juga beras / Di sekolah rajinlah belajar / Agar dewasa jadi orang cerdas</div>
-          <div class="border p-1.5 rounded"><strong>(3)</strong> Banyak sawah di Desa Jabong / Banyak juga kebun di Desa Cimalaka / Janganlah kamu suka berbohong / Karena dusta membuat celaka</div>
-          <div class="border p-1.5 rounded"><strong>(4)</strong> Rasa cinta membakar jiwa / Membuat dua insan jadi terlena / Ingatlah selalu pada yang Kuasa / Supaya hati tak inginkan dosa</div>
-        </div>`,
-        question: `Pantun bertema nasihat yang paling tepat terdapat pada nomor.....`,
-        options: [`(1)`, `(2)`, `(3)`, `(4)`],
-        answer: 1
-      },
-      {
-        id: 43,
-        stimulus: `<div class="p-2 border rounded bg-indigo-50 text-xs italic text-center">
-          Jauhi semua perbuatan jahat<br>Jauhi pula perbuatan maksiat<br>Mari kita segera bertobat<br>Supaya selamat dunia akhirat
-        </div>`,
-        question: `Ciri yang sesuai dengan syair tersebut adalah....`,
-        options: [
-          `Terdapat 2 baris yang merupakan isi.`,
-          `Baris 1 dan 2 merupakan sampiran.`,
-          `Baris 3 dan 4 merupakan isi.`,
-          `Bersajak a a a a.`
-        ],
-        answer: 3
-      },
-      {
-        id: 44,
-        stimulus: `<div class="p-2 border rounded bg-indigo-50 text-xs italic text-center">
-          Sebelum berbicara pikir dahulu<br>Agar tak melukai hati temanmu<br>Kalau berbicara semaumu<br>Tentulah banyak orang yang membencimu
-        </div>`,
-        question: `Makna gurindam tersebut adalah....`,
-        options: [
-          `Berbicaralah sesuatu yang disukai teman.`,
-          `Berbicara jujur meski banyak yang membencimu.`,
-          `Sebelum berbicara, pikirkanlah hal-hal yang kamu sukai.`,
-          `Berpikir sebelum berbicara agar tak melukai dan dibenci orang.`
-        ],
-        answer: 3
-      },
-      {
-        id: 45,
-        stimulus: `<p class="text-xs">Lidah buaya sering dijadikan sebagai bahan baku dalam industri obat dan kosmetik. Lidah buaya memiliki daun tebal dan meruncing berwarna hijau segar dengan tepi yang bergerigi namun tidak terlalu tajam. Di dalam daunnya terdapat cairan gel bening yang sering dimanfaatkan untuk berbagai keperluan. Daun lidah buaya bisa lebar antara 2-6 cm dengan tinggi tanaman bervariasi tergantung jenisnya, mencapai 20-36 cm. Akar lidah buaya termasuk akar serabut.</p>`,
-        question: `Ide pokok kutipan teks laporan hasil observasi tersebut adalah…`,
-        options: [
-          `Lidah buaya memiliki daun tebal dan meruncing berwarna hijau segar dengan tepi yang bergerigi namun tidak terlalu tajam.`,
-          `Lidah buaya sering dijadikan sebagai bahan baku dalam industri obat dan kosmetik.`,
-          `Daun lidah buaya bisa lebar antara 2-6 cm dengan tinggi tanaman mencapai 20-36 cm.`,
-          `Akar lidah buaya termasuk akar serabut.`
-        ],
-        answer: 1
-      },
-      {
-        id: 46,
-        stimulus: `<p class="text-xs mb-1"><strong>(Paragraf 1)</strong> Komodo adalah jenis reptil besar yang memiliki empat kaki dan terlihat seperti kadal. Bedanya, ukuran hewan ini sangat besar. Komodo merupakan hewan langka yang masuk dalam kategori dilindungi. Komodo telah dinyatakan sebagai hewan nasional negara tersebut.</p>
-        <p class="text-xs mb-1"><strong>(Paragraf 2)</strong> Sekilas, komodo terlihat seperti biawak biasa. Namun jika diperhatikan lebih dekat, hewan ini jauh lebih besar dari biawak...</p>
-        <p class="text-xs mb-1"><strong>(Paragraf 3)</strong> Kepala komodo agak memanjang, mirip dengan reptil pada umumnya...</p>
-        <p class="text-xs"><strong>(Paragraf 4)</strong> Komodo boleh dibilang hewan yang menyeramkan, namun memiliki sisik yang indah...</p>`,
-        question: `Struktur definisi umum pada teks laporan hasil observasi terletak pada paragraf….`,
-        options: [`4`, `3`, `2`, `1`],
-        answer: 3
-      },
-      {
-        id: 47,
-        stimulus: `<div class="flex flex-col items-center justify-center p-3 border rounded bg-blue-50">
-          <div class="bg-blue-600 text-white font-bold px-4 py-2 rounded-t-lg text-center w-full max-w-xs">
-            SAAT DEMAM, JAGA CAIRAN TUBUH
-          </div>
-          <div class="border-2 border-blue-600 bg-white p-4 my-2 rounded text-center w-full max-w-xs shadow">
-            <span class="block text-xl font-extrabold text-blue-700 tracking-wider">POCARI SWEAT</span>
-            <span class="block text-xs text-slate-500">ION SUPPLY DRINK (350 mL)</span>
-          </div>
-          <div class="text-xs font-semibold text-blue-900">POCARI SWEAT SINGLE</div>
-        </div>`,
-        question: `Pesan yang terkandung dalam iklan tersebut adalah….`,
-        options: [
-          `Pocari Sweat cocok untuk yang single.`,
-          `Saat demam bisa minum Pocari Sweat untuk menjaga cairan tubuh.`,
-          `Pocari Sweat cocok untuk yang demam dan single.`,
-          `Pocari Sweat menjaga cairan tubuh saaat demam.`
-        ],
-        answer: 1
-      },
-      {
-        id: 48,
-        stimulus: `<div class="p-3 border rounded bg-amber-50 text-center font-bold text-slate-800 text-sm">
-          "Manfaatkan waktu yang terbatas untuk ilmu yang tidak terbatas"
-        </div>`,
-        question: `Pesan yang terkandung dalam slogan tersebut adalah….`,
-        options: [
-          `Waktu kita sebagai manusia terbatas jadi harus dimanfaatkan sebaik mungkin untuk mempelajari ilmu yang begitu banyak.`,
-          `Kita harus bisa memanfaatkan waktu dengan sebaik-baiknya.`,
-          `Ilmu kita terbatas bila tidak memanfaatkan waktu yang kita miliki.`,
-          `Waktu yang kita miliki akan hilang begitu saja bila tidak dimanfaatkan dengan sebaik-baiknya.`
-        ],
-        answer: 0
-      },
-      {
-        id: 49,
-        stimulus: `<div class="p-3 border rounded bg-slate-50 text-xs italic">
-          <p class="font-bold not-italic">Hujan Bulan Juni (Sapardi Djoko Damono)</p>
-          Tak ada yang lebih tabah / Dari hujan bulan Juni / Dirahasiakannya rintik rindunya / Kepada pohon berbunga itu<br><br>
-          Tak ada yang lebih bijak / Dari hujan bulan Juni / Dihapuskannya jejak-jejak kakinya / Yang ragu-ragu di jalan itu<br><br>
-          Tak ada yang lebih arif / Dari hujan bulan Juni / Dibiarkannya yang tak terucapkan / Diserap akar pohon bunga itu
-        </div>`,
-        question: `Makna simbol dihapuskannya jejak-jejak kakinya adalah….`,
-        options: [
-          `Meninggalkan kenangan`,
-          `menjalani kehiduan dengan semangat`,
-          `menghindari tanggung jawab`,
-          `melupakan masa lalu`
-        ],
-        answer: 3
-      },
-      {
-        id: 50,
-        stimulus: `<div class="p-3 border rounded bg-slate-50 text-xs italic">
-          Ibu…<br>
-          Cintamu padaku bagai embun pagi (Baris 2)<br>
-          Sejuk menyentuh kalbu yang sunyi (Baris 3)<br>
-          Kasihmu laksana mentari berseri (Baris 4)<br>
-          Menghangatkan jiwa setiap hari (Baris 5)
-        </div>`,
-        question: `Kalimat bermajas simile dalam puisi tersebut terdapat pada baris….`,
-        options: [`pertama dan kedua`, `kedua dan ketiga`, `kedua dan keempat`, `ketiga dan kelima`],
-        answer: 2
-      }
+    // DATA DEFAULT 50 SOAL BAHASA INDONESIA
+    const defaultQuestions = [
+      { id: 1, stimulus: `<p class="font-semibold text-center text-indigo-900 mb-2">Pekan Raya Jakarta</p><p>Pekan Raya Jakarta (PRJ) adalah acara tahunan yang diselenggarakan sebelum, saat, dan sesudah hari ulang tahun kota Jakarta yang jatuh pada tanggal 22 Juni. Acara ini pertama kali diadakan tahun 1968 di kawasan Monas, sebelum akhirnya dipindahkan ke Kemayoran sejak 1992 sampai sekarang. Pekan Raya Jakarta menghadirkan ribuan merek lokal dan internasional, mulai dari pakaian, gadget, otomotif, aksesoris, makanan, minuman, hingga obat-obatan dengan harga miring. Tak ketinggalan acara hiburan seperti pesta kembang api dan penampilan dari musisi tanah air.</p>`, question: `Isi paragraf teks deskripsi tersebut yang paling tepat adalah …`, options: [`Pekan Raya Jakarta (PRJ) adalah acara tahunan yang diselenggarakan sebelum, saat, dan sesudah hari ulang tahun kota Jakarta yang jatuh pada tanggal 22 Juni.`, `Pekan Raya pertama kali diadakan tahun1968 did kawasan monas sebelum akhirnya dipindahkan ke Kemayoran.`, `Pekan Raya Jakarta menghadirkan ribuan merek lokal dan internasional, mulai dari pakaian, gadget, otomotif, aksesoris, makanan, minuman, hingga obat-obatan dengan harga miring.`, `Pekan Raya Jakarta juga menghadirkan acara hiburan seperti pesta kembang api dan penampilan dari musisi tanah air.`], answer: 2 },
+      { id: 2, stimulus: `<p>Congklak, atau yang sering dikenal dengan nama dakon di beberapa daerah, adalah permainan ....... Indonesia yang telah ada sejak zaman nenek moyang. Permainan ini biasanya dimainkan oleh dua orang, menggunakan papan congklak yang terdiri dari satu garis panjang dengan lubang-lubang kecil di setiap sisinya.</p>`, question: `Istilah yang tepat untuk mengisi bagian yang rumpang adalah....`, options: [`fenomenal`, `tradisional`, `digital`, `modern`], answer: 1 },
+      { id: 3, stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"><div class="border p-2 rounded bg-white"><strong>TEKS I:</strong> Indonesia merupakan negara agraris, memiliki hamparan lahan pertanian yang sangat luas. Hampir di semua kabupaten yang ada di Indonesia memiliki sawah dan 42% sawah terbanyak ada di pulau Jawa. Statistik menunjukkan bahwa mayoritas dari sawah yang ada digunakan sebagai lahan untuk menanam padi. Sawah di Indonesia ada banyak bentuknya, ada yang datar atau horisontal, dan ada yang dibuat jenjang atau berupa terasering. Tujuan bentuk terasering ini adalah untuk membantu sistem irigasi air pada pertanian, contohnya sawah yang ada di Bali.</div><div class="border p-2 rounded bg-white"><strong>TEKS II:</strong> Gunung berapi ada beberapa bentuk. Gunung berapi yang aktif mungkin berubah menjadi separuh aktif, istirahat, sebelum akhirnya menjadi tidak aktif. Gunung berapi mampu istirahat dalam waktu 610 tahun sebelum berubah menjadi aktif kembali. Karena itu, sulit menentukan keadaan sebenarnya dari sebuah gunung berapi, apakah berada dalam keadaan istirahat atau telah mati. Letusan gunung berapi terjadi apabila magma naik melintasi kerak bumi dan muncul di atas permukaan. Apabila gunung berapi meletus, magma yang terkandung di dalam kamar magma di bawah gunung berapi keluar sebagai lahar atau lava.</div></div>`, question: `Perbedaan penggunaan bahasa kedua teks tersebut yang paling tepat adalah…`, options: [`Teks I diawali deskripsi objek | Teks II diawali deskripsi objek`, `Teks I menggunakan istilah pertanian | Teks II menggunakan istilah geofisika`, `Teks I menggunakan kata bermajas | Teks II tidak menggunakan kata bermajas`, `Teks I menggunakan kalimat langsung | Teks II menggunakan kalimat penjelasan`], answer: 1 },
+      { id: 4, stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"><div class="border p-2 rounded bg-white"><strong>Teks I:</strong> Sekolah saya memiliki lingkungan yang sangat bersih dengan tempat parkir yang luas dan lapangan upacara. Sekolah saya memiliki tiga bangunan utama sebagai tempat belajar siswa, yaitu gedung A, B, dan C. Sekolah saya terletak tepat di tengah sawah, membuat suasana sekolah sejuk dan segar. Semua lantai kelas menggunakan keramik. Sekolah saya memiliki ruangan besar yang biasanya digunakan untuk acara-acara seperti wisuda, pernikahan, olahraga dan lainnya...</div><div class="border p-2 rounded bg-white"><strong>Teks II:</strong> Nama saya Andini. Sekarang saya duduk di kelas XI. Sekolah saya adalah sekolah yang cukup terkenal di daerah saya. Rata-rata, siswa yang hadir di sini adalah orang-orang yang tinggal di daerah saya. Selain dekat, ada pengurangan biaya untuk siswa yang tinggal dekat dengan sekolah. Sekolah saya memiliki tiga lantai dan dicat hijau tosca...</div></div>`, question: `Perbedaan pola penyajian kedua teks tersebut adalah ..`, options: [`Teks I diawali dengan bagaimana | Teks II diawali dengan siapa`, `Teks I diawali dengan apa | Teks II diawali dengan bagaimana`, `Teks I diawali dengan apa | Teks II diawali dengan siapa`, `Teks I diawali dengan mengapa | Teks II diawali dengan apa`], answer: 2 },
+      { id: 5, stimulus: `<p class="font-semibold mb-1">Cara Menarik uang di mesin ATM</p><ol class="list-decimal list-inside space-y-1 text-xs"><li>Masukkan pin ATM. Pastikan untuk mengetikan angka yang benar sebab jika salah sebanyak 3x kartu Anda akan terblokir.</li><li>Tunggu transaksi diproses terlebih dahulu. Kemudian uang dan bukti transaksi akan keluar. Beberapa mesin ATM tidak mengeluarkan kertas bukti transaksi, jadi tidak mengapa jika Anda tidak mendapatkannya.</li><li>Pilih tarik tunai pada menu di layar. Sesuaikan jumlah nominal yang ingin diambil.</li><li>Terakhir, jangan lupa untuk mengecek jumlah uang yang diterima dan ambil kartu ATM.</li><li>Masukan kartu ke dalam mesin ATM. Pilihlah bahasa yang ingin Anda gunakan.</li><li>Setelah selesai, layar akan menampilkan pilihan “Apakah Anda ingin melanjutkan transaksi?” Pilih tidak untuk mengeluarkan Kartu ATM.</li></ol>`, question: `Urutan cara menarik uang di mesin ATM yang tepat adalah …`, options: [`1-2-3-4-5-6`, `5-1-3-4-2-6`, `5-1-3-2-6-4`, `5-1-3-2-4-6`], answer: 2 },
+      { id: 6, stimulus: `<p class="font-semibold mb-1">Panduan mencuci tangan menurut WHO</p><ol class="list-decimal list-inside space-y-1 text-xs"><li>Gunakan air bersih mengalir.</li><li>Basahkan kedua tangan menggunakan air bersih mengalir tersebut.</li><li>....................................</li><li>Gosok kedua telapak tangan hingga tertutup sabun.</li><li>Bersihkan sela-sela jari dan punggung tangan.</li><li>Genggam dan basuhlah ibu jari dengan cara memutar.</li><li>Gosokkan ujung jari ke telapak tangan supaya bagian kuku dapat dibersihkan dengan sabun.</li><li>Bilas sabun dari kedua tangan menggunakan air bersih mengalir.</li><li>Keringkan tangan menggunakan tisu atau kain yang higienis.</li></ol>`, question: `Kalimat yang tepat untuk mengisi bagian yang rumpang adalah...`, options: [`Dahulukan tangan sebelah kanan.`, `Tuangkan sabun antibakteri seperlunya ke telapak tangan.`, `Gunakanlah sabun antibakteri agar lebih higienis.`, `Virus dan bakteri akan mati dengan penggunaan sabun.`], answer: 1 },
+      { id: 7, stimulus: `<p>(1) Setelah menggunakan laboratorium, pastikan Anda membersihkan banyak sampah-sampah yang berserakan. (2) Hal ini berfungsi untuk mensterilkan laboratorium sehingga siap digunakan kembali.</p>`, question: `Kesalahan yang terdapat pada kalimat bernomor 1 pada kutipan teks prosedur tersebut adalah....`, options: [`Pengguanaan konjungsi setelah tidak tepat.`, `Penggunaan kata Anda yang diawali huruf kapital.`, `Penggunaan kata mensterilkan seharusnya menyeterilkan.`, `Penggunaan kata banyak bersifat mubazir karena sapah-sampah sudah bermakna banyak.`], answer: 3 },
+      { id: 8, stimulus: `<p class="text-xs">Assalamualaikum wr.wb, (1) Ibu Yuni yang saya sayangi, nama saya Ghani Alqarni. (2) Saya adalah siswa di SMA Budi Bangsa, kelas 12 IPA-1. (3) Melalui surat ini saya ingin mengucapkan terimakasih yang sebesar-besarnya atas bantuan dan bimbingan Ibu sehingga saya bisa direkomendasikan oleh kepala sekolah untuk mengikuti program pertukaran pelajar di Malaysia. (4) Saya mohon doa dari Ibu semoga kegiatan belajar saya selama disini bisa berjalan dengan lancar sesuai dengan harapan.</p>`, question: `Kalimat tidak efektif pada kutipan surat tersebut ditandai nomor…`, options: [`1`, `2`, `3`, `4`], answer: 0 },
+      { id: 9, stimulus: `<div class="p-2 border rounded bg-white text-xs">Bandarlampung, 10 Juni 2025<br>Salam rindu sahabatku,<br>Bagaimana kabarmu, semoga Tuhan selalu melimpahkan kesehatan dan karunia-Nya untukmu dan Bapak/Ibu, serta keluarga besarmu. Lewat surat ini aku ingin mengabarkan bahwa liburan sekolah yang akan datang aku akan berkunjung ke tempatmu. ...</div>`, question: `Alasan kesalahan penggunaan tanda baca dalam surat tersebut adalah …`, options: [`Tanda koma setelah kata Bandarlampung seharusnya dihilangkan dan setelah 2025 diberi tanda titik.`, `Tanda koma setelah kata kabarmu seharusnya diganti tanda tanya karena kalimat diawali dengan kata tanya bagaimana.`, `Tanda titik setelah kata serta keluarga besarmu seharusnya diganti tanda koma karena kalimat di bawahnya adalah kalimat lanjutan.`, `Huruf kapital pada kata karunia-Nya seharusnya diganti huruf kecil menjadi karunia-nya.`], answer: 1 },
+      { id: 10, stimulus: `<div class="p-2 border rounded bg-white text-xs">Bandar Lampung, 10 Maret 2025<br>Yth. Ibu Wali Kelas 7C SMP N 23 Bandung<br>di tempat<br><br>Dengan hormat,<br>Melalui surat ini saya mengabari bahwa anak saya yang bernama Siti Zulaikha kelas 7C tidak bisa mengikuti pelajaran sebagai mana biasanya karena sakit. Berdasarkan diagnosa dokter dan hasil laboratorium anak saya menderita tipus. Maka dari itu saya mohon izin.<br>Demikian surat ini, atas perhatian Ibu saya mengucapkan terima kasih.<br><br>Hormat Saya,<br>Muhammad Soleh</div>`, question: `Perbaikan kata yang tidak baku pada cuplikan surat tersebut adalah...`, options: [`Di tempat seharusnya ditempat`, `Diagnosa seharusnya diagnosis`, `Karena seharusny dikarenakan`, `Mengucapkan seharusnya ucapkan`], answer: 1 },
+      { id: 11, stimulus: `<p>(1) Pada Minggu (26/1/2025), operasi modifikasi cuaca terus dilakukan untuk mencegah terulangnya bencana banjir di Lampung. (2) Pesawat yang digunakan untuk operasi tersebut diterbangkan dari Bandara Radin Inten II, Kabupaten Lampung Selatan. (3) Selain menerjunkan empat personel untuk memantau pelaksanaan operasi modifikasi cuaca di Lampung, BNPB juga menunjuk 10 orang profesional, yang terdiri dari pilot, kopilot, ilmuwan, dan penabur garam, untuk melaksanakan operasi modifikasi cuaca dari udara. (4) Banyak berton-ton garam itu ditebar dari ketinggian 10 ribu sampai 12 ribu kaki.</p>`, question: `Kalimat tidak efektif dalam teks tersebut terdapat pada kalimat bernomor …`, options: [`(1)`, `(2)`, `(3)`, `(4)`], answer: 3 },
+      { id: 12, stimulus: `<p class="font-semibold mb-1">Data Korban Banjir Kelurahan Way Lunik Kota Bandar Lampung (Jumat, 17 Januari 2025)</p><table class="w-full text-center text-xs border border-slate-300 mb-2"><tr class="bg-slate-100 font-bold border-b"><td class="p-1 border-r">Bangunan Rusak</td><td class="p-1 border-r">Korban jiwa</td><td class="p-1 border-r">Korban luka berat</td><td class="p-1">Korban luka ringan</td></tr><tr><td class="p-1 border-r">10</td><td class="p-1 border-r">1</td><td class="p-1 border-r">5</td><td class="p-1">21</td></tr></table>`, question: `Berita yang sesuai berdasarkan ilustrasi data tersebut adalah...`, options: [`Sebanyak 21 rumah di KelurahanWay Lunik, Panjang mengalami kerusakan parah setelah diterjang banjir Jumat, 17 Januari 2025.`, `Banjir yang menerjang Bandar Lampung pada Jumat, 17 Januari 2025 lalu menelan korban jiwa sebanyak 5 orang.`, `Berdasarkan pantauan wartawan di lokasi kejadian banjir, Kelurahan Way Lunik, Panjang mengalami kerusakan yang cukup parah. Sedikitnya10 bangunan rusak berat, terdapat 1 korban jiwa, 21 orang korban luka berat, Dan 5 orang korban luka ringan. Semua korban luka telah dievakuasi ke rumah sakit terdekat.`, `Banjir yang menerjang Bandar Lampung pada Jumat, 17 Januari 2025 lalu menyisakan kerusakan dan korban yang cukup banyak. Seperti di Kelurahan Way Lunik, Panjang terdapat 10 bangunan yang mengalami kerusakan. Selain itu ada setidaknya 21 korban luka ringan, 5 orang luka berat, Dan 1 korban jiwa pada banjir kali ini.`], answer: 3 },
+      { id: 13, stimulus: `<div class="p-2 border rounded bg-amber-50 text-xs"><strong>Dijual</strong><br>Laptop second merek Lenovo tipe E15 gen4 warna body merah. Tangan pertama. Spesifikasi Layar 15.6 inch, prosesor intel core i5, ram16GB.<br>8 juta boleh negosiasi. Minat hub. Eko 0898 65748584</div>`, question: `Perbaikan kesalahan penulisan ejaan pada teks iklan baris tersebut yang paling tepat adalah …`, options: [`DiJual -> Di jual`, `Merek -> Merk`, `Body -> Bodi`, `Negosiasi -> Negoisasi`], answer: 2 },
+      { id: 14, stimulus: `<div class="p-2 border rounded bg-amber-50 text-xs font-mono">TANAH DIJUAL BANDAR LAMPUNG Jl Jendral Sudirman no. 76 LT370m bgs hdp timur 184m²&180m² jln lebar aks tol dkt CP 0816271181 085672316753</div>`, question: `Iklan baris tersebut jika dilengkapi dengan tanda baca yang paling tepat adalah …`, options: [`TANAH DIJUAL BANDAR LAMPUNG Jl. Jendral Sudirman no.76 LT370m bgs hdp timur 184m²&180m² jln lebar aks tol dkt CP. 0816271181 085672316753`, `TANAH DIJUAL BANDAR LAMPUNG Jl. Jendral Sudirman no. 76 LT.370m. bgs. hdp timur.184m²&180m². jln. lebar aks. tol dkt. CP. 0816271181, 085672316753.`, `TANAH DIJUAL BANDAR LAMPUNG Jl. Jendral Sudirman no. 76 LT 370m. bgs. hdp timur.184m²&180m². jlnlebar aks. tol dkt. CP. 0816271181 085672316753.`, `TANAH DIJUAL BANDAR LAMPUNG Jl Jendral Sudirman no. 76 LT.370m. bgs. hdp timur.184m²&180m². jln. lebar aks. tol dkt. CP. 0816271181, 085672316753.`], answer: 1 },
+      { id: 15, stimulus: `<p>Banjir yang terjadi akhir-akhir ini di Bandar Lampung salah satunya disebabkan oleh sampah. Pembuangan sampah di DAS membuat sungai tersumbat sampah. Jika air melimpah, air akan keluar dari sungai karena daya tampung saluran berkurang. Kawasan padat penduduk di sepanjang sungai atau sepanjang <strong>drainase</strong> dapat menjadi penghambat aliran dan daya tampung sungai. Masalah kawasan kumuh dikenal sangat penting sebagai faktor sosial terhadap masalah banjir daerah perkotaan.</p>`, question: `Makna kata drainase pada teks tersebut adalah …`, options: [`saluran irigasi`, `jalan utama`, `saluran air`, `jalur sungai`], answer: 2 },
+      { id: 16, stimulus: `<p>Gempa dahsyat pernah terjadi di Aceh, 26 Desember 2004, pada pukul 17.58 WIB. Pusat gempa terletak di sebelah barat Aceh dengan kedalaman 10 km. Bencana ini merupakan gempa bumi terdahsyat dalam kurun waktu 40 tahun terakhir. Dampak kerusakan, meliputi Aceh, Sumatera Utara, Pantai Barat Semenanjung Malaysia, Thailand, Pantai Timur India, Sri Lanka, bahkan sampai Pantai Timur Afrika. Gempa ini mengakibatkan gelombang laut setinggi 9 meter. Kekuatan gempa pada penghujung tahun 2004 itu mencapai 9.0 richter dengan korban tewas mencapai 283.100, 14.000 orang hilang dan 1.126.900 kehilangan tempat tinggal. Gempa bumi yang disertai gelombang tsunami itu merupakan bencana yang mengakibatkan kematian terbesar sepanjang sejarah.</p>`, question: `Informasi tersurat yang sesuai dengan teks eksplanasi tersebut adalah ….`, options: [`Gempa Aceh menduduki peringkat gempa terdahsyat no 1 di dunia.`, `Gempa Aceh mengakibatkan tsunami setinggi 9 meter sehingga menyebabkan korban jiwa terbanyak di dunia.`, `Gempa dahsyat pernah terjadi di Aceh pada 26 Desember 2004 merupakan gempa bumi terdahsyat dalam kurun waktu 40 tahun terakhir.`, `Gempa Aceh disebabkan oleh pergeseran lempeng bumi yang menimbulkan getaran yang tidak hanya terasa di Indonesia.`], answer: 2 },
+      { id: 17, stimulus: `<p>Menurut sebuah studi yang dikutip dari situs Alodokter, berolahraga jalan kaki selama 30 menit ternyata mampu menurunkan risiko penyakit jantung sebanyak 40 persen. Berdasarkan data tersebut, berarti olahraga jalan kaki dapat memicu jantung untuk terus berdenyut lebih kencang, sehingga jantung pun menguat, dan sirkulasi darah pun kian meningkat. Selain itu, berjalan kaki secara teratur juga dapat menurunkan kolesterol dalam tubuh. Hal ini dikarenakan berjalan kaki akan menuntut tubuh bergerak secara konstan yang mengakibatkan lemak dan kolesterol pun akan semakin menurun.</p>`, question: `Ide pokok kutipan teks persuasi tersebut adalah…`, options: [`Berolahraga jalan kaki selama 30 menit ternyata mampu menurunkan risiko penyakit jantung sebanyak 40 persen.`, `Berolahraga jalan kaki dapat memicu jantung untuk terus berdenyut lebih kencang, sehingga jantung pun menguat, dan sirkulasi darah pun kian meningkat.`, `Berjalan kaki secara teratur juga dapat menurunkan kolesterol dalam tubuh.`, `Berjalan kaki akan menuntut tubuh bergerak secara konstan yang mengakibatkan lemak dan kolesterol pun akan semakin menurun.`], answer: 0 },
+      { id: 18, stimulus: `<p>Perilaku bullying merupakan tindakan yang perlu ditindak secara tegas dan tidak bisa dibiarkan berlarut-larut. Perilaku menjijikan tersebut dapat berdampak sangat serius pada masa depan mereka yang menjadi korban pembulian. Sejak usia yang masih sangat muda, tak sedikit anak-anak yang sudah menghadapi begitu banyak beban, salah satunya adalah dengan menerima perilaku bullying dari lingkungannya. Mulai dari lingkungan rumah tangga, lingkungan rumahnya hingga sekolah.</p>`, question: `Simpulan isi teks persuasi tersebut yang paling tepat adalah …`, options: [`Bullying terjadi di semua lingkungan, mulai dari lingkungan rumah tangga hingga lingkungan sekolah.`, `Tak sedikit anak yang menjadi korban bullying pada akhirnya juga menjadi pelaku pada korban yang usianya lebih muda.`, `Bullying adalah perilaku yang mengintimidasi seseorang baik secara fisik maupun verbal.`, `Perilaku bullying merupakan tindakan yang perlu ditindak secara tegas dan tidak bisa dibiarkan berlarut-larut karena dapat berdampak sangat serius pada masa depan mereka yang menjadi korban.`], answer: 3 },
+      { id: 19, stimulus: `<p class="text-xs leading-relaxed">Dayang Sumbi adalah putri dari kerajaan di Jawa Barat. Ia terusir dari kerajaan akibat kesalahan yang pernah diperbuat. Ia memiliki seorang anak lelaki bernama Sangkuriang. Sangkuriang senang berburu ke hutan dengan anjing setianya si Tumang. Suatu hari, karena tidak mendapat hewan buruan, Sangkuriang memutuskan untuk membunuh si Tumang... Sangkuriang yang marah kemudian menendang perahu yang sudah dibuatnya hingga terbalik menjadi gunung tangkuban perahu.</p>`, question: `Keunggulan kutipan cerita fiksi tersebut yang paling tepat adalah …`, options: [`Cerita fiksi tersebut berasal dari daerah Jawa Barat sehingga sangat menarik untuk dibaca.`, `Kisah yang disampaikan dalam cerita fiksi tersebut sangat menarik karena memuat kisah percintaan yang jarang terjadi`, `Cerita fiksi tersebut menyajikan sejarah terbentuknya Gunung Tangkuban Perahu sehingga layak dibaca.`, `Cerita fiksi tersebut disajikan dengan bahasa yang sederhana sehingga mudah dipahami.`], answer: 3 },
+      { id: 20, stimulus: `<p class="text-xs leading-relaxed">Bumi manusia adalah mahakarya yang ditulis dengan penuh perhatian terhadap setiap detail peristiwa dan alur yang diarahkan. Novel ini berlatar Hindia Belanda, sebelum Indonesia merdeka pada akhir abad 18. Pram menampilkan suasana kolonial dengan sangat apik dan detail. Lokasi yang digambarkan adalah Wonokromo yang merupakan kawasan perkebunan tebu, Surabaya, Blora...</p>`, question: `Komentar terhadap isi teks tanggapan tersebut yang paling tepat adalah …`, options: [`Meskipun berlatar Hindia Belanda di akhir abad 18, novel ini berhasil menggambarkan suasana kolonial yang sangat apik dan detail sehingga pembaca dapat merasakan suasana romantisme novel. Tak salah jika novel ini menjadi salah satu novel yang wajib Anda nikmati.`, `Novel ini berlatar Hindia Belanda sehingga pembaca cukup kesulitan menyelami cerita melalui penggambaran latar. Maka sebaiknya penulis perlu mengubah latar cerita.`, `Novel ini memiliki kombinasi teknik penulisan yang di luar akal sehat. Sebaiknya pembaca tidak membaca novel ini untuk menghindari salah penafsiran.`, `Novel merupakan novel fenomenal yang hanya pantas dibaca oleh orang-orang berwawasan luas dan berpikiran kritis.`], answer: 0 },
+      { id: 21, stimulus: `<p class="text-xs">Assalamualaikum wr. wb. Selamat pagi dan salam sejahtera untuk Bapak/Ibu Guru, serta teman-teman semuanya. Hari ini 17 Agustus 2020, kita memperingati Hari Kemerdekaan ke-73 negara kita Republik Indonesia. Setiap tahunsetiap 17 Agustus kita melaksanakan upacara untuk merayakan Hari Kemerdekaan. 17 Agustus adalah hari di mana Indonesia dan seluruh warganya bergembira dalam rasa syukur karena berkat rahmat Allah SWT kita merdeka. Dalam kesempatan ini pula, saya mengajak ibu/Baoak Guru serta teman-teman untuk mengenang, menghargai, dan meneruskan perjuangan para pahlawan…</p>`, question: `Penggunaan kata di mana pada teks pidato tersebut tidak tepat karena …`, options: [`Tidak baku karena seharusnya penulisannya diserangkaikan.`, `Tidak baku. Seharusnya kata di mana diganti kata saatnya.`, `Tidak efektif. Kata di mana adalah kata untuk menyampaikan pertanyaan.`, `Tidak efektif. Jika kata tersebut dihilangkan, tidak akan mengubah makna.`], answer: 2 },
+      { id: 22, stimulus: `<p class="text-xs">Kampung Eforbia layak mendapat penghargaan sebagai kampung terbersih. Lingkungan yang asri dan bersih membuat kampung ini nyaman. Semua ini terwujud karena hasil binaan dari para tokoh-tokoh masyarakat dan semua elemen masyarakat yang terlibat. Namun, yang terpenting adalah kerja sama dan kekompakan warga untuk mempertahankan predikat tersebut.</p>`, question: `Kalimat tidak efektif di dalam kutipan teks pidato tersebut adalah…`, options: [`Kampung Eforbia layak mendapat penghargaan sebagai kampung terbersih`, `Lingkungan yang asri dan bersih membuat kampung ini nyaman.`, `Semua ini terwujud karena hasil binaan dari para tokoh-tokoh masyarakat dan semua elemen masyarakat yang terlibat.`, `Namun, yang terpenting adalah kerja sama dan kekompakan warga untuk mempertahankan predikat tersebut.`], answer: 2 },
+      { id: 23, stimulus: `<p class="text-xs">(1) Saudara-saudara yang saya hormati, kebersihan kampung kita harus kita tingkatkan. (2) Usaha yang bisa kita lakukan antara lain, membuat jadwal kerja bakti setiap pekan, membuat program menanam tanaman di rumah warga, dan juga membuat program pengolahan sampah. (3) Usaha pengolahan sampah bisa mendatangkan banyak keuntungan secara ekonomi. (4) Oleh karena itu, kesadaran dan partisipasi warga terhadap kebersihan berperan penting dalam menyuksekan program-program ini.</p>`, question: `Paragraf kutipan teks pidato tersebut tidak padu karena …`, options: [`Kalimat (1), (2), dan (4) membahas tentang kebersihan kampung, sedangkan kalimat (3) menjelaskan usaha pengolahan sampah.`, `Kalimat (1), (2), dan (4) membahas tentang usaha yang menghasilkan uang, sedangkan kalimat (3) menjelaskan usaha pengolahan sampah.`, `Kalimat (1), (2), dan (4) membahas tentang meningkatkan usaha di kampung, sedangkan kalimat (3) menjelaskan tentang pembuangan sampah.`, `Kalimat (1), (2), dan (4) membahas tentang meningkatkan kebersihan di kampung, sedangkan kalimat (3) menjelaskan tentang cara mendapatkan keuntungan.`], answer: 3 },
+      { id: 24, stimulus: `<p class="text-xs">Hadirin yang saya hormati dalam kesempatan ini saya akan membahas “Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”.</p>`, question: `Perbaikan tanda baca pada cuplikan kalimat pidato tersebut yang tepat adalah…`, options: [`Hadirin yang saya hormati dalam kesempatan ini saya akan membahas “ Pentingnya Pengendalian Emosi Bagi Anak Usia Dini” .`, `Hadirin yang saya hormati dalam kesempatan ini saya akan membahas, “ Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”`, `Hadirin yang saya hormati, dalam kesempatan ini saya akan membahas “Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”.`, `Hadirin yang saya hormati dalam kesempatan ini saya, akan membahas “Pentingnya Pengendalian Emosi Bagi Anak Usia Dini”.`], answer: 2 },
+      { id: 25, stimulus: `<p class="text-xs">Oleh karena itu, dalam kesempatan ini saya mengajak seluruh anggota dan jajaran Gerakan Pramuka untuk terus berupaya meningkatkan kemampuan diri, beramal bhakti bagi kepentingan masyarakat, bangsa, negara, dan dunia, sesuai tingkat kemampuannya masing-masing. Mengakhiri sambutan ini, perkenankan kami atas nama Gerakan pramuka menyampaikan penghargaan dan terima kasih sebesar-besarnya kepada seluruh masyarakat yang telah memberikan dorongan, dukungan, dan bantuannya, baik moril, materiil, maupun finansial.</p>`, question: `Kesalahan penulisan ejaan dalam kutipan teks pidato tersebut adalah ….`, options: [`bhakti seharusnya bakti`, `mengakhiri seharusnya mengahiri`, `materiil seharusnya materil`, `finansial seharusnya pinansial`], answer: 0 },
+      { id: 26, stimulus: `<p class="text-xs">Hadirin yang berbahagia, merokok memiliki banyak dampak negatif. Merokok dapat mengakibatkan gangguan kesehatan yang serius, seperti masalah pernapasan, penyakit jantung, kanker dan berbagai penyakit lainnya. Kebiasaan merokok juga dapat mempengaruhi kualitas hidup secara sosial, ekonomi, dan psikologis.</p>`, question: `Alasan ketidaktepatan penggunaan tanda baca pada teks tersebut adalah…`, options: [`Setelah kata kanker seharusnya diberi tanda koma.`, `Tanda koma setelah kata ekonomi seharusnya dihilangkan.`, `Tanda koma setelah kata pernapasan seharusnya dihilangkan.`, `Setelah kata kualitas hidup seharusnya diberi tanda koma.`], answer: 0 },
+      { id: 27, stimulus: `<p class="text-xs">Aku akhirnya memutuskan berkelana ke negeri seberang. Tak perduli dengan anggapan orang-orang. Aku harus menjadi orang sukses yang bisa mengangkat derajat keluargaku. Aku akan pulang dengan membawa kesuksesan.</p>`, question: `Makna kata berkelana dalam kutipan cerpen tersebut adalah….`, options: [`menyeberang`, `diam di tempat`, `bepergian`, `menetap`], answer: 2 },
+      { id: 28, stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"><div class="border p-2 rounded bg-white"><strong>Teks 1:</strong> Di bawah terik matahari, Erwin dan Rusto bertengkar. Mereka merasa saling dirugikan oleh ulah masing-masing. Tiba-tiba segerombolan siswa keluar dari gerbang sekolah dan membuat mereka menghentikan perdebatan.</div><div class="border p-2 rounded bg-white"><strong>Teks 2:</strong> Angin bertiup sejuk. Cuaca cerah cemerlang terkena sinar rembulan. Bintang bertaburan di langit laksana permata berserakan di atas permadani. Di sana melancarlah biduk nelayan yang sedang mengadu untung, menantang gelombang yang penuh marabahaya.</div></div>`, question: `Latar tempat pada kutipan dua teks cerpen tersebut adalah….`, options: [`teks 1 di pinggir jalan dan teks 2 di pantai`, `teks 1 di halaman sekolah dan teks 2 di pantai`, `teks 1 di laut dan teks 2 di depan gerbang sekolah`, `teks 1 di depan gerbang sekolah dan teks 2 di laut`], answer: 3 },
+      { id: 29, stimulus: `<p class="text-xs">Tiba-tiba Ani menangis. Ia mulai terisak-isak menumpahkan perasaannya. Wajahnya merah padam. Ia geram pada dirinya sendiri. Ia juga merasa terpuruk karena gagal masuk universitas impiannya.</p>`, question: `Makna simbol wajahnya merah padam dalam kutipan cerpen tersebut adalah….`, options: [`senang dan gembira`, `marah dan bahagia`, `malu dan terluka`, `marah dan kecewa`], answer: 3 },
+      { id: 30, stimulus: `<p class="text-xs">“Kamu kenapa, Do? Tanya ibu.<br>“Maafkan Dodo, Bu, tadi Dodo di sekolah mendapat nilai kecil saat ulangan,” kata Dodo dengan wajah sedih.<br>“Dodo semalam sudah belajar?” tanya Ibu.<br>“Sudah, Bu, tapi nilai Dodo masih kecil,” jawab Dodo.<br>“Tidak apa-apa Nak, yang penting Dodo sudah berusaha. Ibu tidak marah atau kecewa. Ibu yakin Dodo akan dapat nilai bagus saat ulangan berikutnya,” ujar Ibu menguatkan Dodo.</p>`, question: `Watak tokoh ibu pada kutipan cerpen tersebut adalah…`, options: [`periang`, `pemarah`, `bijaksana`, `dermawan`], answer: 2 },
+      { id: 31, stimulus: `<p class="text-xs">Dita masuk ke kelasnya. Tiba-tiba semua teman di kelasnya terdiam. Mereka memandangi Dita dengan tatapan sinis. Dita hanya menunduk. Ia tahu mereka menganggap beasiswa yang ia terima tidak pantas ia dapatkan karena ia diduga menyontek saat ujian tulis. Dita rasanya ingin berteriak dan menjelaskan kepada mereka. Namun beban di hatinya terlalu berat sehingga ia sulit mengucapkan kata-kata. Ia hanya ingin segera membuktikan bahwa semua dugaan itu salah.</p>`, question: `Penyebab konflik dalam kutipan cerpen tersebut adalah…`, options: [`Dita sedih dan mempertanyakan perbuatan teman-temannya pada dirinya sendiri.`, `Dita merasa bebannya begitu berat sehingga ia tidak sanggup berkata-kata.`, `Dita dianggap tidak pantas mendapat beasiswa karena ia diduga menyontek saat ujian.`, `Dita ingin segera membuktikan bahwa semua tuduhan teman-temannya salah.`], answer: 2 },
+      { id: 32, stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"><div class="border p-2 rounded bg-white"><strong>Cerpen 1:</strong> Ayah Dika sudah meninggal setahun lalu. Sudah seminggu ini, ibunya yang seorang buruh cuci, terbaring sakit. Dika yang masih SMP itu tak sempat bermain dengan teman-temannya. Ia harus berusaha mencari nafkah yang halal buat ibu dan adik-adiknya dengan bekerja serabutan. Terkadang, pagi-pagi sekali ia mendapat upah dari mencuci mobil Pak Trisno tetangganya. Sepulang sekolah, ia berjualan pisang goreng keliling kampung.</div><div class="border p-2 rounded bg-white"><strong>Cerpen 2:</strong> Aku seorang anak SMP yang memiliki hobi memancing. Mungkin banyak orang menganggap hobiku seperti hobi orang tua. Tetapi aku memang sangat suka memancing ikan. Saat memancing aku memiliki waktu untuk menyendiri dan berpikir dengan bijak. Meresapi alur kehidupan. Penatku pun hilang. Semua masalah perlahan memudar. Aku seakan memiliki energi besar untuk menghadapi aral melintang.</div></div>`, question: `Perbedaan penggunaan bahasa kedua kutipan cerpen tersebut adalah…`, options: [`Cerpen 1 menggunakan kata ganti orang ketiga dan bahasa yang lugas (apa adanya), sedangkan cerpen 2 menggunakan kata ganti orang pertama dan bahasa yang bermajas.`, `Cerpen 1 menggunakan kata ganti orang ketiga dan istilah ilmiah, sedangkan cerpen 2 menggunakan kata ganti orang pertama dan istilah bidang kedokteran.`, `Cerpen 1 menggunakan kata ganti orang pertama dan bahasa yang bermajas, sedangkan cerpen 2 menggunakan kata ganti orang ketiga dan bahasa yang lugas (apa adanya).`, `Cerpen 1 menggunakan kata ganti orang ketiga dan istilah bidang kedokteran, sedangkan cerpen 2 menggunakan kata ganti orang pertama dan istilah ilmiah.`], answer: 0 },
+      { id: 33, stimulus: `<p class="text-xs">(1) Aku bangun dalam keadaan terkejut. (2) Kuperhatikan ruangan di sekelilingku yang berwarna putih. (3) Bau obat-obatan perlahan menerobos indera penciumanku. (4) Aku mulai menyadari bahwa ini adalah ruangan di rumah sakit. (5) Tiba-tiba kepalaku sakit. (6) Aku teringat kejadian sebelumnya yang menyebabkan aku ada di sini. Mobilku menabrak pembatas jalan, lalu aku terperosok jurang, dan akhirnya aku tak sadarkan diri. (7) Aku ingat bahwa aku sedang dalam perjalanan ke bandara menjemput orang tuaku. (8) Cahaya matahari yang masuk melalu jendela menyadarkanku dari lamunan.</p>`, question: `Bukti latar tempat dan waktu dalam kutipan cerpen tersebut terdapat pada kalimat bertanda nomor…`, options: [`(1), (3), (5)`, `(2), (4), (8)`, `(6), (7), (8)`, `(2), (4), (6)`], answer: 1 },
+      { id: 34, stimulus: `<p class="text-xs">Aku seorang anak SMP yang memiliki hobi memancing. Mungkin banyak orang menganggap hobiku seperti hobi orang tua. Tetapi aku memang sangat suka memancing ikan. Saat memancing aku memiliki waktu untuk menyendiri dan berpikir dengan tenang. Meresapi alur kehidupan. Penatku pun hilang. Semua masalah perlahan memudar. Aku seakan memiliki energi besar untuk menghadapi aral melintang.</p>`, question: `Watak tokoh Aku dalam kutipan cerpen tersebut ditunjukkan pada kalimat….`, options: [`Aku seorang anak SMP yang memiliki hobi memancing.`, `Semua masalah perlahan memudar.`, `Mungkin banyak orang menganggap hobiku seperti hobi orang tua.`, `Saat memancing aku memiliki waktu untuk menyendiri dan berpikir dengan bijak.`], answer: 3 },
+      { id: 35, stimulus: `<p class="text-xs">“Aldo, selamat ya! Kamu memang berhak menjadi juara umum. Nilaimu bagus-bagus dan kau juga masih memiliki waktu untuk aktif berorganisasi. Aku ingin bisa belajar mengatur waktu sepertimu!” ujar Ridho.<br>Aldo tersenyum.<br>[ ... ]<br>Teman-teman Aldo semakin mengagumi sosok Aldo yang dianggap berhasil. Mereka tahu usaha dan kerja keras Aldo. Meski Aldo berasal dari keluarga tidak mampu, ia tidak pernah menyerah memperjuangkan mimpinya.</p>`, question: `Kalimat yang sesuai untuk melengkapi bagian yang rumpang dalam kutipan cerpen tersebut adalah…`, options: [`“Terima kasih Ridho. Memang aku kan paling rajin di kelas ini. Dari dulu bahkan aku tidak pernah membolos. Tidak seperti kalian!“ jawab Aldo dengan suara keras.`, `“Ridho,kamu memang sahabatku yang baik. Akan kuingat selalu nasihatmu,” jawab Aldo sambil tersenyum ramah.`, `“Terima kasih Ridho. Semua yang aku raih ini tidak lepas dari doa orang tuaku dan bantuan kalian. Kalian juga selalu memberiku semangat untuk terus berjuang. Terima kasih teman-teman,” ujar Aldo sambil tersenyum.`, `“Kamu pikir kamu siapa? Berani-beraninya menasihati aku!” bentak Aldo sambil berlalu meninggalkan kelas.`], answer: 2 },
+      { id: 36, stimulus: `<p class="text-xs">Monalisa, lukisan ikonik karya Leonardo da Vinci, merupakan sebuah karya seni yang menarik dan penuh misteri. Lukisan ini berhasil menangkap perhatian dunia selama berabad-abad dan terus menjadi sumber inspirasi bagi seniman dan pengagum seni rupa lainnya. Daya tarik utama lukisan Monalisa terletak pada senyum misterius yang terpahat di wajah wanita itu... Selanjutnya, penggunaan teknik sfumato oleh da Vinci memberikan kesan realisme dan kelembutan yang luar biasa pada lukisan...</p>`, question: `Informasi yang sesuai dengan kutipan teks tanggapan tersebut adalah…`, options: [`Penggunaan teknik sfumato oleh da Vinci memberikan kesan khayalan dan kelembutan yang luar biasa pada lukisan.`, `Lukisan Monalisa merupakan salah satu lukisan termahal di dunia dan menjadi mahakarya yang dikenal di seluruh dunia.`, `Monalisa menjadi sumber insirasi bagi seniman dan pengagum seni rupa selama berabad-abad.`, `Daya tarik lukisan Monalisa terletak pada perpaduan warna yang ada di dalam lukisan tersebut.`], answer: 2 },
+      { id: 37, stimulus: `<p class="text-xs">Salah satu aspek yang paling menonjol dari film ini adalah kemampuan sutradara dan para pemeran dalam membawakan suasana romansa yang hangat dan tulus. Selain itu, penyutradaraan yang cerdas dan sinematografi yang apik memberikan sentuhan visual yang memukau. Pemilihan lokasi yang autentik dan pemakaian musik era 90-an turut menyumbangkan nuansa nostalgia yang menyentuh hati.</p>`, question: `Informasi dalam kutipan teks tanggapan tersebut termasuk kategori….`, options: [`kritik`, `pujian`, `sanggahan`, `saran`], answer: 1 },
+      { id: 38, stimulus: `<p class="text-xs">Penggunaan galon sekali pakai yang beredar luas di kalangan masyarakat ternyata menyebabkan peningkatan sampah plastik. Selama ini, bumi kita sudah cukup kesakitan akibat berbagai pencemaran lingkungan dan pemanasan global yang setiap tahunnya semakin memburuk. Dilansir dari NASA, tercatat suhu permukaan rata-rata bumi telah meningkat sekitar 2,05 derajat Fahrenheit (1,14 derajat Celcius) sejak akhir abad ke-19.</p>`, question: `Konjungsi yang digunakan dalam kutipan teks tanggapan tersebut adalah….`, options: [`penggunaan, cukup`, `telah, memburuk`, `semakin, berbagai`, `akibat, dan`], answer: 3 },
+      { id: 39, stimulus: `<p class="text-xs">Dalam cerpen ini, tokoh utama tidak memiliki pendirian tetap dan selalu menyesali perbuatannya sendiri. Cerpen ini mempunyai cerita yang menarik dan tidak membosankan. Akan tetapi, di dalam cerpen ini terdapat banyak istilah kekinian yang sulit dipahami. Meskipun demikian, tetap ada pelajaran moral yang terkandung di dalamnya, yakni persahabatan yang didasari dengan kasih sayang.</p>`, question: `Berdasarkan strukturnya, kutipan teks tanggapan tersebut termasuk bagian….`, options: [`evaluasi (penilaian)`, `deskripsi`, `penegasan`, `konteks`], answer: 0 },
+      { id: 40, stimulus: `<p class="text-xs">Siger Lampung dikenal sebagai mahkota pengantin perempuan suku Lampung dalam acara pernikahan atau upacara adat lainnya. Bahan pembuatannnya berasal dari lempengan tembaga, kuningan, atau logam lainnya yang dicat warna emas. Bahkan dahulu bahan Siger Lampung menggunakan emas asli. Selain sebagai mahkota pengantin, siger digunakan sebagai benda perhiasan sehari-hari. Bentuk Siger Lampung berupa segitiga berwarna emas yang biasanya memiliki cabang yang berjumlah sembilan atau tujuh.</p>`, question: `Ide pokok paragraf kutipan teks tanggapan tersebut adalah….`, options: [`ciri khas Siger Lampung`, `bahan pembuatan Siger Lampung`, `makna Siger Lampung`, `perkenalan tentang Siger Lampung`], answer: 3 },
+      { id: 41, stimulus: `<p class="text-xs">Minat membaca buku di Indonesia dinilai masih sangat rendah. Faktanya UNESCO menyebut indeks minat baca masyarakat Indonesia hanya diangka 0,001% atau dari 1.000 orang Indonesia, hanya 1 orang yang rajin membaca. Kemenkominfo dalam laman resminya juga merilis hasil riset yang menyatakan Indonesia menduduki peringkat ke-60 dari 61 negara soal minat membaca...</p>`, question: `Simpulan teks tanggapan tersebut yang paling tepat adalah…`, options: [`Kualitas bangsa harus diperbaiki melalui minat baca.`, `Masih banyak hal yang harus dibenahi dalam pendidikan.`, `Minat membaca buku di Indonesia masih sangat rendah.`, `Permasalahan negeri ini semakin banyak terutama masalah pendidikan.`], answer: 2 },
+      { id: 42, stimulus: `<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]"><div class="border p-1.5 rounded"><strong>(1)</strong> Minyak kayu putih dipakai di badan / Rasanya akan menjadi hangat / Jagalah kebersihan lingkungan / Lingkungan bersih membuat kita sehat</div><div class="border p-1.5 rounded"><strong>(2)</strong> Ibu dan ayah pergi ke pasar / Membeli buah dan juga beras / Di sekolah rajinlah belajar / Agar dewasa jadi orang cerdas</div><div class="border p-1.5 rounded"><strong>(3)</strong> Banyak sawah di Desa Jabong / Banyak juga kebun di Desa Cimalaka / Janganlah kamu suka berbohong / Karena dusta membuat celaka</div><div class="border p-1.5 rounded"><strong>(4)</strong> Rasa cinta membakar jiwa / Membuat dua insan jadi terlena / Ingatlah selalu pada yang Kuasa / Supaya hati tak inginkan dosa</div></div>`, question: `Pantun bertema nasihat yang paling tepat terdapat pada nomor.....`, options: [`(1)`, `(2)`, `(3)`, `(4)`], answer: 1 },
+      { id: 43, stimulus: `<div class="p-2 border rounded bg-indigo-50 text-xs italic text-center">Jauhi semua perbuatan jahat<br>Jauhi pula perbuatan maksiat<br>Mari kita segera bertobat<br>Supaya selamat dunia akhirat</div>`, question: `Ciri yang sesuai dengan syair tersebut adalah....`, options: [`Terdapat 2 baris yang merupakan isi.`, `Baris 1 dan 2 merupakan sampiran.`, `Baris 3 dan 4 merupakan isi.`, `Bersajak a a a a.`], answer: 3 },
+      { id: 44, stimulus: `<div class="p-2 border rounded bg-indigo-50 text-xs italic text-center">Sebelum berbicara pikir dahulu<br>Agar tak melukai hati temanmu<br>Kalau berbicara semaumu<br>Tentulah banyak orang yang membencimu</div>`, question: `Makna gurindam tersebut adalah....`, options: [`Berbicaralah sesuatu yang disukai teman.`, `Berbicara jujur meski banyak yang membencimu.`, `Sebelum berbicara, pikirkanlah hal-hal yang kamu sukai.`, `Berpikir sebelum berbicara agar tak melukai dan dibenci orang.`], answer: 3 },
+      { id: 45, stimulus: `<p class="text-xs">Lidah buaya sering dijadikan sebagai bahan baku dalam industri obat dan kosmetik. Lidah buaya memiliki daun tebal dan meruncing berwarna hijau segar dengan tepi yang bergerigi namun tidak terlalu tajam. Di dalam daunnya terdapat cairan gel bening yang sering dimanfaatkan untuk berbagai keperluan. Daun lidah buaya bisa lebar antara 2-6 cm dengan tinggi tanaman bervariasi tergantung jenisnya, mencapai 20-36 cm. Akar lidah buaya termasuk akar serabut.</p>`, question: `Ide pokok kutipan teks laporan hasil observasi tersebut adalah…`, options: [`Lidah buaya memiliki daun tebal dan meruncing berwarna hijau segar dengan tepi yang bergerigi namun tidak terlalu tajam.`, `Lidah buaya sering dijadikan sebagai bahan baku dalam industri obat dan kosmetik.`, `Daun lidah buaya bisa lebar antara 2-6 cm dengan tinggi tanaman mencapai 20-36 cm.`, `Akar lidah buaya termasuk akar serabut.`], answer: 1 },
+      { id: 46, stimulus: `<p class="text-xs mb-1"><strong>(Paragraf 1)</strong> Komodo adalah jenis reptil besar yang memiliki empat kaki dan terlihat seperti kadal. Bedanya, ukuran hewan ini sangat besar. Komodo merupakan hewan langka yang masuk dalam kategori dilindungi. Komodo telah dinyatakan sebagai hewan nasional negara tersebut.</p><p class="text-xs mb-1"><strong>(Paragraf 2)</strong> Sekilas, komodo terlihat seperti biawak biasa. Namun jika diperhatikan lebih dekat, hewan ini jauh lebih besar dari biawak...</p><p class="text-xs mb-1"><strong>(Paragraf 3)</strong> Kepala komodo agak memanjang, mirip dengan reptil pada umumnya...</p><p class="text-xs"><strong>(Paragraf 4)</strong> Komodo boleh dibilang hewan yang menyeramkan, namun memiliki sisik yang indah...</p>`, question: `Struktur definisi umum pada teks laporan hasil observasi terletak pada paragraf….`, options: [`4`, `3`, `2`, `1`], answer: 3 },
+      { id: 47, stimulus: `<div class="flex flex-col items-center justify-center p-3 border rounded bg-blue-50"><div class="bg-blue-600 text-white font-bold px-4 py-2 rounded-t-lg text-center w-full max-w-xs">SAAT DEMAM, JAGA CAIRAN TUBUH</div><div class="border-2 border-blue-600 bg-white p-4 my-2 rounded text-center w-full max-w-xs shadow"><span class="block text-xl font-extrabold text-blue-700 tracking-wider">POCARI SWEAT</span><span class="block text-xs text-slate-500">ION SUPPLY DRINK (350 mL)</span></div><div class="text-xs font-semibold text-blue-900">POCARI SWEAT SINGLE</div></div>`, question: `Pesan yang terkandung dalam iklan tersebut adalah….`, options: [`Pocari Sweat cocok untuk yang single.`, `Saat demam bisa minum Pocari Sweat untuk menjaga cairan tubuh.`, `Pocari Sweat cocok untuk yang demam dan single.`, `Pocari Sweat menjaga cairan tubuh saaat demam.`], answer: 1 },
+      { id: 48, stimulus: `<div class="p-3 border rounded bg-amber-50 text-center font-bold text-slate-800 text-sm">"Manfaatkan waktu yang terbatas untuk ilmu yang tidak terbatas"</div>`, question: `Pesan yang terkandung dalam slogan tersebut adalah….`, options: [`Waktu kita sebagai manusia terbatas jadi harus dimanfaatkan sebaik mungkin untuk mempelajari ilmu yang begitu banyak.`, `Kita harus bisa memanfaatkan waktu dengan sebaik-baiknya.`, `Ilmu kita terbatas bila tidak memanfaatkan waktu yang kita miliki.`, `Waktu yang kita miliki akan hilang begitu saja bila tidak dimanfaatkan dengan sebaik-baiknya.`], answer: 0 },
+      { id: 49, stimulus: `<div class="p-3 border rounded bg-slate-50 text-xs italic"><p class="font-bold not-italic">Hujan Bulan Juni (Sapardi Djoko Damono)</p>Tak ada yang lebih tabah / Dari hujan bulan Juni / Dirahasiakannya rintik rindunya / Kepada pohon berbunga itu<br><br>Tak ada yang lebih bijak / Dari hujan bulan Juni / Dihapuskannya jejak-jejak kakinya / Yang ragu-ragu di jalan itu<br><br>Tak ada yang lebih arif / Dari hujan bulan Juni / Dibiarkannya yang tak terucapkan / Diserap akar pohon bunga itu</div>`, question: `Makna simbol dihapuskannya jejak-jejak kakinya adalah….`, options: [`Meninggalkan kenangan`, `menjalani kehiduan dengan semangat`, `menghindari tanggung jawab`, `melupakan masa lalu`], answer: 3 },
+      { id: 50, stimulus: `<div class="p-3 border rounded bg-slate-50 text-xs italic">Ibu…<br>Cintamu padaku bagai embun pagi (Baris 2)<br>Sejuk menyentuh kalbu yang sunyi (Baris 3)<br>Kasihmu laksana mentari berseri (Baris 4)<br>Menghangatkan jiwa setiap hari (Baris 5)</div>`, question: `Kalimat bermajas simile dalam puisi tersebut terdapat pada baris….`, options: [`pertama dan kedua`, `kedua dan ketiga`, `kedua dan keempat`, `ketiga dan kelima`], answer: 2 }
     ];
+
+    // LOAD DYNAMIC BANK SOAL FROM LOCALSTORAGE
+    function getStoredQuestions() {
+      const stored = localStorage.getItem('cbt_questions');
+      if (!stored) {
+        localStorage.setItem('cbt_questions', JSON.stringify(defaultQuestions));
+        return defaultQuestions;
+      }
+      return JSON.parse(stored);
+    }
+
+    let questions = getStoredQuestions();
 
     // STATE APLIKASI
     let currentQuestionIndex = 0;
-    let userAnswers = {}; // { qIndex: selectedOptionIndex }
-    let doubtfulStatus = {}; // { qIndex: boolean }
+    let userAnswers = {};
+    let doubtfulStatus = {};
     let currentStudent = { name: '', id: '' };
     let timerInterval = null;
-    let remainingTimeSeconds = 90 * 60; // 90 menit
+    let remainingTimeSeconds = 90 * 60;
+    let uploadedImageBase64 = '';
 
     // INITIALIZATION
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
-      loadTeacherStats();
     });
 
     // MODE TOGGLE (SISWA vs GURU)
@@ -903,7 +460,6 @@
       const viewTeacher = document.getElementById('view-teacher');
 
       if (viewTeacher.classList.contains('hidden')) {
-        // Pindah ke Mode Guru (Input password dibuat kosong tanpa default text)
         const pass = prompt('Masukkan Password Guru:', '');
         if (pass === 'admin123' || pass === 'admin') {
           viewLogin.classList.add('hidden');
@@ -912,11 +468,11 @@
           document.getElementById('header-student-info').classList.add('hidden');
           modeLabel.innerText = 'Mode Siswa';
           renderTeacherDashboard();
+          renderTeacherQuestionsTable();
         } else if (pass !== null) {
           alert('Password salah!');
         }
       } else {
-        // Pindah ke Mode Siswa
         viewTeacher.classList.add('hidden');
         if (currentStudent.name) {
           viewExam.classList.remove('hidden');
@@ -928,6 +484,26 @@
       }
     }
 
+    // SUB-TAB SWITCHING IN TEACHER MODE
+    function switchTeacherTab(tab) {
+      const btnResults = document.getElementById('tab-btn-results');
+      const btnQuestions = document.getElementById('tab-btn-questions');
+      const tabResults = document.getElementById('teacher-tab-results');
+      const tabQuestions = document.getElementById('teacher-tab-questions');
+
+      if (tab === 'results') {
+        tabResults.classList.remove('hidden');
+        tabQuestions.classList.add('hidden');
+        btnResults.className = "pb-2 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2";
+        btnQuestions.className = "pb-2 font-bold text-sm text-slate-500 border-b-2 border-transparent hover:text-slate-700 flex items-center space-x-2";
+      } else {
+        tabResults.classList.add('hidden');
+        tabQuestions.classList.remove('hidden');
+        btnQuestions.className = "pb-2 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2";
+        btnResults.className = "pb-2 font-bold text-sm text-slate-500 border-b-2 border-transparent hover:text-slate-700 flex items-center space-x-2";
+      }
+    }
+
     // START EXAM
     function startExam(e) {
       e.preventDefault();
@@ -936,6 +512,7 @@
 
       if (!name || !studentId) return;
 
+      questions = getStoredQuestions(); // Pastikan ambil versi terbaru
       currentStudent = { name, id: studentId };
       document.getElementById('display-student-name').innerText = name;
       document.getElementById('display-student-id').innerText = `No/Kelas: ${studentId}`;
@@ -944,7 +521,6 @@
       document.getElementById('view-login').classList.add('hidden');
       document.getElementById('view-exam').classList.remove('hidden');
 
-      // Init Grid & Question
       renderQuestionGrid();
       loadQuestion(0);
       startTimer();
@@ -971,7 +547,7 @@
       const grid = document.getElementById('question-grid');
       grid.innerHTML = '';
 
-      rawQuestions.forEach((q, idx) => {
+      questions.forEach((q, idx) => {
         const btn = document.createElement('button');
         btn.id = `grid-btn-${idx}`;
         btn.innerText = idx + 1;
@@ -1002,21 +578,24 @@
 
     // LOAD QUESTION
     function loadQuestion(idx) {
+      if (!questions[idx]) return;
+
       const oldIdx = currentQuestionIndex;
       currentQuestionIndex = idx;
       updateGridStyle(oldIdx);
       updateGridStyle(currentQuestionIndex);
 
-      const q = rawQuestions[idx];
+      const q = questions[idx];
 
       document.getElementById('q-number').innerText = idx + 1;
-      document.getElementById('q-stimulus').innerHTML = q.stimulus;
+      
+      // Tampilkan Gambar jika ada
+      let imgHtml = q.image ? `<div class="mb-3 text-center"><img src="${q.image}" class="max-h-60 rounded border mx-auto shadow-sm" alt="Gambar Soal"></div>` : '';
+      document.getElementById('q-stimulus').innerHTML = imgHtml + (q.stimulus || '');
       document.getElementById('q-text').innerText = q.question;
 
-      // Check Doubtful
       document.getElementById('check-doubtful').checked = !!doubtfulStatus[idx];
 
-      // Options
       const optionsContainer = document.getElementById('q-options');
       optionsContainer.innerHTML = '';
 
@@ -1040,14 +619,12 @@
         optionsContainer.appendChild(optLabel);
       });
 
-      // Prev Next Buttons
       document.getElementById('btn-prev').disabled = idx === 0;
-      document.getElementById('btn-next').disabled = idx === rawQuestions.length - 1;
+      document.getElementById('btn-next').disabled = idx === questions.length - 1;
 
       lucide.createIcons();
     }
 
-    // ACTIONS
     function selectOption(oIdx) {
       userAnswers[currentQuestionIndex] = oIdx;
       updateGridStyle(currentQuestionIndex);
@@ -1065,7 +642,7 @@
     }
 
     function nextQuestion() {
-      if (currentQuestionIndex < rawQuestions.length - 1) loadQuestion(currentQuestionIndex + 1);
+      if (currentQuestionIndex < questions.length - 1) loadQuestion(currentQuestionIndex + 1);
     }
 
     // SUBMIT & MODAL
@@ -1073,9 +650,9 @@
       const answeredCount = Object.keys(userAnswers).length;
       let doubtfulCount = 0;
       Object.values(doubtfulStatus).forEach(v => { if (v) doubtfulCount++; });
-      const unansweredCount = rawQuestions.length - answeredCount;
+      const unansweredCount = questions.length - answeredCount;
 
-      document.getElementById('summary-answered').innerText = `${answeredCount} / ${rawQuestions.length}`;
+      document.getElementById('summary-answered').innerText = `${answeredCount} / ${questions.length}`;
       document.getElementById('summary-doubtful').innerText = doubtfulCount;
       document.getElementById('summary-unanswered').innerText = unansweredCount;
 
@@ -1094,15 +671,14 @@
       closeSubmitModal();
       clearInterval(timerInterval);
 
-      // Hitung Nilai
       let correct = 0;
-      rawQuestions.forEach((q, idx) => {
+      questions.forEach((q, idx) => {
         if (userAnswers[idx] === q.answer) {
           correct++;
         }
       });
 
-      const total = rawQuestions.length;
+      const total = questions.length;
       const wrong = total - correct;
       const score = Math.round((correct / total) * 100);
 
@@ -1115,14 +691,12 @@
         score
       };
 
-      // Simpan ke LocalStorage
       const savedResults = JSON.parse(localStorage.getItem('cbt_results') || '[]');
       savedResults.push(resultObj);
       localStorage.setItem('cbt_results', JSON.stringify(savedResults));
 
       alert(`Ujian Selesai!\n\nNama: ${currentStudent.name}\nJumlah Benar: ${correct}\nJumlah Salah: ${wrong}\nNilai Akhir: ${score}`);
 
-      // Auto Redirect ke Mode Guru untuk lihat rekap
       document.getElementById('view-exam').classList.add('hidden');
       document.getElementById('header-student-info').classList.add('hidden');
       document.getElementById('view-teacher').classList.remove('hidden');
@@ -1130,7 +704,7 @@
       renderTeacherDashboard();
     }
 
-    // GURU DASHBOARD & DOWNLOAD SHEET
+    // TEACHER: MANAGEMENT TABLE
     function renderTeacherDashboard() {
       const results = JSON.parse(localStorage.getItem('cbt_results') || '[]');
       const tbody = document.getElementById('teacher-table-body');
@@ -1166,8 +740,146 @@
       document.getElementById('stat-max-score').innerText = maxScore;
     }
 
-    function loadTeacherStats() {
-      // Auto-load background stats
+    function renderTeacherQuestionsTable() {
+      const tbody = document.getElementById('teacher-questions-table-body');
+      tbody.innerHTML = '';
+
+      const labels = ['A', 'B', 'C', 'D'];
+
+      questions.forEach((q, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b hover:bg-slate-50";
+
+        const imgBadge = q.image ? `<span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded ml-2">Ada Gambar</span>` : '';
+
+        tr.innerHTML = `
+          <td class="px-4 py-3 text-center font-bold text-slate-500">${idx + 1}</td>
+          <td class="px-4 py-3">
+            <div class="font-bold text-slate-800 text-xs flex items-center">${q.question} ${imgBadge}</div>
+            <div class="text-[11px] text-slate-500 truncate max-w-md mt-0.5">${q.stimulus ? q.stimulus.replace(/<[^>]*>?/gm, '') : '-'}</div>
+          </td>
+          <td class="px-4 py-3 text-center font-extrabold text-emerald-600 bg-emerald-50/40">${labels[q.answer]}</td>
+          <td class="px-4 py-3 text-center">
+            <div class="flex justify-center space-x-1">
+              <button onclick="openQuestionModal(${idx})" class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded border border-amber-200"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+              <button onclick="deleteQuestion(${idx})" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded border border-rose-200"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    // EDIT / TAMBAH / HAPUS SOAL & IMAGE UPLOADER LOGIC
+    function openQuestionModal(idx) {
+      document.getElementById('edit-q-index').value = idx !== null ? idx : -1;
+      document.getElementById('modal-editor-title').innerText = idx !== null ? `Edit Soal Nomor ${idx + 1}` : 'Tambah Soal Baru';
+
+      if (idx !== null) {
+        const q = questions[idx];
+        document.getElementById('edit-q-stimulus').value = q.stimulus || '';
+        document.getElementById('edit-q-question').value = q.question || '';
+        document.getElementById('edit-opt-0').value = q.options[0] || '';
+        document.getElementById('edit-opt-1').value = q.options[1] || '';
+        document.getElementById('edit-opt-2').value = q.options[2] || '';
+        document.getElementById('edit-opt-3').value = q.options[3] || '';
+        document.getElementById('edit-q-answer').value = q.answer;
+
+        if (q.image) {
+          uploadedImageBase64 = q.image;
+          document.getElementById('preview-img-element').src = q.image;
+          document.getElementById('edit-q-image-preview').classList.remove('hidden');
+        } else {
+          removeUploadedImage();
+        }
+      } else {
+        document.getElementById('edit-q-stimulus').value = '';
+        document.getElementById('edit-q-question').value = '';
+        document.getElementById('edit-opt-0').value = '';
+        document.getElementById('edit-opt-1').value = '';
+        document.getElementById('edit-opt-2').value = '';
+        document.getElementById('edit-opt-3').value = '';
+        document.getElementById('edit-q-answer').value = 0;
+        removeUploadedImage();
+      }
+
+      const modal = document.getElementById('modal-question-editor');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQuestionModal() {
+      const modal = document.getElementById('modal-question-editor');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function previewUploadedImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedImageBase64 = e.target.result;
+          document.getElementById('preview-img-element').src = uploadedImageBase64;
+          document.getElementById('edit-q-image-preview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeUploadedImage() {
+      uploadedImageBase64 = '';
+      document.getElementById('edit-q-image-file').value = '';
+      document.getElementById('edit-q-image-preview').classList.add('hidden');
+    }
+
+    function saveQuestion(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('edit-q-index').value);
+
+      const updatedObj = {
+        id: idx >= 0 ? questions[idx].id : Date.now(),
+        stimulus: document.getElementById('edit-q-stimulus').value,
+        question: document.getElementById('edit-q-question').value,
+        options: [
+          document.getElementById('edit-opt-0').value,
+          document.getElementById('edit-opt-1').value,
+          document.getElementById('edit-opt-2').value,
+          document.getElementById('edit-opt-3').value
+        ],
+        answer: parseInt(document.getElementById('edit-q-answer').value),
+        image: uploadedImageBase64 || null
+      };
+
+      if (idx >= 0) {
+        questions[idx] = updatedObj;
+      } else {
+        questions.push(updatedObj);
+      }
+
+      localStorage.setItem('cbt_questions', JSON.stringify(questions));
+      closeQuestionModal();
+      renderTeacherQuestionsTable();
+      alert('Soal berhasil disimpan!');
+    }
+
+    function deleteQuestion(idx) {
+      if (confirm(`Apakah Anda yakin ingin menghapus Soal Nomor ${idx + 1}?`)) {
+        questions.splice(idx, 1);
+        localStorage.setItem('cbt_questions', JSON.stringify(questions));
+        renderTeacherQuestionsTable();
+      }
+    }
+
+    function resetDefaultQuestions() {
+      if (confirm('Apakah Anda yakin ingin mengembalikan bank soal ke 50 Soal Bawaan? Semua soal buatan sendiri akan terhapus.')) {
+        localStorage.setItem('cbt_questions', JSON.stringify(defaultQuestions));
+        questions = [...defaultQuestions];
+        renderTeacherQuestionsTable();
+        alert('Bank soal berhasil direset ke standar.');
+      }
     }
 
     function downloadCSV() {
@@ -1177,7 +889,7 @@
         return;
       }
 
-      let csvContent = "\uFEFF"; // UTF-8 BOM agar Excel membaca karakter khusus dengan benar
+      let csvContent = "\uFEFF";
       csvContent += "No,Nama Peserta,No. Ujian / Kelas,Waktu Selesai,Jumlah Benar,Jumlah Salah,Nilai Akhir\n";
 
       results.forEach((res, i) => {
