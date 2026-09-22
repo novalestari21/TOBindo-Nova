@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
-    body { background-color: #f4f6f9; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; -webkit-user-select: none; }
     .cbt-header { background-color: #4338ca; color: white; padding: 12px 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
     .cbt-badge { background: white; color: #4338ca; font-weight: 800; padding: 6px 14px; border-radius: 10px; font-size: 1.2rem; }
     .timer-box { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 16px; border-radius: 8px; font-weight: bold; color: #fde047; font-size: 1.1rem; }
@@ -23,9 +23,37 @@
     .stat-card { background: #fff; border-radius: 10px; padding: 20px; border-left: 5px solid #4338ca; }
     .soal-item-card { border-left: 4px solid #4338ca; background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
     .img-opsi-preview { max-height: 100px; border-radius: 6px; border: 1px solid #ddd; margin-top: 6px; display: block; }
+    
+    /* OVERLAY PERINGATAN KECURANGAN */
+    #cheatOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: rgba(220, 38, 38, 0.96);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
+
+<!-- OVERLAY ALARM MERAH PERINGATAN KECURANGAN -->
+<div id="cheatOverlay" class="d-none">
+  <i class="bi bi-exclamation-triangle-fill display-1 mb-3 animate__animated animate__infinite animate__flash"></i>
+  <h1 class="fw-extrabold display-4 mb-2">PERINGATAN KECURANGAN!</h1>
+  <p class="fs-4 max-w-lg mb-4">Anda terdeteksi meninggalkan layar ujian / membuka tab baru / keluar dari mode Fullscreen!</p>
+  <div class="card text-dark p-3 mb-4 shadow fw-bold">
+    Sisa Toleransi Kesempatan: <span id="lblSisaKesempatan" class="text-danger fs-3 ms-2">3</span> Kali Lagi
+  </div>
+  <button id="btnKembaliUjian" class="btn btn-light btn-lg fw-bold px-5 py-3 text-danger shadow" onclick="kembaliKeUjianFullscreen()">
+    <i class="bi bi-arrows-fullscreen me-2"></i> Saya Mengerti & Kembali Ujian Fullscreen
+  </button>
+</div>
 
 <div class="cbt-header d-flex justify-content-between align-items-center">
   <div class="d-flex align-items-center gap-3">
@@ -73,11 +101,14 @@
             <label class="form-label fw-semibold">Nomor Ujian / Kelas</label>
             <input type="text" id="kelasSiswa" class="form-control" required placeholder="Contoh: 9A">
           </div>
-          <div class="alert alert-info py-2 small mb-4 d-flex align-items-center">
+          <div class="alert alert-info py-2 small mb-3 d-flex align-items-center">
             <i class="bi bi-clock-history fs-5 me-2"></i>
             <div>Durasi Pengerjaan: <b id="textDurasiInformasi">15</b> Menit</div>
           </div>
-          <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white" style="background:#4338ca">Mulai Ujian</button>
+          <div class="alert alert-warning py-2 small mb-4">
+            <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang membuka tab baru, pindah aplikasi, atau keluar dari layar Fullscreen! Maksimal toleransi 3x.
+          </div>
+          <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white" style="background:#4338ca">Mulai Ujian Fullscreen</button>
         </form>
       </div>
     </div>
@@ -89,6 +120,7 @@
       <div class="card card-cbt p-4">
         <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
           <h5 class="fw-bold mb-0">Soal No. <span id="noSoalTitle">1</span></h5>
+          <span class="badge bg-danger px-3 py-2"><i class="bi bi-shield-lock me-1"></i> Mode Anti-Curang</span>
         </div>
         <div id="soalImgContainer" class="mb-3 text-center d-none">
           <img id="soalImg" src="" class="img-fluid rounded border" style="max-height: 250px;">
@@ -182,11 +214,12 @@
                 <th>WAKTU SELESAI</th>
                 <th>BENAR</th>
                 <th>SALAH</th>
+                <th>PELANGGARAN TAB</th>
                 <th>NILAI (0-100)</th>
               </tr>
             </thead>
             <tbody id="bodyNilaiGuru">
-              <tr><td colspan="7" class="text-center text-muted">Memuat data nilai...</td></tr>
+              <tr><td colspan="8" class="text-center text-muted">Memuat data nilai...</td></tr>
             </tbody>
           </table>
         </div>
@@ -202,13 +235,11 @@
             <p class="text-muted small mb-0">Ubah teks, upload gambar, sakelar akses ujian, durasi, dan preview soal.</p>
           </div>
           <div class="d-flex gap-2 align-items-center flex-wrap">
-            <!-- SAKELAR STATUS UJIAN -->
             <div class="form-check form-switch bg-light border p-2 px-3 rounded d-flex align-items-center gap-2">
               <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="switchStatusUjian" onchange="toggleStatusUjian(this)">
               <label class="form-check-label fw-bold small text-dark mb-0" for="switchStatusUjian" id="lblStatusUjian">Status: Checking...</label>
             </div>
 
-            <!-- PENGATURAN DURASI -->
             <div class="input-group input-group-sm" style="width:190px">
               <span class="input-group-text bg-light fw-bold"><i class="bi bi-clock me-1"></i> Durasi</span>
               <input type="number" id="inputDurasiWaktu" class="form-control text-center fw-bold" value="15" min="1">
@@ -328,6 +359,7 @@
   // PASTE URL WEB APP APPS SCRIPT ANDA DI SINI
   const API_URL = "https://script.google.com/macros/s/AKfycbwqzECjjvDdxrdzB-_uP4GAdL4_xJhl_9hzA_0jsScQyyLOopL8M16KB8p-9UlLmXQQiw/exec";
 
+  let rawBankSoal = [];
   let bankSoal = [];
   let jawabanSiswa = [];
   let currentSoalIndex = 0;
@@ -335,6 +367,13 @@
   let sisaWaktu = 15 * 60; 
   let timerInterval;
   let modalLoginObj, modalEditObj, modalPreviewObj;
+
+  // SYSTEM ANTI-CURANG VARIABEL
+  let isUjianAktifMode = false;
+  let jumlahPelanggaran = 0;
+  const MAX_TOLERANSI = 3;
+  let audioCtx = null;
+  let alarmInterval = null;
 
   document.addEventListener("DOMContentLoaded", function() {
     modalLoginObj = new bootstrap.Modal(document.getElementById('modalLogin'));
@@ -350,7 +389,125 @@
         document.getElementById('inputDurasiWaktu').value = durasiMenitGlobal;
       }
     });
+
+    // BLOK SHORTCUT KEYBOARD
+    document.addEventListener('keydown', function(e) {
+      if (isUjianAktifMode) {
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+           (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'c' || e.key === 'v' || e.key === 'a' || e.key === 't' || e.key === 'n'))) {
+          e.preventDefault();
+          trigPeringatanKecurangan("Penggunaan shortcut keyboard dilarang!");
+        }
+      }
+    });
+
+    // DETEKSI PINDAH TAB / MINIMIZE BROWSER
+    document.addEventListener("visibilitychange", function() {
+      if (isUjianAktifMode && document.hidden) {
+        trigPeringatanKecurangan("Meninggalkan tab halaman ujian!");
+      }
+    });
+
+    window.addEventListener("blur", function() {
+      if (isUjianAktifMode) {
+        trigPeringatanKecurangan("Meninggalkan jendela browser ujian!");
+      }
+    });
+
+    // DETEKSI KELUAR FULLSCREEN
+    document.addEventListener("fullscreenchange", function() {
+      if (isUjianAktifMode && !document.fullscreenElement) {
+        trigPeringatanKecurangan("Keluar dari Mode Layar Penuh (Fullscreen)!");
+      }
+    });
   });
+
+  // FUNGSI KANONIKAL SOUND ALARM SIRINE
+  function membunyikanSirine() {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      let osc = audioCtx.createOscillator();
+      let gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.3);
+
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    } catch(e){}
+  }
+
+  function startAlarmRepeat() {
+    membunyikanSirine();
+    if(!alarmInterval) {
+      alarmInterval = setInterval(membunyikanSirine, 400);
+    }
+  }
+
+  function stopAlarmRepeat() {
+    if(alarmInterval) {
+      clearInterval(alarmInterval);
+      alarmInterval = null;
+    }
+  }
+
+  function trigPeringatanKecurangan(alasan) {
+    if (!isUjianAktifMode) return;
+
+    jumlahPelanggaran++;
+    let sisa = MAX_TOLERANSI - jumlahPelanggaran;
+    
+    startAlarmRepeat();
+    document.getElementById('cheatOverlay').classList.remove('d-none');
+
+    if (sisa <= 0) {
+      document.getElementById('lblSisaKesempatan').innerText = "HABIS! DISKUALIFIKASI";
+      document.getElementById('btnKembaliUjian').classList.add('d-none');
+      
+      setTimeout(() => {
+        alert("Batas toleransi kecurangan telah habis! Sistem akan mengirim jawaban Anda secara otomatis.");
+        stopAlarmRepeat();
+        kirimJawaban();
+      }, 1000);
+    } else {
+      document.getElementById('lblSisaKesempatan').innerText = sisa;
+    }
+  }
+
+  function kembaliKeUjianFullscreen() {
+    stopAlarmRepeat();
+    document.getElementById('cheatOverlay').classList.add('d-none');
+    
+    let elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen().catch(()=>{});
+    }
+  }
+
+  // FUNGSI ACAK ARRAY (SHUFFLE)
+  function shuffleArray(array) {
+    let curId = array.length;
+    let clone = JSON.parse(JSON.stringify(array));
+    while (0 !== curId) {
+      let randId = Math.floor(Math.random() * curId);
+      curId -= 1;
+      let tmp = clone[curId];
+      clone[curId] = clone[randId];
+      clone[randId] = tmp;
+    }
+    return clone;
+  }
 
   function showModalLogin() {
     document.getElementById('loginUser').value = '';
@@ -379,6 +536,7 @@
   }
 
   function bukaModeGuru() {
+    isUjianAktifMode = false;
     document.getElementById('section-identitas').classList.add('d-none');
     document.getElementById('section-ujian').classList.add('d-none');
     document.getElementById('section-hasil').classList.add('d-none');
@@ -465,7 +623,7 @@
 
       let html = '';
       if(res.data.length === 0) {
-        html = '<tr><td colspan="7" class="text-center text-muted">Belum ada data peserta yang menyelesaikan ujian.</td></tr>';
+        html = '<tr><td colspan="8" class="text-center text-muted">Belum ada data peserta yang menyelesaikan ujian.</td></tr>';
       } else {
         res.data.forEach(item => {
           html += `<tr>
@@ -475,6 +633,7 @@
             <td>${item.waktu}</td>
             <td class="text-success fw-bold">${item.benar}</td>
             <td class="text-danger fw-bold">${item.salah}</td>
+            <td><span class="badge bg-warning text-dark fw-bold">${item.pelanggaran}</span></td>
             <td class="fw-bold text-primary">${item.nilai}</td>
           </tr>`;
         });
@@ -485,7 +644,7 @@
 
   function konfirmasiResetNilai() {
     if (confirm("Apakah Anda yakin ingin menghapus/mereset seluruh data nilai siswa? Tindakan ini tidak dapat dibatalkan!")) {
-      document.getElementById('bodyNilaiGuru').innerHTML = `<tr><td colspan="7" class="text-center text-muted">Mereset data nilai...</td></tr>`;
+      document.getElementById('bodyNilaiGuru').innerHTML = `<tr><td colspan="8" class="text-center text-muted">Mereset data nilai...</td></tr>`;
       
       fetch(API_URL, {
         method: 'POST',
@@ -517,9 +676,8 @@
     .then(res => {
       const container = document.getElementById('listSoalGuruContainer');
       const data = res.data;
-      bankSoal = data;
+      rawBankSoal = data;
 
-      // Update Sakelar Status
       const chk = document.getElementById('switchStatusUjian');
       const lbl = document.getElementById('lblStatusUjian');
       chk.checked = res.isAktif;
@@ -577,7 +735,7 @@
   }
 
   function previewSoal(idx) {
-    const item = bankSoal[idx];
+    const item = rawBankSoal[idx];
     document.getElementById('prevNoSoal').innerText = idx + 1;
     document.getElementById('prevSoalTeks').innerText = item.soal;
 
@@ -604,7 +762,7 @@
   }
 
   function bukaModalEditSoal(idx) {
-    const item = bankSoal[idx];
+    const item = rawBankSoal[idx];
     document.getElementById('modalNoSoal').innerText = idx + 1;
     document.getElementById('editItemId').value = item.itemId;
     document.getElementById('editIndex').value = idx;
@@ -754,7 +912,7 @@
       if(!res.success) {
         alert(res.message || "Akses ujian saat ini ditutup oleh Guru.");
         btnMulai.disabled = false;
-        btnMulai.innerText = "Mulai Ujian";
+        btnMulai.innerText = "Mulai Ujian Fullscreen";
         return;
       }
 
@@ -762,17 +920,50 @@
       if (!data || data.length === 0) {
         alert("Soal tidak ditemukan.");
         btnMulai.disabled = false;
-        btnMulai.innerText = "Mulai Ujian";
+        btnMulai.innerText = "Mulai Ujian Fullscreen";
         return;
       }
 
       document.getElementById('hNama').innerText = nama;
       document.getElementById('hKelas').innerText = "No/Kelas: " + kelas;
 
-      bankSoal = data;
+      // PROSES ACAK SOAL & OPSINYA UNTUK SISWA
+      let rawData = JSON.parse(JSON.stringify(data));
+      let shuffledSoal = shuffleArray(rawData);
+
+      shuffledSoal.forEach(sItem => {
+        let combinedOps = [];
+        sItem.pilihan.forEach((pText, pIdx) => {
+          combinedOps.push({
+            txt: pText,
+            img: sItem.pilihanGambar ? sItem.pilihanGambar[pIdx] : null,
+            isCorrect: (pIdx === sItem.jawabanBenar)
+          });
+        });
+
+        let shufOps = shuffleArray(combinedOps);
+        sItem.pilihan = [];
+        sItem.pilihanGambar = [];
+        shufOps.forEach((o, oIdx) => {
+          sItem.pilihan.push(o.txt);
+          sItem.pilihanGambar.push(o.img);
+          if (o.isCorrect) sItem.jawabanBenar = oIdx;
+        });
+      });
+
+      bankSoal = shuffledSoal;
       jawabanSiswa = new Array(bankSoal.length).fill(null);
       if(res.durasi) durasiMenitGlobal = res.durasi;
       sisaWaktu = durasiMenitGlobal * 60;
+
+      // AKTIFKAN MODE ANTI CURANG DAN FULLSCREEN
+      isUjianAktifMode = true;
+      jumlahPelanggaran = 0;
+
+      let elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(()=>{});
+      }
 
       document.getElementById('section-identitas').classList.add('d-none');
       document.getElementById('section-ujian').classList.remove('d-none');
@@ -856,7 +1047,6 @@
       if (sisaWaktu <= 0) {
         clearInterval(timerInterval);
         
-        // Nonaktifkan akses ujian otomatis di backend saat waktu habis
         fetch(API_URL, {
           method: 'POST',
           body: JSON.stringify({ action: 'toggleStatusUjian', status: false })
@@ -876,7 +1066,14 @@
   }
 
   function kirimJawaban() {
+    isUjianAktifMode = false;
+    stopAlarmRepeat();
     clearInterval(timerInterval);
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(()=>{});
+    }
+
     const nama = document.getElementById('namaSiswa').value;
     const kelas = document.getElementById('kelasSiswa').value;
 
@@ -888,7 +1085,8 @@
         action: 'simpanHasil',
         nama: nama,
         kelas: kelas,
-        jawabanSiswa: jawabanSiswa
+        jawabanSiswa: jawabanSiswa,
+        jumlahPelanggaran: jumlahPelanggaran
       })
     })
     .then(res => res.json())
