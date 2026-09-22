@@ -137,7 +137,7 @@
         <button class="nav-link active" onclick="switchTabGuru('rekap', event)"><i class="bi bi-bar-chart me-1"></i> Rekap Hasil Nilai</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchTabGuru('banksoal', event)"><i class="bi bi-file-earmark-text me-1"></i> Kelola Bank Soal & Gambar</button>
+        <button class="nav-link" onclick="switchTabGuru('banksoal', event)"><i class="bi bi-file-earmark-text me-1"></i> Kelola Bank Soal & Status Ujian</button>
       </li>
     </ul>
 
@@ -198,12 +198,18 @@
       <div class="card card-cbt p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <div>
-            <h5 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Gambar</h5>
-            <p class="text-muted small mb-0">Ubah teks, upload gambar pada soal/opsi, atur durasi pengerjaan, dan preview soal.</p>
+            <h5 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h5>
+            <p class="text-muted small mb-0">Ubah teks, upload gambar, sakelar akses ujian, durasi, dan preview soal.</p>
           </div>
-          <div class="d-flex gap-2 align-items-center">
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <!-- SAKELAR STATUS UJIAN -->
+            <div class="form-check form-switch bg-light border p-2 px-3 rounded d-flex align-items-center gap-2">
+              <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="switchStatusUjian" onchange="toggleStatusUjian(this)">
+              <label class="form-check-label fw-bold small text-dark mb-0" for="switchStatusUjian" id="lblStatusUjian">Status: Checking...</label>
+            </div>
+
             <!-- PENGATURAN DURASI -->
-            <div class="input-group input-group-sm" style="width:200px">
+            <div class="input-group input-group-sm" style="width:190px">
               <span class="input-group-text bg-light fw-bold"><i class="bi bi-clock me-1"></i> Durasi</span>
               <input type="number" id="inputDurasiWaktu" class="form-control text-center fw-bold" value="15" min="1">
               <span class="input-group-text">mnt</span>
@@ -407,6 +413,27 @@
     }
   }
 
+  function toggleStatusUjian(chk) {
+    const isAktif = chk.checked;
+    const lbl = document.getElementById('lblStatusUjian');
+    lbl.innerText = "Mengubah status...";
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'toggleStatusUjian', status: isAktif })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if(res.success) {
+        lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
+        lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
+      } else {
+        alert("Gagal mengubah status ujian: " + res.error);
+        chk.checked = !isAktif;
+      }
+    });
+  }
+
   function simpanDurasiWaktu() {
     const durasi = document.getElementById('inputDurasiWaktu').value;
     if(!durasi || durasi < 1) return alert("Durasi tidak valid");
@@ -485,12 +512,19 @@
       }
     });
 
-    fetch(`${API_URL}?action=getBankSoal`)
+    fetch(`${API_URL}?action=getBankSoal&isGuru=true`)
     .then(res => res.json())
     .then(res => {
       const container = document.getElementById('listSoalGuruContainer');
       const data = res.data;
       bankSoal = data;
+
+      // Update Sakelar Status
+      const chk = document.getElementById('switchStatusUjian');
+      const lbl = document.getElementById('lblStatusUjian');
+      chk.checked = res.isAktif;
+      lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
+      lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
 
       if(res.durasi) {
         durasiMenitGlobal = res.durasi;
@@ -710,16 +744,20 @@
     const nama = document.getElementById('namaSiswa').value;
     const kelas = document.getElementById('kelasSiswa').value;
 
-    document.getElementById('hNama').innerText = nama;
-    document.getElementById('hKelas').innerText = "No/Kelas: " + kelas;
-
     const btnMulai = document.getElementById('btnMulai');
     btnMulai.disabled = true;
-    btnMulai.innerText = "Mengambil Soal...";
+    btnMulai.innerText = "Memeriksa Status Ujian...";
 
     fetch(`${API_URL}?action=getBankSoal`)
     .then(res => res.json())
     .then(res => {
+      if(!res.success) {
+        alert(res.message || "Akses ujian saat ini ditutup oleh Guru.");
+        btnMulai.disabled = false;
+        btnMulai.innerText = "Mulai Ujian";
+        return;
+      }
+
       const data = res.data;
       if (!data || data.length === 0) {
         alert("Soal tidak ditemukan.");
@@ -727,6 +765,10 @@
         btnMulai.innerText = "Mulai Ujian";
         return;
       }
+
+      document.getElementById('hNama').innerText = nama;
+      document.getElementById('hKelas').innerText = "No/Kelas: " + kelas;
+
       bankSoal = data;
       jawabanSiswa = new Array(bankSoal.length).fill(null);
       if(res.durasi) durasiMenitGlobal = res.durasi;
@@ -813,7 +855,14 @@
       
       if (sisaWaktu <= 0) {
         clearInterval(timerInterval);
-        alert('Waktu ujian habis!');
+        
+        // Nonaktifkan akses ujian otomatis di backend saat waktu habis
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'toggleStatusUjian', status: false })
+        });
+
+        alert('Waktu ujian telah habis! Sistem akan mengirimkan jawaban Anda.');
         kirimJawaban();
       }
       sisaWaktu--;
