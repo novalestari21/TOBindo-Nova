@@ -24,7 +24,6 @@
     .soal-item-card { border-left: 4px solid #4338ca; background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
     .img-opsi-preview { max-height: 100px; border-radius: 6px; border: 1px solid #ddd; margin-top: 6px; display: block; }
     
-    /* OVERLAY PERINGATAN KECURANGAN */
     #cheatOverlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -44,7 +43,7 @@
 
 <!-- OVERLAY ALARM MERAH PERINGATAN KECURANGAN -->
 <div id="cheatOverlay" class="d-none">
-  <i class="bi bi-exclamation-triangle-fill display-1 mb-3 animate__animated animate__infinite animate__flash"></i>
+  <i class="bi bi-exclamation-triangle-fill display-1 mb-3"></i>
   <h1 class="fw-extrabold display-4 mb-2">PERINGATAN KECURANGAN!</h1>
   <p class="fs-4 max-w-lg mb-4">Anda terdeteksi meninggalkan layar ujian / membuka tab baru / keluar dari mode Fullscreen!</p>
   <div class="card text-dark p-3 mb-4 shadow fw-bold">
@@ -71,7 +70,7 @@
     </div>
 
     <div id="headerTimer" class="timer-box d-none">
-      <i class="bi bi-clock me-1"></i> <span id="timer">15 : 00</span>
+      <i class="bi bi-clock me-1"></i> <span id="timer">60 : 00</span>
     </div>
 
     <button id="btnModeGuru" class="btn btn-outline-light rounded-3 px-3 btn-sm" onclick="showModalLogin()">
@@ -79,7 +78,7 @@
     </button>
     
     <button id="btnModeSiswa" class="btn btn-outline-light rounded-3 px-3 btn-sm d-none" onclick="keModeSiswa()">
-      <i class="bi bi-person me-1"></i> Mode Siswa
+      <i class="bi bi-person me-1"></i> Keluar Mode Guru
     </button>
   </div>
 </div>
@@ -103,7 +102,7 @@
           </div>
           <div class="alert alert-info py-2 small mb-3 d-flex align-items-center">
             <i class="bi bi-clock-history fs-5 me-2"></i>
-            <div>Durasi Pengerjaan: <b id="textDurasiInformasi">15</b> Menit</div>
+            <div>Durasi Pengerjaan: <b id="textDurasiInformasi">60</b> Menit</div>
           </div>
           <div class="alert alert-warning py-2 small mb-4">
             <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang membuka tab baru, pindah aplikasi, atau keluar dari layar Fullscreen! Maksimal toleransi 3x.
@@ -160,13 +159,16 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h3 class="fw-bold mb-0">Panel Pengelola CBT (Guru)</h3>
-        <p class="text-muted">Rekapitulasi hasil ujian peserta didik & kelola bank soal.</p>
+        <p class="text-muted">Rekapitulasi hasil ujian peserta didik, arsip nilai & kelola bank soal.</p>
       </div>
     </div>
 
     <ul class="nav nav-tabs mb-4">
       <li class="nav-item">
         <button class="nav-link active" onclick="switchTabGuru('rekap', event)"><i class="bi bi-bar-chart me-1"></i> Rekap Hasil Nilai</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" onclick="switchTabGuru('arsip', event)"><i class="bi bi-archive me-1"></i> Arsip Nilai Ujian</button>
       </li>
       <li class="nav-item">
         <button class="nav-link" onclick="switchTabGuru('banksoal', event)"><i class="bi bi-file-earmark-text me-1"></i> Kelola Bank Soal & Status Ujian</button>
@@ -197,10 +199,11 @@
       </div>
 
       <div class="card card-cbt p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="fw-bold mb-0">Daftar Nilai Peserta Didik</h6>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <h6 class="fw-bold mb-0">Daftar Nilai Peserta Didik Aktif</h6>
           <div class="d-flex gap-2">
-            <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV()"><i class="bi bi-download me-1"></i> Unduh Sheet Nilai (CSV)</button>
+            <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipNilai()"><i class="bi bi-archive me-1"></i> Arsipkan Hasil Nilai</button>
+            <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelNilaiGuru', 'Rekap_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh CSV</button>
             <button class="btn btn-danger btn-sm fw-bold" onclick="konfirmasiResetNilai()"><i class="bi bi-trash me-1"></i> Reset Nilai</button>
           </div>
         </div>
@@ -226,6 +229,39 @@
       </div>
     </div>
 
+    <!-- TAB ARSIP NILAI -->
+    <div id="tabGuruArsip" class="d-none">
+      <div class="card card-cbt p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div>
+            <h6 class="fw-bold mb-1"><i class="bi bi-archive-fill text-warning me-2"></i>Daftar Arsip Rekapitulasi Ujian</h6>
+            <p class="text-muted small mb-0">Seluruh data rekap nilai ujian terdahulu yang pernah diarsipkan tersimpan di sini.</p>
+          </div>
+          <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelArsipNilai', 'Arsip_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh Semua Arsip (CSV)</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle" id="tabelArsipNilai">
+            <thead class="table-secondary">
+              <tr>
+                <th>NO</th>
+                <th>LABEL / NAMA UJIAN</th>
+                <th>NAMA PESERTA</th>
+                <th>KELAS</th>
+                <th>NILAI</th>
+                <th>BENAR / TOTAL</th>
+                <th>WAKTU SELESAI</th>
+                <th>PELANGGARAN</th>
+                <th>TGL DIBUAT ARSIP</th>
+              </tr>
+            </thead>
+            <tbody id="bodyArsipNilai">
+              <tr><td colspan="9" class="text-center text-muted">Memuat arsip...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- Tab Bank Soal -->
     <div id="tabGuruBankSoal" class="d-none">
       <div class="card card-cbt p-4 mb-4">
@@ -242,7 +278,7 @@
 
             <div class="input-group input-group-sm" style="width:190px">
               <span class="input-group-text bg-light fw-bold"><i class="bi bi-clock me-1"></i> Durasi</span>
-              <input type="number" id="inputDurasiWaktu" class="form-control text-center fw-bold" value="15" min="1">
+              <input type="number" id="inputDurasiWaktu" class="form-control text-center fw-bold" value="60" min="1">
               <span class="input-group-text">mnt</span>
               <button class="btn btn-primary btn-sm" onclick="simpanDurasiWaktu()" title="Simpan Durasi"><i class="bi bi-check-lg"></i></button>
             </div>
@@ -363,8 +399,8 @@
   let bankSoal = [];
   let jawabanSiswa = [];
   let currentSoalIndex = 0;
-  let durasiMenitGlobal = 15;
-  let sisaWaktu = 15 * 60; 
+  let durasiMenitGlobal = 60;
+  let sisaWaktu = 60 * 60; 
   let timerInterval;
   let modalLoginObj, modalEditObj, modalPreviewObj;
 
@@ -379,6 +415,11 @@
     modalLoginObj = new bootstrap.Modal(document.getElementById('modalLogin'));
     modalEditObj = new bootstrap.Modal(document.getElementById('modalEditSoal'));
     modalPreviewObj = new bootstrap.Modal(document.getElementById('modalPreview'));
+
+    // CEK SESI LOGIN ADMIN AGAR PERMANEN SAAT DI-REFRESH
+    if (sessionStorage.getItem("isGuruLoggedIn") === "true") {
+      bukaModeGuru();
+    }
     
     fetch(`${API_URL}?action=getBankSoal`)
     .then(res => res.json())
@@ -390,7 +431,6 @@
       }
     });
 
-    // BLOK SHORTCUT KEYBOARD
     document.addEventListener('keydown', function(e) {
       if (isUjianAktifMode) {
         if (e.key === 'F12' || 
@@ -402,7 +442,6 @@
       }
     });
 
-    // DETEKSI PINDAH TAB / MINIMIZE BROWSER
     document.addEventListener("visibilitychange", function() {
       if (isUjianAktifMode && document.hidden) {
         trigPeringatanKecurangan("Meninggalkan tab halaman ujian!");
@@ -415,7 +454,6 @@
       }
     });
 
-    // DETEKSI KELUAR FULLSCREEN
     document.addEventListener("fullscreenchange", function() {
       if (isUjianAktifMode && !document.fullscreenElement) {
         trigPeringatanKecurangan("Keluar dari Mode Layar Penuh (Fullscreen)!");
@@ -423,7 +461,6 @@
     });
   });
 
-  // FUNGSI KANONIKAL SOUND ALARM SIRINE
   function membunyikanSirine() {
     try {
       if (!audioCtx) {
@@ -495,7 +532,6 @@
     }
   }
 
-  // FUNGSI ACAK ARRAY (SHUFFLE)
   function shuffleArray(array) {
     let curId = array.length;
     let clone = JSON.parse(JSON.stringify(array));
@@ -510,6 +546,10 @@
   }
 
   function showModalLogin() {
+    if (sessionStorage.getItem("isGuruLoggedIn") === "true") {
+      bukaModeGuru();
+      return;
+    }
     document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
     modalLoginObj.show();
@@ -527,6 +567,7 @@
     .then(res => res.json())
     .then(res => {
       if (res.success) {
+        sessionStorage.setItem("isGuruLoggedIn", "true"); // SIMPAN SESI LOGIN DI BROWSER
         modalLoginObj.hide();
         bukaModeGuru();
       } else {
@@ -551,6 +592,7 @@
   }
 
   function keModeSiswa() {
+    sessionStorage.removeItem("isGuruLoggedIn"); // HAPUS SESI SAAT KELUAR
     document.getElementById('section-guru').classList.add('d-none');
     document.getElementById('btnModeSiswa').classList.add('d-none');
     document.getElementById('btnModeGuru').classList.remove('d-none');
@@ -559,13 +601,21 @@
 
   function switchTabGuru(tab, e) {
     document.querySelectorAll('.nav-tabs .nav-link').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById('tabGuruRekap').classList.add('d-none');
+    document.getElementById('tabGuruArsip').classList.add('d-none');
+    document.getElementById('tabGuruBankSoal').classList.add('d-none');
+
     if (tab === 'rekap') {
       e.target.classList.add('active');
       document.getElementById('tabGuruRekap').classList.remove('d-none');
-      document.getElementById('tabGuruBankSoal').classList.add('d-none');
+      loadDataRekapGuru();
+    } else if (tab === 'arsip') {
+      e.target.classList.add('active');
+      document.getElementById('tabGuruArsip').classList.remove('d-none');
+      loadDataRekapGuru();
     } else {
       e.target.classList.add('active');
-      document.getElementById('tabGuruRekap').classList.add('d-none');
       document.getElementById('tabGuruBankSoal').classList.remove('d-none');
       loadBankSoalGuru();
     }
@@ -621,9 +671,10 @@
       document.getElementById('statAvg').innerText = res.rataRata;
       document.getElementById('statMax').innerText = res.tertinggi;
 
+      // Render Rekap Nilai Aktif
       let html = '';
       if(res.data.length === 0) {
-        html = '<tr><td colspan="8" class="text-center text-muted">Belum ada data peserta yang menyelesaikan ujian.</td></tr>';
+        html = '<tr><td colspan="8" class="text-center text-muted">Belum ada data peserta yang menyelesaikan ujian aktif.</td></tr>';
       } else {
         res.data.forEach(item => {
           html += `<tr>
@@ -639,11 +690,51 @@
         });
       }
       document.getElementById('bodyNilaiGuru').innerHTML = html;
+
+      // Render Arsip Nilai
+      let htmlArsip = '';
+      if(!res.arsip || res.arsip.length === 0) {
+        htmlArsip = '<tr><td colspan="9" class="text-center text-muted">Belum ada data nilai yang diarsipkan.</td></tr>';
+      } else {
+        res.arsip.forEach(a => {
+          htmlArsip += `<tr>
+            <td>${a.no}</td>
+            <td><span class="badge bg-primary">${a.label}</span></td>
+            <td class="fw-bold">${a.nama}</td>
+            <td>${a.kelas}</td>
+            <td class="fw-bold text-success">${a.nilai}</td>
+            <td>${a.benarSalah}</td>
+            <td>${a.waktu}</td>
+            <td>${a.pelanggaran}</td>
+            <td class="small text-muted">${a.tglArsip}</td>
+          </tr>`;
+        });
+      }
+      document.getElementById('bodyArsipNilai').innerHTML = htmlArsip;
+    });
+  }
+
+  function prosesArsipNilai() {
+    const namaLabel = prompt("Masukkan Label / Nama Ujian untuk Arsip ini:", "Try Out Bahasa Indonesia Sesi 1");
+    if (!namaLabel) return;
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'arsipNilai', namaUjian: namaLabel })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if(res.success) {
+        alert(`Berhasil mengarsipkan ${res.count} data nilai ke dalam label: "${res.label}"`);
+        loadDataRekapGuru();
+      } else {
+        alert("Gagal mengarsipkan: " + res.error);
+      }
     });
   }
 
   function konfirmasiResetNilai() {
-    if (confirm("Apakah Anda yakin ingin menghapus/mereset seluruh data nilai siswa? Tindakan ini tidak dapat dibatalkan!")) {
+    if (confirm("Apakah Anda yakin ingin menghapus/mereset seluruh data nilai siswa? Pastikan Anda sudah mengarsipkan nilai terlebih dahulu!")) {
       document.getElementById('bodyNilaiGuru').innerHTML = `<tr><td colspan="8" class="text-center text-muted">Mereset data nilai...</td></tr>`;
       
       fetch(API_URL, {
@@ -927,7 +1018,6 @@
       document.getElementById('hNama').innerText = nama;
       document.getElementById('hKelas').innerText = "No/Kelas: " + kelas;
 
-      // PROSES ACAK SOAL & OPSINYA UNTUK SISWA
       let rawData = JSON.parse(JSON.stringify(data));
       let shuffledSoal = shuffleArray(rawData);
 
@@ -956,7 +1046,6 @@
       if(res.durasi) durasiMenitGlobal = res.durasi;
       sisaWaktu = durasiMenitGlobal * 60;
 
-      // AKTIFKAN MODE ANTI CURANG DAN FULLSCREEN
       isUjianAktifMode = true;
       jumlahPelanggaran = 0;
 
@@ -1103,8 +1192,8 @@
     });
   }
 
-  function exportTableToCSV() {
-    let table = document.getElementById("tabelNilaiGuru");
+  function exportTableToCSV(tableId, filename) {
+    let table = document.getElementById(tableId);
     let rows = table.querySelectorAll("tr");
     let csv = [];
     for (let i = 0; i < rows.length; i++) {
@@ -1115,7 +1204,7 @@
     }
     let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
     let downloadLink = document.createElement("a");
-    downloadLink.download = "Rekap_Nilai_CBT.csv";
+    downloadLink.download = filename || "Data_Nilai_CBT.csv";
     downloadLink.href = window.URL.createObjectURL(csvFile);
     downloadLink.style.display = "none";
     document.body.appendChild(downloadLink);
