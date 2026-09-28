@@ -26,13 +26,11 @@
       touch-action: manipulation;
     }
     
-    /* Mencegah seleksi teks HANYA saat ujian aktif berlangsung */
     body.exam-mode-active {
       user-select: none; 
       -webkit-user-select: none;
     }
     
-    /* HEADER */
     .cbt-header { 
       background: linear-gradient(135deg, #3730a3 0%, #4338ca 50%, #4f46e5 100%); 
       color: white; 
@@ -104,10 +102,23 @@
     .option-card.selected { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
 
     .stat-card { background: #fff; border-radius: 10px; padding: 16px; border-left: 5px solid var(--primary-color); }
-    .soal-item-card { border-left: 4px solid var(--primary-color); background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+    
+    .soal-item-card { 
+      border-left: 5px solid var(--primary-color); 
+      background: #fff; 
+      border-radius: 8px; 
+      padding: 16px; 
+      margin-bottom: 15px; 
+      transition: all 0.2s;
+    }
+    .soal-item-card.soal-disabled {
+      border-left-color: #eab308 !important;
+      background: #fefce8 !important;
+      opacity: 0.85;
+    }
+
     .img-opsi-preview { max-height: 90px; border-radius: 6px; border: 1px solid #ddd; margin-top: 6px; display: block; }
     
-    /* OVERLAY PERINGATAN KECURANGAN */
     #cheatOverlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -122,7 +133,6 @@
       padding: 20px;
     }
 
-    /* DESAIN SIDEBAR MODE GURU */
     .guru-wrapper {
       display: flex;
       width: 100%;
@@ -236,7 +246,6 @@
 <!-- HEADER -->
 <div class="cbt-header d-flex justify-content-between align-items-center flex-wrap gap-2">
   <div class="d-flex align-items-center gap-2 gap-sm-3">
-    <!-- HAMBURGER BUTTON UNTUK SIDEBAR GURU -->
     <button id="btnToggleSidebar" class="btn btn-outline-light btn-sm d-none shadow-sm" onclick="toggleGuruSidebar()" title="Buka/Tutup Menu Sidebar">
       <i class="bi bi-list fs-5"></i>
     </button>
@@ -371,7 +380,7 @@
     </div>
   </div>
 
-  <!-- PANEL GURU (SIDEBAR RESPONSIVE) -->
+  <!-- PANEL GURU -->
   <div id="section-guru" class="guru-wrapper d-none">
     
     <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleGuruSidebar()"></div>
@@ -628,7 +637,7 @@
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
               <h6 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h6>
-              <p class="text-muted small mb-0">Edit soal, arsipkan bank soal lama, dan impor kembali paket soal terdahulu.</p>
+              <p class="text-muted small mb-0">Edit, nonaktifkan, hapus soal, dan arsipkan bank soal lama.</p>
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
               <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipBankSoal()"><i class="bi bi-archive-fill me-1"></i> Arsipkan Soal</button>
@@ -845,7 +854,6 @@
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
 
-    // LOGIKA PROTEKSI COPY-PASTE DENGAN DETEKSI KHUSUS SISWA
     document.addEventListener('contextmenu', function(e) {
       if (isUjianAktifMode) e.preventDefault();
     });
@@ -889,7 +897,6 @@
     });
   });
 
-  // FUNGSI TOGGLE SIDEBAR GURU
   function toggleGuruSidebar() {
     const sidebar = document.getElementById('guruSidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -1079,7 +1086,7 @@
 
   function bukaModeGuru() {
     isUjianAktifMode = false;
-    document.body.classList.remove('exam-mode-active'); // Bebaskan seleksi & copy paste
+    document.body.classList.remove('exam-mode-active');
     document.getElementById('section-identitas').classList.add('d-none');
     document.getElementById('section-ujian').classList.add('d-none');
     document.getElementById('section-hasil').classList.add('d-none');
@@ -1467,15 +1474,27 @@
           </div>`;
         });
 
-        html += `<div class="soal-item-card shadow-sm mb-3">
+        let cardClass = item.isNonaktif ? "soal-item-card soal-disabled shadow-sm mb-3" : "soal-item-card shadow-sm mb-3";
+        let statusBadge = item.isNonaktif ? `<span class="badge bg-warning text-dark me-2"><i class="bi bi-eye-slash-fill me-1"></i> NONAKTIF</span>` : `<span class="badge bg-success me-2"><i class="bi bi-check-circle-fill me-1"></i> AKTIF</span>`;
+
+        html += `<div class="${cardClass}">
           <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-            <h6 class="fw-bold mb-0" style="color:var(--primary-color)">Soal No. ${idx + 1}</h6>
-            <div class="d-flex gap-2">
+            <div class="d-flex align-items-center">
+              ${statusBadge}
+              <h6 class="fw-bold mb-0" style="color:var(--primary-color)">Soal No. ${idx + 1}</h6>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+              <button class="btn btn-sm ${item.isNonaktif ? 'btn-outline-success' : 'btn-outline-warning'} fw-bold" onclick="toggleStatusNonaktifSoal('${item.itemId}', ${!item.isNonaktif})">
+                <i class="bi ${item.isNonaktif ? 'bi-eye' : 'bi-eye-slash'} me-1"></i> ${item.isNonaktif ? 'Aktifkan' : 'Nonaktifkan'}
+              </button>
               <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="previewSoal(${idx})">
                 <i class="bi bi-eye me-1"></i> Preview
               </button>
               <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEditSoal(${idx})">
                 <i class="bi bi-pencil-square me-1"></i> Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger fw-bold" onclick="deleteSatuSoal('${item.itemId}', ${idx + 1})">
+                <i class="bi bi-trash me-1"></i> Hapus
               </button>
             </div>
           </div>
@@ -1489,6 +1508,50 @@
 
       container.innerHTML = html;
       loadDataRekapGuru();
+    });
+  }
+
+  // FUNGSI AKSI NONAKTIFKAN SOAL
+  function toggleStatusNonaktifSoal(itemId, statusSet) {
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'toggleSoalNonaktif', itemId: itemId, isNonaktif: statusSet })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.success) {
+        loadBankSoalGuru();
+      } else {
+        alert("Gagal mengubah status soal: " + res.error);
+      }
+    });
+  }
+
+  // FUNGSI AKSI HAPUS SOAL
+  function deleteSatuSoal(itemId, noSoal) {
+    Swal.fire({
+      title: `Hapus Soal No. ${noSoal}?`,
+      text: "Soal ini akan dihapus permanen dari Google Form!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      confirmButtonText: 'Ya, Hapus!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'deleteSoal', itemId: itemId })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Terhapus!', timer: 1500, showConfirmButton: false });
+            loadBankSoalGuru();
+          } else {
+            alert("Gagal menghapus soal: " + res.error);
+          }
+        });
+      }
     });
   }
 
@@ -1723,7 +1786,7 @@
 
       sisaWaktu = globalConfig.durasi * 60;
       isUjianAktifMode = true;
-      document.body.classList.add('exam-mode-active'); // Aktifkan proteksi kecurangan pada CSS
+      document.body.classList.add('exam-mode-active');
       jumlahPelanggaran = 0;
 
       let elem = document.documentElement;
