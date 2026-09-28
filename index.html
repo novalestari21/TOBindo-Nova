@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>TRY OUT BAHASA INDONESIA</title>
   
-  <!-- FAVICON DARI GOOGLE DRIVE -->
   <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1oMCkxUqfoz4z5XwUu0UisJOr17RPfv69">
   <link rel="shortcut icon" type="image/png" href="https://lh3.googleusercontent.com/d/1oMCkxUqfoz4z5XwUu0UisJOr17RPfv69">
 
@@ -637,7 +636,7 @@
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
               <h6 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h6>
-              <p class="text-muted small mb-0">Edit, nonaktifkan, hapus soal, dan arsipkan bank soal lama.</p>
+              <p class="text-muted small mb-0">Edit, nonaktifkan, hapus soal, hapus gambar, dan arsipkan bank soal lama.</p>
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
               <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipBankSoal()"><i class="bi bi-archive-fill me-1"></i> Arsipkan Soal</button>
@@ -742,6 +741,7 @@
         <form id="formEditSoal" onsubmit="simpanEditSoal(event)">
           <input type="hidden" id="editItemId">
           <input type="hidden" id="editIndex">
+          <input type="hidden" id="editRemoveSoalImage" value="false">
 
           <div class="mb-3">
             <label class="form-label fw-bold small">Teks Pertanyaan / Soal</label>
@@ -749,11 +749,16 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold small">Unggah Gambar Soal Stimulus (Opsional)</label>
+            <label class="form-label fw-bold small">Gambar Soal Stimulus</label>
             <input type="file" id="editSoalGambar" class="form-control form-control-sm" accept="image/*">
-            <div id="previewGambarModal" class="mt-2 d-none">
-              <small class="text-muted">Gambar stimulus saat ini:</small><br>
-              <img id="imgModalPreview" src="" class="img-fluid border rounded" style="max-height:120px">
+            <div id="previewGambarModal" class="mt-2 d-none p-2 border rounded bg-light">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted fw-bold">Gambar stimulus saat ini:</small>
+                <button type="button" class="btn btn-danger btn-sm p-1 px-2 fw-bold" style="font-size:0.75rem;" onclick="hapusGambarSoalModal()">
+                  <i class="bi bi-trash-fill me-1"></i> Hapus Gambar Soal
+                </button>
+              </div>
+              <img id="imgModalPreview" src="" class="img-fluid border rounded" style="max-height:140px">
             </div>
           </div>
 
@@ -1511,7 +1516,6 @@
     });
   }
 
-  // FUNGSI AKSI NONAKTIFKAN SOAL
   function toggleStatusNonaktifSoal(itemId, statusSet) {
     fetch(API_URL, {
       method: 'POST',
@@ -1527,7 +1531,6 @@
     });
   }
 
-  // FUNGSI AKSI HAPUS SOAL
   function deleteSatuSoal(itemId, noSoal) {
     Swal.fire({
       title: `Hapus Soal No. ${noSoal}?`,
@@ -1582,6 +1585,7 @@
     modalPreviewObj.show();
   }
 
+  // FUNGSI UNTUK MEMBUKA MODAL EDIT SOAL LENGKAP DENGAN TOMBOL HAPUS GAMBAR
   function bukaModalEditSoal(idx) {
     const item = rawBankSoal[idx];
     document.getElementById('modalNoSoal').innerText = idx + 1;
@@ -1589,6 +1593,7 @@
     document.getElementById('editIndex').value = idx;
     document.getElementById('editSoalTeks').value = item.soal;
     document.getElementById('editSoalGambar').value = '';
+    document.getElementById('editRemoveSoalImage').value = 'false';
 
     const prevBox = document.getElementById('previewGambarModal');
     if (item.imageUrl) {
@@ -1611,16 +1616,40 @@
           <span class="input-group-text fw-bold">${String.fromCharCode(65 + pIdx)}</span>
           <input type="text" class="form-control modal-pilihan-input" value="${p}" required>
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <small class="fw-bold text-muted" style="min-width:70px; font-size:0.75rem;">Gambar:</small>
+        
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <small class="fw-bold text-muted" style="min-width:70px; font-size:0.75rem;">Ganti/Upload:</small>
           <input type="file" class="form-control form-control-sm modal-pilihan-file" accept="image/*" data-index="${pIdx}">
-          <input type="hidden" class="modal-pilihan-existing" value="${existingImg}">
+          <input type="hidden" id="modalPilihanExisting_${pIdx}" class="modal-pilihan-existing" value="${existingImg}">
+        </div>
+
+        <div id="boxImgOpsiPreview_${pIdx}" class="${existingImg ? 'd-flex' : 'd-none'} align-items-center justify-content-between mt-2 p-2 border rounded bg-white">
+          <div class="d-flex align-items-center gap-2">
+            <small class="fw-bold text-muted" style="font-size:0.7rem;">Gambar Opsi saat ini:</small>
+            <img id="imgOpsiModal_${pIdx}" src="${existingImg}" class="img-fluid border rounded" style="max-height:50px;">
+          </div>
+          <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 fw-bold" style="font-size:0.75rem;" onclick="hapusGambarOpsiModal(${pIdx})">
+            <i class="bi bi-trash me-1"></i> Hapus Gambar Opsi
+          </button>
         </div>
       </div>`;
     });
     document.getElementById('editPilihanContainer').innerHTML = pilHtml;
 
     modalEditObj.show();
+  }
+
+  // FUNGSI AKSI HAPUS GAMBAR SOAL STIMULUS DARI MODAL EDIT
+  function hapusGambarSoalModal() {
+    document.getElementById('editRemoveSoalImage').value = 'true';
+    document.getElementById('previewGambarModal').classList.add('d-none');
+    document.getElementById('imgModalPreview').src = '';
+  }
+
+  // FUNGSI AKSI HAPUS GAMBAR OPSI DARI MODAL EDIT
+  function hapusGambarOpsiModal(pIdx) {
+    document.getElementById(`modalPilihanExisting_${pIdx}`).value = '';
+    document.getElementById(`boxImgOpsiPreview_${pIdx}`).classList.replace('d-flex', 'd-none');
   }
 
   function simpanEditSoal(e) {
@@ -1632,7 +1661,8 @@
     const itemId = document.getElementById('editItemId').value;
     const soalTeks = document.getElementById('editSoalTeks').value;
     const kunciIdx = document.querySelector('input[name="modalKunci"]:checked').value;
-    
+    const removeSoalImage = document.getElementById('editRemoveSoalImage').value === 'true';
+
     let pilihanArr = [];
     document.querySelectorAll('.modal-pilihan-input').forEach(input => { pilihanArr.push(input.value); });
 
@@ -1661,30 +1691,26 @@
       const fileInputSoal = document.getElementById('editSoalGambar');
       const fileSoal = fileInputSoal.files[0];
 
-      if (fileSoal) {
+      let payload = {
+        itemId: itemId,
+        soal: soalTeks,
+        pilihan: pilihanArr,
+        jawabanBenar: kunciIdx,
+        pilihanGambarBase64: pilihanGambarBase64,
+        pilihanGambarExisting: pilihanGambarExisting,
+        removeSoalImage: removeSoalImage
+      };
+
+      if (fileSoal && !removeSoalImage) {
         const reader = new FileReader();
         reader.onload = function(evt) {
-          kirimUpdateKeBackend({
-            itemId: itemId,
-            soal: soalTeks,
-            pilihan: pilihanArr,
-            jawabanBenar: kunciIdx,
-            pilihanGambarBase64: pilihanGambarBase64,
-            pilihanGambarExisting: pilihanGambarExisting,
-            imageBase64: evt.target.result,
-            imageName: fileSoal.name
-          });
+          payload.imageBase64 = evt.target.result;
+          payload.imageName = fileSoal.name;
+          kirimUpdateKeBackend(payload);
         };
         reader.readAsDataURL(fileSoal);
       } else {
-        kirimUpdateKeBackend({
-          itemId: itemId,
-          soal: soalTeks,
-          pilihan: pilihanArr,
-          jawabanBenar: kunciIdx,
-          pilihanGambarBase64: pilihanGambarBase64,
-          pilihanGambarExisting: pilihanGambarExisting
-        });
+        kirimUpdateKeBackend(payload);
       }
     });
   }
