@@ -6,7 +6,7 @@
   <title>TRY OUT BAHASA INDONESIA</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <!-- SWEETALERT2 UNTUK POP-UP LOGIN/LOGOUT & DILENGKAPI EFEK CEKLIST -->
+  <!-- SWEETALERT2 UNTUK ANIMASI POP-UP CEKLIST & DIALOG SAYONARA -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body { background-color: #f4f6f9; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; -webkit-user-select: none; }
@@ -533,7 +533,6 @@
     }
   }
 
-  // FUNGSI SHUFFLE KANONIKAL
   function shuffleArray(array) {
     let curId = array.length;
     let clone = JSON.parse(JSON.stringify(array));
@@ -572,7 +571,7 @@
         sessionStorage.setItem("isGuruLoggedIn", "true");
         modalLoginObj.hide();
         
-        // POP-UP CEKLIST & SELAMAT DATANG DENGAN SWEETALERT2
+        // POP-UP CEKLIST & UCAPAN SELAMAT DATANG (SWEETALERT2)
         Swal.fire({
           icon: 'success',
           title: 'Login Berhasil!',
@@ -610,7 +609,7 @@
   }
 
   function keModeSiswa() {
-    // POP-UP KONFIRMASI LOGOUT DENGAN SWEETALERT2
+    // POP-UP KONFIRMASI DILANJUTKAN UCAPAN SAYONARA (SWEETALERT2)
     Swal.fire({
       title: 'Apakah Anda Yakin?',
       text: "Anda akan keluar dari Panel Pengelola CBT",
@@ -1057,7 +1056,6 @@
       document.getElementById('hNama').innerText = nama;
       document.getElementById('hKelas').innerText = "No/Kelas: " + kelas;
 
-      // SIKLUS ACAK SOAL & OPSINYA DENGAN PENGUNCIAN KUNCI JAWABAN AKURAT
       let rawData = JSON.parse(JSON.stringify(data));
       let shuffledSoal = shuffleArray(rawData);
 
@@ -1067,7 +1065,7 @@
           combinedOps.push({
             txt: pText,
             img: sItem.pilihanGambar ? sItem.pilihanGambar[pIdx] : null,
-            isCorrect: (pIdx === sItem.jawabanBenar) // KUNCI UTAMA KEBENARAN DIIKUTKAN DENGAN TIAP OPSINYA
+            isCorrect: (pIdx === sItem.jawabanBenar)
           });
         });
 
@@ -1078,7 +1076,7 @@
           sItem.pilihan.push(o.txt);
           sItem.pilihanGambar.push(o.img);
           if (o.isCorrect) {
-            sItem.jawabanBenar = oIdx; // INDEKS KUNCI JAWABAN DITERAPKAN DI KEDUDUKAN OPSI BARU (100% PRESISI)
+            sItem.jawabanBenar = oIdx;
           }
         });
       });
@@ -1247,7 +1245,7 @@
     let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
     let downloadLink = document.createElement("a");
     downloadLink.download = filename || "Data_Nilai_CBT.csv";
-    downloadLink.href = window.URL.URL.createObjectURL ? window.URL.createObjectURL(csvFile) : window.webkitURL.createObjectURL(csvFile);
+    downloadLink.href = window.URL.createObjectURL ? window.URL.createObjectURL(csvFile) : window.webkitURL.createObjectURL(csvFile);
     downloadLink.style.display = "none";
     document.body.appendChild(downloadLink);
     downloadLink.click();
