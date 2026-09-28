@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>TRY OUT BAHASA INDONESIA</title>
   
   <!-- FAVICON DARI GOOGLE DRIVE -->
@@ -13,52 +13,97 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    body { background-color: #f4f6f9; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; -webkit-user-select: none; }
+    :root {
+      --primary-color: #4338ca;
+      --primary-hover: #3730a3;
+      --sidebar-width: 260px;
+      --sidebar-collapsed-width: 70px;
+    }
+
+    body { 
+      background-color: #f4f6f9; 
+      font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif; 
+      user-select: none; 
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
     
+    /* HEADER */
     .cbt-header { 
       background: linear-gradient(135deg, #3730a3 0%, #4338ca 50%, #4f46e5 100%); 
       color: white; 
-      padding: 14px 24px; 
+      padding: 12px 20px; 
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
       position: relative;
-      overflow: hidden;
+      z-index: 1020;
     }
     .cbt-badge { 
       background: white; 
       color: #4338ca; 
       font-weight: 800; 
-      padding: 6px 14px; 
-      border-radius: 10px; 
-      font-size: 1.2rem; 
+      padding: 4px 10px; 
+      border-radius: 8px; 
+      font-size: 1.1rem; 
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .sastra-badge {
       background: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
       color: #e0e7ff;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
-    .accent-icon { font-size: 1.15rem; color: #fde047; opacity: 0.9; }
-    .timer-box { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 16px; border-radius: 8px; font-weight: bold; color: #fde047; font-size: 1.1rem; }
+    .accent-icon { font-size: 1.1rem; color: #fde047; }
+    .timer-box { 
+      background: rgba(255, 255, 255, 0.15); 
+      border: 1px solid rgba(255, 255, 255, 0.3); 
+      padding: 4px 12px; 
+      border-radius: 8px; 
+      font-weight: bold; 
+      color: #fde047; 
+      font-size: 1rem; 
+    }
+
     .card-cbt { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .box-nomor { width: 42px; height: 42px; line-height: 42px; text-align: center; border: 1px solid #ced4da; margin: 4px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #fff; }
-    .box-nomor.active { background-color: #4338ca; color: white; border-color: #4338ca; }
+    .box-nomor { 
+      width: 38px; 
+      height: 38px; 
+      line-height: 38px; 
+      text-align: center; 
+      border: 1px solid #ced4da; 
+      margin: 3px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      background: #fff;
+      font-size: 0.9rem;
+    }
+    .box-nomor.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
     .box-nomor.terjawab { background-color: #16a34a; color: white; border-color: #16a34a; }
-    .option-card { text-align: left; margin-bottom: 10px; border: 1px solid #dee2e6; padding: 14px 18px; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: #fff; }
-    .option-card:hover { background-color: #f3f4f6; }
-    .option-card.selected { background-color: #4338ca; color: white; border-color: #4338ca; }
-    .nav-tabs .nav-link { color: #4b5563; font-weight: 600; }
-    .nav-tabs .nav-link.active { color: #4338ca; border-bottom: 3px solid #4338ca; }
-    .stat-card { background: #fff; border-radius: 10px; padding: 20px; border-left: 5px solid #4338ca; }
-    .soal-item-card { border-left: 4px solid #4338ca; background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
-    .img-opsi-preview { max-height: 100px; border-radius: 6px; border: 1px solid #ddd; margin-top: 6px; display: block; }
     
+    .option-card { 
+      text-align: left; 
+      margin-bottom: 10px; 
+      border: 1px solid #dee2e6; 
+      padding: 12px 16px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      background: #fff; 
+    }
+    .option-card:hover { background-color: #f3f4f6; }
+    .option-card.selected { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+    .stat-card { background: #fff; border-radius: 10px; padding: 16px; border-left: 5px solid var(--primary-color); }
+    .soal-item-card { border-left: 4px solid var(--primary-color); background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 15px; }
+    .img-opsi-preview { max-height: 90px; border-radius: 6px; border: 1px solid #ddd; margin-top: 6px; display: block; }
+    
+    /* OVERLAY PERINGATAN KECURANGAN */
     #cheatOverlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -72,6 +117,134 @@
       text-align: center;
       padding: 20px;
     }
+
+    /* =========================================================
+       DESAIN SIDEBAR RESPONSIVE & COMPATIBLE UNTUK MODE GURU
+       ========================================================= */
+    .guru-wrapper {
+      display: flex;
+      width: 100%;
+      min-height: calc(100vh - 70px);
+      position: relative;
+    }
+
+    .guru-sidebar {
+      width: var(--sidebar-width);
+      background: #1e1b4b;
+      color: #e0e7ff;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 1010;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .guru-sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+
+    .guru-sidebar.collapsed .menu-text,
+    .guru-sidebar.collapsed .sidebar-header-title {
+      display: none !important;
+    }
+
+    .guru-sidebar.collapsed .sidebar-menu-btn {
+      justify-content: center;
+      padding: 12px 0;
+    }
+
+    .guru-sidebar .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .guru-sidebar .sidebar-menu-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      border: none;
+      background: transparent;
+      color: #c7d2fe;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-left: 4px solid transparent;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .guru-sidebar .sidebar-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .guru-sidebar .sidebar-menu-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border-left-color: #fde047;
+    }
+
+    .guru-content {
+      flex-grow: 1;
+      padding: 20px;
+      width: 100%;
+      overflow-x: hidden;
+      transition: all 0.3s ease;
+    }
+
+    /* OVERLAY MOBILE BAR SIDEBAR */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1005;
+    }
+
+    /* MEDIA QUERIES RESPONSIVE (DESKTOP, LAPTOP, TABLET, ANDROID, IPHONE) */
+    @media (max-width: 991.98px) {
+      .guru-sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        height: 100vh;
+        z-index: 1030;
+      }
+
+      .guru-sidebar.mobile-open {
+        left: 0;
+      }
+
+      .sidebar-overlay.mobile-open {
+        display: block;
+      }
+
+      .guru-sidebar.collapsed {
+        width: var(--sidebar-width);
+      }
+
+      .guru-sidebar.collapsed .menu-text,
+      .guru-sidebar.collapsed .sidebar-header-title {
+        display: inline-block !important;
+      }
+
+      .guru-sidebar.collapsed .sidebar-menu-btn {
+        justify-content: flex-start;
+        padding: 12px 18px;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .cbt-header { padding: 10px 12px; }
+      .cbt-badge { font-size: 0.95rem; padding: 3px 8px; }
+      .timer-box { font-size: 0.85rem; padding: 3px 8px; }
+      .guru-content { padding: 12px 8px; }
+    }
   </style>
 </head>
 <body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
@@ -79,453 +252,476 @@
 <!-- OVERLAY ALARM MERAH PERINGATAN KECURANGAN -->
 <div id="cheatOverlay" class="d-none">
   <i class="bi bi-exclamation-triangle-fill display-1 mb-3"></i>
-  <h1 class="fw-extrabold display-4 mb-2">PERINGATAN KECURANGAN!</h1>
-  <p class="fs-4 max-w-lg mb-4">Anda terdeteksi meninggalkan layar ujian / membuka tab baru / keluar dari mode Fullscreen!</p>
+  <h1 class="fw-extrabold display-5 mb-2">PERINGATAN KECURANGAN!</h1>
+  <p class="fs-5 max-w-lg mb-4">Anda terdeteksi meninggalkan layar ujian / membuka tab baru / keluar dari Fullscreen!</p>
   <div class="card text-dark p-3 mb-4 shadow fw-bold">
     Sisa Toleransi Kesempatan: <span id="lblSisaKesempatan" class="text-danger fs-3 ms-2">3</span> Kali Lagi
   </div>
-  <button id="btnKembaliUjian" class="btn btn-light btn-lg fw-bold px-5 py-3 text-danger shadow" onclick="kembaliKeUjianFullscreen()">
-    <i class="bi bi-arrows-fullscreen me-2"></i> Saya Mengerti & Kembali Ujian Fullscreen
+  <button id="btnKembaliUjian" class="btn btn-light btn-lg fw-bold px-4 py-3 text-danger shadow" onclick="kembaliKeUjianFullscreen()">
+    <i class="bi bi-arrows-fullscreen me-2"></i> Kembali Ujian Fullscreen
   </button>
 </div>
 
 <!-- HEADER -->
 <div class="cbt-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-  <div class="d-flex align-items-center gap-3">
+  <div class="d-flex align-items-center gap-2 gap-sm-3">
+    <!-- HAMBURGER BUTTON UNTUK SIDEBAR GURU -->
+    <button id="btnToggleSidebar" class="btn btn-outline-light btn-sm d-none shadow-sm" onclick="toggleGuruSidebar()" title="Buka/Tutup Menu Sidebar">
+      <i class="bi bi-list fs-5"></i>
+    </button>
+
     <div class="cbt-badge d-flex align-items-center gap-1">
       <i class="bi bi-journal-bookmark-fill text-primary me-1"></i> CBT
     </div>
     <div>
       <div class="d-flex align-items-center gap-2">
-        <h5 class="fw-bold mb-0 text-white">TRY OUT BAHASA INDONESIA</h5>
-        <i class="bi bi-feather accent-icon" title="Sastra & Puisi"></i>
+        <h6 class="fw-bold mb-0 text-white fs-6">TRY OUT BAHASA INDONESIA</h6>
+        <i class="bi bi-feather accent-icon d-none d-sm-inline" title="Sastra & Puisi"></i>
       </div>
       <div class="d-flex align-items-center gap-2 mt-1">
-        <small class="text-white-50">By. Bu Nova Lestari, S.Pd.,Gr.</small>
-        <span class="sastra-badge"><i class="bi bi-book"></i> Kamus & Literasi</span>
-        <span class="sastra-badge d-none d-md-inline-flex"><i class="bi bi-chat-quote"></i> Puisi & Pantun</span>
+        <small class="text-white-50" style="font-size:0.75rem;">Bu Nova Lestari, S.Pd.,Gr.</small>
+        <span class="sastra-badge d-none d-md-inline-flex"><i class="bi bi-book"></i> Literasi</span>
       </div>
     </div>
   </div>
 
-  <div class="d-flex align-items-center gap-3">
+  <div class="d-flex align-items-center gap-2 gap-sm-3">
     <div id="headerInfoSiswa" class="text-end d-none">
-      <div id="hNama" class="fw-bold text-white">Nama Siswa</div>
-      <small id="hKelas" class="text-white-50">No/Kelas: -</small>
+      <div id="hNama" class="fw-bold text-white small">Nama Siswa</div>
+      <small id="hKelas" class="text-white-50" style="font-size:0.7rem;">Kelas: -</small>
     </div>
 
     <div id="headerTimer" class="timer-box d-none">
       <i class="bi bi-clock me-1"></i> <span id="timer">60 : 00</span>
     </div>
 
-    <button id="btnModeGuru" class="btn btn-outline-light rounded-3 px-3 btn-sm shadow-sm" onclick="showModalLogin()">
+    <button id="btnModeGuru" class="btn btn-outline-light rounded-3 px-2 px-sm-3 btn-sm shadow-sm" onclick="showModalLogin()">
       <i class="bi bi-shield-lock me-1"></i> Mode Guru
     </button>
     
-    <button id="btnModeSiswa" class="btn btn-outline-light rounded-3 px-3 btn-sm d-none shadow-sm" onclick="keModeSiswa()">
-      <i class="bi bi-box-arrow-right me-1"></i> Keluar Mode Guru
+    <button id="btnModeSiswa" class="btn btn-outline-light rounded-3 px-2 px-sm-3 btn-sm d-none shadow-sm" onclick="keModeSiswa()">
+      <i class="bi bi-box-arrow-right me-1"></i> Keluar
     </button>
   </div>
 </div>
 
-<div class="container py-4">
+<div class="container-fluid p-0">
 
   <!-- Identitas Siswa -->
-  <div id="section-identitas" class="row justify-content-center my-5">
-    <div class="col-md-5">
-      <div class="card card-cbt p-4">
-        <div class="text-center mb-3">
-          <i class="bi bi-mortarboard-fill text-primary display-4"></i>
-          <h4 class="fw-bold text-primary mt-2 mb-1">Ujian CBT Online</h4>
-          <p class="text-muted small">Bahasa Indonesia • Literasi & Bahasa</p>
+  <div id="section-identitas" class="container py-4">
+    <div class="row justify-content-center my-3 my-md-5">
+      <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+        <div class="card card-cbt p-4">
+          <div class="text-center mb-3">
+            <i class="bi bi-mortarboard-fill text-primary display-4"></i>
+            <h4 class="fw-bold text-primary mt-2 mb-1">Ujian CBT Online</h4>
+            <p class="text-muted small">Bahasa Indonesia • Literasi & Bahasa</p>
+          </div>
+          <form id="formIdentitas" onsubmit="mulaiUjian(event)">
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Nama Lengkap</label>
+              <input type="text" id="namaSiswa" class="form-control" required placeholder="Masukkan Nama Lengkap">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Nomor Ujian / Kelas</label>
+              <input type="text" id="kelasSiswa" class="form-control" required placeholder="Contoh: 9A">
+            </div>
+            <div class="alert alert-info py-2 small mb-3 d-flex align-items-center">
+              <i class="bi bi-clock-history fs-5 me-2"></i>
+              <div>Durasi Ujian: <b id="textDurasiInformasi">60</b> Menit</div>
+            </div>
+            <div class="alert alert-warning py-2 small mb-4">
+              <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang keluar layar/pindah tab!
+            </div>
+            <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white shadow-sm" style="background:var(--primary-color)">Mulai Ujian Fullscreen</button>
+          </form>
         </div>
-        <form id="formIdentitas" onsubmit="mulaiUjian(event)">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Nama Lengkap</label>
-            <input type="text" id="namaSiswa" class="form-control" required placeholder="Masukkan Nama Lengkap">
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Nomor Ujian / Kelas</label>
-            <input type="text" id="kelasSiswa" class="form-control" required placeholder="Contoh: 9A">
-          </div>
-          <div class="alert alert-info py-2 small mb-3 d-flex align-items-center">
-            <i class="bi bi-clock-history fs-5 me-2"></i>
-            <div>Durasi Pengerjaan: <b id="textDurasiInformasi">60</b> Menit</div>
-          </div>
-          <div class="alert alert-warning py-2 small mb-4">
-            <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang membuka tab baru, pindah aplikasi, atau keluar dari layar Fullscreen!
-          </div>
-          <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white shadow-sm" style="background:#4338ca">Mulai Ujian Fullscreen</button>
-        </form>
       </div>
     </div>
   </div>
 
   <!-- Ujian Siswa -->
-  <div id="section-ujian" class="row d-none">
-    <div class="col-md-8 mb-3">
-      <div class="card card-cbt p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-          <h5 class="fw-bold mb-0">Soal No. <span id="noSoalTitle">1</span></h5>
-          
-          <!-- INDIKATOR AUTOSAVE & KONEKSI -->
-          <div class="d-flex align-items-center gap-2">
-            <span id="saveStatusIndicator" class="badge bg-success-subtle text-success border border-success px-3 py-2 fw-bold">
-              <i class="bi bi-check-circle-fill me-1"></i> Jawaban Tersimpan
-            </span>
-            <span class="badge bg-danger px-3 py-2"><i class="bi bi-shield-lock me-1"></i> Anti-Curang</span>
+  <div id="section-ujian" class="container py-3 d-none">
+    <div class="row g-3">
+      <div class="col-12 col-lg-8">
+        <div class="card card-cbt p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2 flex-wrap gap-2">
+            <h6 class="fw-bold mb-0">Soal No. <span id="noSoalTitle">1</span></h6>
+            
+            <div class="d-flex align-items-center gap-2">
+              <span id="saveStatusIndicator" class="badge bg-success-subtle text-success border border-success px-2 px-md-3 py-2 fw-bold small">
+                <i class="bi bi-check-circle-fill me-1"></i> Jawaban Tersimpan ✓
+              </span>
+              <span class="badge bg-danger px-2 px-md-3 py-2 small"><i class="bi bi-shield-lock me-1"></i> Anti-Curang</span>
+            </div>
+          </div>
+
+          <div id="soalImgContainer" class="mb-3 text-center d-none">
+            <img id="soalImg" src="" class="img-fluid rounded border" style="max-height: 250px;">
+          </div>
+          <div id="soalContainer" class="fs-6 fs-md-5 mb-4 fw-medium">Memuat soal...</div>
+          <div id="pilihanContainer"></div>
+          <div class="d-flex justify-content-between mt-4 gap-2">
+            <button class="btn btn-outline-secondary px-3 px-md-4" id="btnPrev" onclick="prevSoal()">Sebelumnya</button>
+            <button class="btn btn-primary px-3 px-md-4" id="btnNext" onclick="nextSoal()" style="background:var(--primary-color); border-color:var(--primary-color)">Berikutnya</button>
           </div>
         </div>
-
-        <div id="soalImgContainer" class="mb-3 text-center d-none">
-          <img id="soalImg" src="" class="img-fluid rounded border" style="max-height: 250px;">
-        </div>
-        <div id="soalContainer" class="fs-5 mb-4 fw-medium">Memuat soal...</div>
-        <div id="pilihanContainer"></div>
-        <div class="d-flex justify-content-between mt-4">
-          <button class="btn btn-outline-secondary px-4" id="btnPrev" onclick="prevSoal()">Sebelumnya</button>
-          <button class="btn btn-primary px-4" id="btnNext" onclick="nextSoal()" style="background:#4338ca; border-color:#4338ca">Berikutnya</button>
-        </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card card-cbt p-3">
-        <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap-fill me-1 text-primary"></i> Navigasi Soal</h6>
-        <div id="navigasiSoal" class="d-flex flex-wrap"></div>
-        <button class="btn btn-success w-100 mt-4 fw-bold shadow-sm" onclick="konfirmasiSelesai()">Selesai & Kirim</button>
+      <div class="col-12 col-lg-4">
+        <div class="card card-cbt p-3">
+          <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap-fill me-1 text-primary"></i> Navigasi Soal</h6>
+          <div id="navigasiSoal" class="d-flex flex-wrap justify-content-start"></div>
+          <button class="btn btn-success w-100 mt-4 fw-bold shadow-sm py-2" onclick="konfirmasiSelesai()">Selesai & Kirim</button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Hasil Ujian -->
-  <div id="section-hasil" class="row justify-content-center d-none my-5">
-    <div class="col-md-6 text-center">
-      <div class="card card-cbt p-5">
-        <h3 class="text-success fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Ujian Selesai!</h3>
-        <p class="text-muted mt-2">Jawaban Anda berhasil tersimpan secara aman di sistem.</p>
-        
-        <div id="detailNilaiContainer" class="my-4 p-4 rounded-3 border bg-light d-none">
-          <h1 id="detailNilai" class="display-3 fw-bold mb-2" style="color:#4338ca">0</h1>
-          <div class="d-flex justify-content-center gap-4 mt-3">
-            <span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-check-lg me-1"></i> Benar: <b id="detailBenar">0</b></span>
-            <span class="badge bg-danger fs-6 px-3 py-2"><i class="bi bi-x-lg me-1"></i> Salah: <b id="detailSalah">0</b></span>
+  <div id="section-hasil" class="container py-4 d-none">
+    <div class="row justify-content-center my-4">
+      <div class="col-12 col-md-8 col-lg-6 text-center">
+        <div class="card card-cbt p-4 p-md-5">
+          <h3 class="text-success fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Ujian Selesai!</h3>
+          <p class="text-muted mt-2 small">Jawaban Anda berhasil tersimpan secara aman di sistem.</p>
+          
+          <div id="detailNilaiContainer" class="my-4 p-3 p-md-4 rounded-3 border bg-light d-none">
+            <h1 id="detailNilai" class="display-3 fw-bold mb-2" style="color:var(--primary-color)">0</h1>
+            <div class="d-flex justify-content-center gap-3 gap-md-4 mt-3">
+              <span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-check-lg me-1"></i> Benar: <b id="detailBenar">0</b></span>
+              <span class="badge bg-danger fs-6 px-3 py-2"><i class="bi bi-x-lg me-1"></i> Salah: <b id="detailSalah">0</b></span>
+            </div>
           </div>
-        </div>
 
-        <p class="small text-secondary mt-3">Terima kasih telah mengerjakan ujian dengan jujur dan teliti.</p>
+          <p class="small text-secondary mt-3">Terima kasih telah mengerjakan ujian dengan jujur dan teliti.</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- PANEL GURU -->
-  <div id="section-guru" class="d-none">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div>
-        <h3 class="fw-bold mb-0">Panel Pengelola CBT (Guru)</h3>
-        <p class="text-muted">Rekapitulasi hasil ujian peserta didik, pengaturan ujian & kelola bank soal.</p>
+  <!-- PANEL GURU (DENGAN HAMBURGER SIDEBAR RESPONSIVE) -->
+  <div id="section-guru" class="guru-wrapper d-none">
+    
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleGuruSidebar()"></div>
+
+    <!-- SIDEBAR KIRI -->
+    <div id="guruSidebar" class="guru-sidebar">
+      <div class="sidebar-header">
+        <div class="d-flex align-items-center gap-2 sidebar-header-title">
+          <i class="bi bi-speedometer2 fs-5 text-warning"></i>
+          <span class="fw-bold text-white fs-6">Panel Guru</span>
+        </div>
+        <button class="btn btn-sm text-white-50 p-0 border-0" onclick="toggleGuruSidebar()" title="Ciutkan/Perlebar">
+          <i class="bi bi-chevron-left fs-5"></i>
+        </button>
+      </div>
+
+      <div class="py-2">
+        <button class="sidebar-menu-btn active" onclick="switchTabGuru('rekap', this)">
+          <i class="bi bi-bar-chart fs-5"></i>
+          <span class="menu-text">Rekap Hasil Nilai</span>
+        </button>
+        <button class="sidebar-menu-btn" onclick="switchTabGuru('setting', this)">
+          <i class="bi bi-sliders fs-5"></i>
+          <span class="menu-text">Setting Ujian</span>
+        </button>
+        <button class="sidebar-menu-btn" onclick="switchTabGuru('arsip', this)">
+          <i class="bi bi-archive fs-5"></i>
+          <span class="menu-text">Arsip Nilai Ujian</span>
+        </button>
+        <button class="sidebar-menu-btn" onclick="switchTabGuru('banksoal', this)">
+          <i class="bi bi-journal-text fs-5"></i>
+          <span class="menu-text">Kelola Bank Soal</span>
+        </button>
       </div>
     </div>
 
-    <ul class="nav nav-tabs mb-4">
-      <li class="nav-item">
-        <button class="nav-link active" onclick="switchTabGuru('rekap', event)"><i class="bi bi-bar-chart me-1"></i> Rekap Hasil Nilai</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" onclick="switchTabGuru('setting', event)"><i class="bi bi-gear-fill me-1"></i> Setting Ujian</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" onclick="switchTabGuru('arsip', event)"><i class="bi bi-archive me-1"></i> Arsip Nilai Ujian</button>
-      </li>
-      <li class="nav-item">
-        <button class="nav-link" onclick="switchTabGuru('banksoal', event)"><i class="bi bi-file-earmark-text me-1"></i> Kelola & Arsip Bank Soal</button>
-      </li>
-    </ul>
+    <!-- KONTEN UTAMA GURU -->
+    <div class="guru-content">
 
-    <!-- Tab Rekap Nilai -->
-    <div id="tabGuruRekap">
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <div class="stat-card shadow-sm">
-            <span class="text-muted small fw-bold">TOTAL PESERTA SELESAI</span>
-            <h2 id="statTotal" class="fw-bold mb-0" style="color:#4338ca">0</h2>
+      <!-- Tab Rekap Nilai -->
+      <div id="tabGuruRekap">
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-4">
+            <div class="stat-card shadow-sm">
+              <span class="text-muted small fw-bold">TOTAL PESERTA</span>
+              <h3 id="statTotal" class="fw-bold mb-0 mt-1" style="color:var(--primary-color)">0</h3>
+            </div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-card shadow-sm" style="border-left-color:#16a34a">
-            <span class="text-muted small fw-bold">RATA-RATA NILAI</span>
-            <h2 id="statAvg" class="fw-bold mb-0 text-success">0</h2>
+          <div class="col-12 col-sm-4">
+            <div class="stat-card shadow-sm" style="border-left-color:#16a34a">
+              <span class="text-muted small fw-bold">RATA-RATA NILAI</span>
+              <h3 id="statAvg" class="fw-bold mb-0 mt-1 text-success">0</h3>
+            </div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-card shadow-sm" style="border-left-color:#eab308">
-            <span class="text-muted small fw-bold">NILAI TERTINGGI</span>
-            <h2 id="statMax" class="fw-bold mb-0 text-warning">0</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="card card-cbt p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-          <h6 class="fw-bold mb-0">Daftar Nilai Peserta Didik Aktif</h6>
-          <div class="d-flex gap-2">
-            <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipNilai()"><i class="bi bi-archive me-1"></i> Arsipkan Hasil Nilai</button>
-            <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelNilaiGuru', 'Rekap_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh CSV</button>
-            <button class="btn btn-danger btn-sm fw-bold" onclick="konfirmasiResetNilai()"><i class="bi bi-trash me-1"></i> Reset Semua Nilai</button>
-          </div>
-        </div>
-
-        <!-- PAGINATION CONTROLLER REKAP -->
-        <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
-          <div class="d-flex align-items-center gap-2">
-            <small class="fw-bold text-muted">Tampilkan:</small>
-            <select id="pageSizeRekap" class="form-select form-select-sm fw-bold" style="width: auto;" onchange="changePageSize('rekap')">
-              <option value="10">10 Baris</option>
-              <option value="25" selected>25 Baris</option>
-              <option value="50">50 Baris</option>
-              <option value="100">100 Baris</option>
-            </select>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <small id="pageInfoRekap" class="fw-bold text-muted">Halaman 1 dari 1</small>
-            <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary fw-bold" onclick="prevPage('rekap')"><i class="bi bi-chevron-left"></i></button>
-              <button class="btn btn-outline-secondary fw-bold" onclick="nextPage('rekap')"><i class="bi bi-chevron-right"></i></button>
+          <div class="col-12 col-sm-4">
+            <div class="stat-card shadow-sm" style="border-left-color:#eab308">
+              <span class="text-muted small fw-bold">NILAI TERTINGGI</span>
+              <h3 id="statMax" class="fw-bold mb-0 mt-1 text-warning">0</h3>
             </div>
           </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-hover align-middle" id="tabelNilaiGuru">
-            <thead class="table-light">
-              <tr>
-                <th>NO</th>
-                <th>NAMA PESERTA</th>
-                <th>NO. UJIAN / KELAS</th>
-                <th>WAKTU SELESAI</th>
-                <th>BENAR</th>
-                <th>SALAH</th>
-                <th>PELANGGARAN TAB</th>
-                <th>NILAI (0-100)</th>
-                <th class="text-center">AKSI</th>
-              </tr>
-            </thead>
-            <tbody id="bodyNilaiGuru">
-              <tr><td colspan="9" class="text-center text-muted">Memuat data nilai...</td></tr>
-            </tbody>
-          </table>
+        <div class="card card-cbt p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h6 class="fw-bold mb-0">Daftar Nilai Peserta Didik Aktif</h6>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipNilai()"><i class="bi bi-archive me-1"></i> Arsipkan Hasil</button>
+              <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelNilaiGuru', 'Rekap_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> CSV</button>
+              <button class="btn btn-danger btn-sm fw-bold" onclick="konfirmasiResetNilai()"><i class="bi bi-trash me-1"></i> Reset</button>
+            </div>
+          </div>
+
+          <!-- PAGINATION CONTROLLER REKAP -->
+          <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <small class="fw-bold text-muted">Tampilkan:</small>
+              <select id="pageSizeRekap" class="form-select form-select-sm fw-bold" style="width: auto;" onchange="changePageSize('rekap')">
+                <option value="10">10 Baris</option>
+                <option value="25" selected>25 Baris</option>
+                <option value="50">50 Baris</option>
+                <option value="100">100 Baris</option>
+              </select>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <small id="pageInfoRekap" class="fw-bold text-muted small">Hal 1 dari 1</small>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary fw-bold" onclick="prevPage('rekap')"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-outline-secondary fw-bold" onclick="nextPage('rekap')"><i class="bi bi-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle small" id="tabelNilaiGuru">
+              <thead class="table-light">
+                <tr>
+                  <th>NO</th>
+                  <th>NAMA PESERTA</th>
+                  <th>KELAS</th>
+                  <th>WAKTU SELESAI</th>
+                  <th>BENAR</th>
+                  <th>SALAH</th>
+                  <th>PELANGGARAN</th>
+                  <th>NILAI</th>
+                  <th class="text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody id="bodyNilaiGuru">
+                <tr><td colspan="9" class="text-center text-muted">Memuat data nilai...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- TAB SETTING UJIAN -->
-    <div id="tabGuruSetting" class="d-none">
-      <div class="card card-cbt p-4 max-w-2xl">
-        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-sliders me-2"></i>Pengaturan Aturan Ujian CBT</h5>
-        <form id="formSettingUjian" onsubmit="simpanSettingUjian(event)">
+      <!-- TAB SETTING UJIAN -->
+      <div id="tabGuruSetting" class="d-none">
+        <div class="card card-cbt p-3 p-md-4" style="max-width: 750px;">
+          <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-sliders me-2"></i>Pengaturan Aturan Ujian CBT</h5>
+          <form id="formSettingUjian" onsubmit="simpanSettingUjian(event)">
 
-          <!-- PENGATURAN DURASI WAKTU UJIAN -->
-          <div class="card p-3 mb-3 border">
-            <div class="row align-items-center">
-              <div class="col-md-8">
-                <label class="fw-bold mb-1"><i class="bi bi-clock-history text-primary me-2"></i>Durasi Waktu Ujian</label>
-                <div class="small text-muted">Lama waktu pengerjaan soal untuk siswa (Default: 60 Menit).</div>
-              </div>
-              <div class="col-md-4 mt-2 mt-md-0">
-                <div class="input-group input-group-sm">
-                  <input type="number" id="cfgDurasiWaktu" class="form-control text-center fw-bold fs-6" value="60" min="1" required>
-                  <span class="input-group-text">Menit</span>
+            <div class="card p-3 mb-3 border">
+              <div class="row align-items-center">
+                <div class="col-12 col-md-8">
+                  <label class="fw-bold mb-1 small"><i class="bi bi-clock-history text-primary me-2"></i>Durasi Waktu Ujian</label>
+                  <div class="small text-muted">Lama waktu pengerjaan soal (Default: 60 Menit).</div>
+                </div>
+                <div class="col-12 col-md-4 mt-2 mt-md-0">
+                  <div class="input-group input-group-sm">
+                    <input type="number" id="cfgDurasiWaktu" class="form-control text-center fw-bold" value="60" min="1" required>
+                    <span class="input-group-text">Menit</span>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <div class="card p-3 mb-3 border">
+              <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-1">
+                <label class="form-check-label fw-bold small" for="cfgTampilHasil">
+                  <i class="bi bi-eye-fill text-info me-2"></i>Tampilkan Info Hasil & Rilis Nilai Langsung
+                  <div class="small text-muted fw-normal">Siswa dapat langsung melihat skor/nilai, jumlah benar, dan salah setelah klik selesai.</div>
+                </label>
+                <input class="form-check-input ms-auto" type="checkbox" id="cfgTampilHasil">
+              </div>
+            </div>
+            
+            <div class="card p-3 mb-3 border">
+              <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-1">
+                <label class="form-check-label fw-bold small" for="cfgAcakSoal">
+                  <i class="bi bi-shuffle text-primary me-2"></i>Acak Urutan Soal
+                  <div class="small text-muted fw-normal">Urutan soal diacak otomatis untuk setiap siswa.</div>
+                </label>
+                <input class="form-check-input ms-auto" type="checkbox" id="cfgAcakSoal">
+              </div>
+            </div>
+
+            <div class="card p-3 mb-3 border">
+              <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-1">
+                <label class="form-check-label fw-bold small" for="cfgAcakJawaban">
+                  <i class="bi bi-arrow-repeat text-success me-2"></i>Acak Pilihan Jawaban
+                  <div class="small text-muted fw-normal">Posisi pilihan A, B, C, D diacak otomatis per siswa.</div>
+                </label>
+                <input class="form-check-input ms-auto" type="checkbox" id="cfgAcakJawaban">
+              </div>
+            </div>
+
+            <div class="card p-3 mb-3 border">
+              <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-1">
+                <label class="form-check-label fw-bold small" for="cfgHanyaSatuKali">
+                  <i class="bi bi-person-lock text-warning me-2"></i>Batasi 1 Kali Mengerjakan
+                  <div class="small text-muted fw-normal">Siswa dengan Nama & Kelas sama tidak bisa mengerjakan 2x.</div>
+                </label>
+                <input class="form-check-input ms-auto" type="checkbox" id="cfgHanyaSatuKali">
+              </div>
+            </div>
+
+            <div class="card p-3 mb-4 border">
+              <div class="row align-items-center">
+                <div class="col-12 col-md-8">
+                  <label class="fw-bold mb-1 small"><i class="bi bi-shield-exclamation text-danger me-2"></i>Toleransi Pelanggaran Tab</label>
+                  <div class="small text-muted">Maksimal keluar layar/pindah tab sebelum didiskualifikasi.</div>
+                </div>
+                <div class="col-12 col-md-4 mt-2 mt-md-0">
+                  <div class="input-group input-group-sm">
+                    <input type="number" id="cfgToleransiTab" class="form-control text-center fw-bold" min="1" max="10" required>
+                    <span class="input-group-text">Kali</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" id="btnSaveConfig" class="btn btn-primary fw-bold px-4 shadow-sm" style="background:var(--primary-color)">
+              <i class="bi bi-check-circle me-1"></i> Simpan Pengaturan
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB ARSIP NILAI -->
+      <div id="tabGuruArsip" class="d-none">
+        <div class="card card-cbt p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+              <h6 class="fw-bold mb-1"><i class="bi bi-archive-fill text-warning me-2"></i>Arsip Rekapitulasi Ujian</h6>
+              <p class="text-muted small mb-0">Seluruh data rekap nilai ujian terdahulu tersimpan rapi di sini.</p>
+            </div>
+            <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelArsipNilai', 'Arsip_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh CSV</button>
           </div>
 
-          <!-- PENGATURAN RILIS NILAI -->
-          <div class="card p-3 mb-3 border">
-            <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
-              <label class="form-check-label fw-bold" for="cfgTampilHasil">
-                <i class="bi bi-eye-fill text-info me-2"></i>Tampilkan Info Hasil & Rilis Nilai Langsung
-                <div class="small text-muted fw-normal">Siswa dapat langsung melihat skor/nilai, jumlah benar, dan salah setelah klik selesai.</div>
-              </label>
-              <input class="form-check-input ms-auto" type="checkbox" id="cfgTampilHasil">
+          <!-- PAGINATION CONTROLLER ARSIP NILAI -->
+          <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <small class="fw-bold text-muted">Tampilkan:</small>
+              <select id="pageSizeArsip" class="form-select form-select-sm fw-bold" style="width: auto;" onchange="changePageSize('arsip')">
+                <option value="10">10 Baris</option>
+                <option value="25" selected>25 Baris</option>
+                <option value="50">50 Baris</option>
+                <option value="100">100 Baris</option>
+              </select>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <small id="pageInfoArsip" class="fw-bold text-muted small">Hal 1 dari 1</small>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary fw-bold" onclick="prevPage('arsip')"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-outline-secondary fw-bold" onclick="nextPage('arsip')"><i class="bi bi-chevron-right"></i></button>
+              </div>
             </div>
           </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle small" id="tabelArsipNilai">
+              <thead class="table-secondary">
+                <tr>
+                  <th>NO</th>
+                  <th>LABEL / UJIAN</th>
+                  <th>NAMA PESERTA</th>
+                  <th>KELAS</th>
+                  <th>NILAI</th>
+                  <th>BENAR/TOTAL</th>
+                  <th>SELESAI</th>
+                  <th>PELANGGARAN</th>
+                  <th>TGL ARSIP</th>
+                </tr>
+              </thead>
+              <tbody id="bodyArsipNilai">
+                <tr><td colspan="9" class="text-center text-muted">Memuat arsip...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Bank Soal -->
+      <div id="tabGuruBankSoal" class="d-none">
+        <div class="card card-cbt p-3 p-md-4 mb-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <h6 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h6>
+              <p class="text-muted small mb-0">Edit soal, arsipkan bank soal lama, dan impor kembali paket soal terdahulu.</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+              <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipBankSoal()"><i class="bi bi-archive-fill me-1"></i> Arsipkan Soal</button>
+              <div class="form-check form-switch bg-light border p-2 px-3 rounded d-flex align-items-center gap-2">
+                <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="switchStatusUjian" onchange="toggleStatusUjian(this)">
+                <label class="form-check-label fw-bold small text-dark mb-0" for="switchStatusUjian" id="lblStatusUjian">Status: Checking...</label>
+              </div>
+              <a id="btnEditFormDirect" href="#" target="_blank" class="btn btn-outline-primary btn-sm fw-bold">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Form
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-cbt p-3 p-md-4 mb-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-folder-symlink-fill text-warning me-2"></i>Daftar Arsip Paket Soal Terdahulu</h6>
           
-          <div class="card p-3 mb-3 border">
-            <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
-              <label class="form-check-label fw-bold" for="cfgAcakSoal">
-                <i class="bi bi-shuffle text-primary me-2"></i>Acak Urutan Soal
-                <div class="small text-muted fw-normal">Urutan soal akan diacak otomatis untuk setiap peserta.</div>
-              </label>
-              <input class="form-check-input ms-auto" type="checkbox" id="cfgAcakSoal">
+          <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <small class="fw-bold text-muted">Tampilkan:</small>
+              <select id="pageSizeArsipSoal" class="form-select form-select-sm fw-bold" style="width: auto;" onchange="changePageSize('arsipSoal')">
+                <option value="10" selected>10 Baris</option>
+                <option value="25">25 Baris</option>
+                <option value="50">50 Baris</option>
+                <option value="100">100 Baris</option>
+              </select>
             </div>
-          </div>
-
-          <div class="card p-3 mb-3 border">
-            <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
-              <label class="form-check-label fw-bold" for="cfgAcakJawaban">
-                <i class="bi bi-arrow-repeat text-success me-2"></i>Acak Pilihan Jawaban
-                <div class="small text-muted fw-normal">Posisi pilihan A, B, C, D diacak otomatis per siswa.</div>
-              </label>
-              <input class="form-check-input ms-auto" type="checkbox" id="cfgAcakJawaban">
-            </div>
-          </div>
-
-          <div class="card p-3 mb-3 border">
-            <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
-              <label class="form-check-label fw-bold" for="cfgHanyaSatuKali">
-                <i class="bi bi-person-lock text-warning me-2"></i>Batasi 1 Kali Mengerjakan
-                <div class="small text-muted fw-normal">Siswa dengan Nama & Kelas yang sama tidak dapat mengerjakan ujian 2x.</div>
-              </label>
-              <input class="form-check-input ms-auto" type="checkbox" id="cfgHanyaSatuKali">
-            </div>
-          </div>
-
-          <div class="card p-3 mb-4 border">
-            <div class="row align-items-center">
-              <div class="col-md-8">
-                <label class="fw-bold mb-1"><i class="bi bi-shield-exclamation text-danger me-2"></i>Toleransi Pelanggaran Tab</label>
-                <div class="small text-muted">Maksimal keluar layar/pindah tab sebelum didiskualifikasi.</div>
-              </div>
-              <div class="col-md-4 mt-2 mt-md-0">
-                <div class="input-group input-group-sm">
-                  <input type="number" id="cfgToleransiTab" class="form-control text-center fw-bold fs-6" min="1" max="10" required>
-                  <span class="input-group-text">Kali</span>
-                </div>
+            <div class="d-flex align-items-center gap-2">
+              <small id="pageInfoArsipSoal" class="fw-bold text-muted small">Hal 1 dari 1</small>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary fw-bold" onclick="prevPage('arsipSoal')"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-outline-secondary fw-bold" onclick="nextPage('arsipSoal')"><i class="bi bi-chevron-right"></i></button>
               </div>
             </div>
           </div>
 
-          <button type="submit" id="btnSaveConfig" class="btn btn-primary fw-bold px-4 shadow-sm" style="background:#4338ca">
-            <i class="bi bi-check-circle me-1"></i> Simpan Pengaturan Ujian
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- TAB ARSIP NILAI -->
-    <div id="tabGuruArsip" class="d-none">
-      <div class="card card-cbt p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-          <div>
-            <h6 class="fw-bold mb-1"><i class="bi bi-archive-fill text-warning me-2"></i>Daftar Arsip Rekapitulasi Ujian</h6>
-            <p class="text-muted small mb-0">Seluruh data rekap nilai ujian terdahulu tersimpan rapi di sini.</p>
-          </div>
-          <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelArsipNilai', 'Arsip_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh Semua Arsip (CSV)</button>
-        </div>
-
-        <!-- PAGINATION CONTROLLER ARSIP NILAI -->
-        <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
-          <div class="d-flex align-items-center gap-2">
-            <small class="fw-bold text-muted">Tampilkan:</small>
-            <select id="pageSizeArsip" class="form-select form-select-sm fw-bold" style="width: auto;" onchange="changePageSize('arsip')">
-              <option value="10">10 Baris</option>
-              <option value="25" selected>25 Baris</option>
-              <option value="50">50 Baris</option>
-              <option value="100">100 Baris</option>
-            </select>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <small id="pageInfoArsip" class="fw-bold text-muted">Halaman 1 dari 1</small>
-            <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary fw-bold" onclick="prevPage('arsip')"><i class="bi bi-chevron-left"></i></button>
-              <button class="btn btn-outline-secondary fw-bold" onclick="nextPage('arsip')"><i class="bi bi-chevron-right"></i></button>
-            </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle small mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>NO</th>
+                  <th>NAMA PAKET SOAL</th>
+                  <th>JUMLAH SOAL</th>
+                  <th>TGL DIARSIPKAN</th>
+                  <th class="text-center">AKSI PULIHKAN</th>
+                </tr>
+              </thead>
+              <tbody id="bodyArsipSoal">
+                <tr><td colspan="5" class="text-center text-muted">Belum ada paket soal yang diarsipkan.</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover align-middle" id="tabelArsipNilai">
-            <thead class="table-secondary">
-              <tr>
-                <th>NO</th>
-                <th>LABEL / NAMA UJIAN</th>
-                <th>NAMA PESERTA</th>
-                <th>KELAS</th>
-                <th>NILAI</th>
-                <th>BENAR / TOTAL</th>
-                <th>WAKTU SELESAI</th>
-                <th>PELANGGARAN</th>
-                <th>TGL DIBUAT ARSIP</th>
-              </tr>
-            </thead>
-            <tbody id="bodyArsipNilai">
-              <tr><td colspan="9" class="text-center text-muted">Memuat arsip...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab Bank Soal -->
-    <div id="tabGuruBankSoal" class="d-none">
-      <div class="card card-cbt p-4 mb-4">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-          <div>
-            <h5 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h5>
-            <p class="text-muted small mb-0">Edit soal, arsipkan bank soal lama, dan impor kembali paket soal terdahulu.</p>
-          </div>
-          <div class="d-flex gap-2 align-items-center flex-wrap">
-            <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipBankSoal()"><i class="bi bi-archive-fill me-1"></i> Arsipkan Bank Soal Ini</button>
-            <div class="form-check form-switch bg-light border p-2 px-3 rounded d-flex align-items-center gap-2">
-              <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="switchStatusUjian" onchange="toggleStatusUjian(this)">
-              <label class="form-check-label fw-bold small text-dark mb-0" for="switchStatusUjian" id="lblStatusUjian">Status: Checking...</label>
-            </div>
-            <a id="btnEditFormDirect" href="#" target="_blank" class="btn btn-outline-primary btn-sm fw-bold">
-              <i class="bi bi-box-arrow-up-right me-1"></i> Google Form
-            </a>
+        <div id="listSoalGuruContainer">
+          <div class="text-center py-5 card card-cbt">
+            <div class="spinner-border text-primary mb-2" role="status"></div>
+            <div class="text-muted fw-bold">Memuat daftar soal aktif...</div>
           </div>
         </div>
       </div>
 
-      <!-- KARTU DAFTAR ARSIP BANK SOAL LAMA -->
-      <div class="card card-cbt p-4 mb-4">
-        <h6 class="fw-bold mb-3"><i class="bi bi-folder-symlink-fill text-warning me-2"></i>Daftar Arsip Paket Soal Terdahulu (Dapat Dipulihkan)</h6>
-        
-        <!-- PAGINATION CONTROLLER ARSIP SOAL -->
-        <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
-          <div class="d-flex align-items-center gap-2">
-            <small class="fw-bold text-muted">Tampilkan:</small>
-            <select id="pageSizeArsipSoal" class="form-select form-select-sm fw-bold" style="width: auto;" onchange="changePageSize('arsipSoal')">
-              <option value="10" selected>10 Baris</option>
-              <option value="25">25 Baris</option>
-              <option value="50">50 Baris</option>
-              <option value="100">100 Baris</option>
-            </select>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <small id="pageInfoArsipSoal" class="fw-bold text-muted">Halaman 1 dari 1</small>
-            <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary fw-bold" onclick="prevPage('arsipSoal')"><i class="bi bi-chevron-left"></i></button>
-              <button class="btn btn-outline-secondary fw-bold" onclick="nextPage('arsipSoal')"><i class="bi bi-chevron-right"></i></button>
-            </div>
-          </div>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>NO</th>
-                <th>NAMA PAKET SOAL</th>
-                <th>JUMLAH SOAL</th>
-                <th>TGL DIARSIPKAN</th>
-                <th class="text-center">AKSI PULIHKAN</th>
-              </tr>
-            </thead>
-            <tbody id="bodyArsipSoal">
-              <tr><td colspan="5" class="text-center text-muted">Belum ada paket soal yang diarsipkan.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="listSoalGuruContainer">
-        <div class="text-center py-5 card card-cbt">
-          <div class="spinner-border text-primary mb-2" role="status"></div>
-          <div class="text-muted fw-bold">Memuat daftar soal aktif...</div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -535,7 +731,7 @@
 <div class="modal fade" id="modalLogin" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content border-0 shadow">
-      <div class="modal-header text-white" style="background:#4338ca">
+      <div class="modal-header text-white" style="background:var(--primary-color)">
         <h6 class="modal-title fw-bold text-white"><i class="bi bi-shield-lock me-1"></i> Login Mode Guru</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -549,7 +745,7 @@
             <label class="form-label small fw-bold">Password</label>
             <input type="password" id="loginPass" class="form-control" required placeholder="Password">
           </div>
-          <button type="submit" class="btn btn-primary w-100 fw-bold" style="background:#4338ca">Masuk Panel</button>
+          <button type="submit" class="btn btn-primary w-100 fw-bold" style="background:var(--primary-color)">Masuk Panel</button>
         </form>
       </div>
     </div>
@@ -560,11 +756,11 @@
 <div class="modal fade" id="modalEditSoal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow">
-      <div class="modal-header text-white" style="background:#4338ca">
+      <div class="modal-header text-white" style="background:var(--primary-color)">
         <h6 class="modal-title fw-bold text-white"><i class="bi bi-pencil-square me-1"></i> Edit Soal No. <span id="modalNoSoal">1</span></h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body p-4">
+      <div class="modal-body p-3 p-md-4">
         <form id="formEditSoal" onsubmit="simpanEditSoal(event)">
           <input type="hidden" id="editItemId">
           <input type="hidden" id="editIndex">
@@ -590,7 +786,7 @@
 
           <div class="d-flex justify-content-end gap-2 mt-4">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" id="btnSimpanSoal" class="btn btn-primary px-4 fw-bold" style="background:#4338ca">Simpan Perubahan</button>
+            <button type="submit" id="btnSimpanSoal" class="btn btn-primary px-4 fw-bold" style="background:var(--primary-color)">Simpan Perubahan</button>
           </div>
         </form>
       </div>
@@ -603,14 +799,14 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow">
       <div class="modal-header bg-dark text-white">
-        <h6 class="modal-title fw-bold text-white"><i class="bi bi-eye me-2"></i>Preview Tampilan Siswa - Soal No. <span id="prevNoSoal">1</span></h6>
+        <h6 class="modal-title fw-bold text-white"><i class="bi bi-eye me-2"></i>Preview Soal No. <span id="prevNoSoal">1</span></h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body p-4">
+      <div class="modal-body p-3 p-md-4">
         <div id="prevSoalImgContainer" class="mb-3 text-center d-none">
           <img id="prevSoalImg" src="" class="img-fluid rounded border" style="max-height: 250px;">
         </div>
-        <div id="prevSoalTeks" class="fs-5 mb-4 fw-medium"></div>
+        <div id="prevSoalTeks" class="fs-6 fs-md-5 mb-4 fw-medium"></div>
         <div id="prevPilihanContainer"></div>
       </div>
       <div class="modal-footer bg-light">
@@ -630,7 +826,6 @@
   let jawabanSiswa = [];
   let currentSoalIndex = 0;
 
-  // KONFIGURASI UJIAN GLOBAL
   let globalConfig = {
     durasi: 60,
     acakSoal: true,
@@ -649,7 +844,6 @@
   let audioCtx = null;
   let alarmInterval = null;
 
-  // DATA REKAP & PAGINATION STATE
   let masterDataSiswa = [];
   let masterDataArsip = [];
   let masterDataArsipSoal = [];
@@ -679,7 +873,6 @@
       }
     });
 
-    // PEMENTAU KONEKSI INTERNET UNTUK AUTOSAVE STATUS
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
 
@@ -713,15 +906,28 @@
     });
   });
 
+  // FUNGSI TOGGLE SIDEBAR GURU (RESPONSIVE COMPATIBLE)
+  function toggleGuruSidebar() {
+    const sidebar = document.getElementById('guruSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    if (window.innerWidth < 992) {
+      sidebar.classList.toggle('mobile-open');
+      overlay.classList.toggle('mobile-open');
+    } else {
+      sidebar.classList.toggle('collapsed');
+    }
+  }
+
   function updateConnectionStatus() {
     const statusEl = document.getElementById('saveStatusIndicator');
     if (!statusEl) return;
 
     if (navigator.onLine) {
-      statusEl.className = "badge bg-success-subtle text-success border border-success px-3 py-2 fw-bold";
+      statusEl.className = "badge bg-success-subtle text-success border border-success px-2 px-md-3 py-2 fw-bold small";
       statusEl.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Jawaban Tersimpan ✓`;
     } else {
-      statusEl.className = "badge bg-warning-subtle text-danger border border-warning px-3 py-2 fw-bold";
+      statusEl.className = "badge bg-warning-subtle text-danger border border-warning px-2 px-md-3 py-2 fw-bold small";
       statusEl.innerHTML = `<i class="bi bi-wifi-off me-1"></i> ⚠️ Koneksi Terputus - Jawaban Tetap Aman`;
     }
   }
@@ -765,7 +971,7 @@
     .then(res => res.json())
     .then(res => {
       btn.disabled = false;
-      btn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Simpan Pengaturan Ujian`;
+      btn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Simpan Pengaturan`;
       if (res.success) {
         globalConfig = newCfg;
         document.getElementById('textDurasiInformasi').innerText = globalConfig.durasi;
@@ -878,12 +1084,12 @@
           icon: 'success',
           title: 'Login Berhasil!',
           text: 'Selamat Datang di Panel Pengelola CBT (Guru)',
-          confirmButtonColor: '#4338ca',
+          confirmButtonColor: 'var(--primary-color)',
           timer: 2000,
           timerProgressBar: true
         }).then(() => { bukaModeGuru(); });
       } else {
-        Swal.fire({ icon: 'error', title: 'Login Gagal', text: res.message || 'Username atau Password salah!', confirmButtonColor: '#dc2626' });
+        Swal.fire({ icon: 'error', title: 'Login Gagal', text: res.message || 'Username/Password salah!', confirmButtonColor: '#dc2626' });
       }
     });
   }
@@ -898,6 +1104,7 @@
     
     document.getElementById('btnModeGuru').classList.add('d-none');
     document.getElementById('btnModeSiswa').classList.remove('d-none');
+    document.getElementById('btnToggleSidebar').classList.remove('d-none');
     
     document.getElementById('section-guru').classList.remove('d-none');
     loadDataRekapGuru();
@@ -909,10 +1116,9 @@
       text: "Anda akan keluar dari Panel Pengelola CBT",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#4338ca',
+      confirmButtonColor: 'var(--primary-color)',
       cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Ya, Keluar',
-      cancelButtonText: 'Batal'
+      confirmButtonText: 'Ya, Keluar'
     }).then((result) => {
       if (result.isConfirmed) {
         sessionStorage.removeItem("isGuruLoggedIn");
@@ -920,12 +1126,13 @@
         Swal.fire({
           icon: 'info',
           title: 'Sayonara! 👋',
-          text: 'Sesi pengelola Anda telah diakhiri secara aman.',
-          timer: 1800,
+          text: 'Sesi pengelola Anda diakhiri secara aman.',
+          timer: 1500,
           showConfirmButton: false
         }).then(() => {
           document.getElementById('section-guru').classList.add('d-none');
           document.getElementById('btnModeSiswa').classList.add('d-none');
+          document.getElementById('btnToggleSidebar').classList.add('d-none');
           document.getElementById('btnModeGuru').classList.remove('d-none');
           document.getElementById('section-identitas').classList.remove('d-none');
         });
@@ -933,8 +1140,14 @@
     });
   }
 
-  function switchTabGuru(tab, e) {
-    document.querySelectorAll('.nav-tabs .nav-link').forEach(el => el.classList.remove('active'));
+  function switchTabGuru(tab, btnElem) {
+    document.querySelectorAll('.sidebar-menu-btn').forEach(el => el.classList.remove('active'));
+    if(btnElem) btnElem.classList.add('active');
+
+    if (window.innerWidth < 992) {
+      document.getElementById('guruSidebar').classList.remove('mobile-open');
+      document.getElementById('sidebarOverlay').classList.remove('mobile-open');
+    }
     
     document.getElementById('tabGuruRekap').classList.add('d-none');
     document.getElementById('tabGuruSetting').classList.add('d-none');
@@ -942,19 +1155,15 @@
     document.getElementById('tabGuruBankSoal').classList.add('d-none');
 
     if (tab === 'rekap') {
-      e.target.classList.add('active');
       document.getElementById('tabGuruRekap').classList.remove('d-none');
       loadDataRekapGuru();
     } else if (tab === 'setting') {
-      e.target.classList.add('active');
       document.getElementById('tabGuruSetting').classList.remove('d-none');
       applyConfigToUI();
     } else if (tab === 'arsip') {
-      e.target.classList.add('active');
       document.getElementById('tabGuruArsip').classList.remove('d-none');
       loadDataRekapGuru();
     } else {
-      e.target.classList.add('active');
       document.getElementById('tabGuruBankSoal').classList.remove('d-none');
       loadBankSoalGuru();
     }
@@ -963,7 +1172,7 @@
   function toggleStatusUjian(chk) {
     const isAktif = chk.checked;
     const lbl = document.getElementById('lblStatusUjian');
-    lbl.innerText = "Mengubah status...";
+    lbl.innerText = "Proses...";
 
     fetch(API_URL, {
       method: 'POST',
@@ -975,13 +1184,12 @@
         lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
         lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
       } else {
-        alert("Gagal mengubah status ujian: " + res.error);
+        alert("Gagal mengubah status: " + res.error);
         chk.checked = !isAktif;
       }
     });
   }
 
-  // --- LOGIKA PAGINATION TABEL GURU ---
   function changePageSize(type) {
     const select = document.getElementById(type === 'rekap' ? 'pageSizeRekap' : (type === 'arsip' ? 'pageSizeArsip' : 'pageSizeArsipSoal'));
     paginationState[type].pageSize = parseInt(select.value);
@@ -1013,11 +1221,11 @@
       const pageData = masterDataSiswa.slice(start, end);
       const totalPages = Math.ceil(masterDataSiswa.length / pageSize) || 1;
 
-      document.getElementById('pageInfoRekap').innerText = `Halaman ${page} dari ${totalPages} (Total ${masterDataSiswa.length} Peserta)`;
+      document.getElementById('pageInfoRekap').innerText = `Hal ${page} dari ${totalPages}`;
 
       let html = '';
       if(pageData.length === 0) {
-        html = '<tr><td colspan="9" class="text-center text-muted">Belum ada data peserta yang menyelesaikan ujian aktif.</td></tr>';
+        html = '<tr><td colspan="9" class="text-center text-muted">Belum ada data peserta.</td></tr>';
       } else {
         pageData.forEach(item => {
           html += `<tr>
@@ -1030,7 +1238,7 @@
             <td><span class="badge bg-warning text-dark fw-bold">${item.pelanggaran}</span></td>
             <td class="fw-bold text-primary">${item.nilai}</td>
             <td class="text-center">
-              <button class="btn btn-outline-danger btn-sm p-1 px-2" title="Hapus Data Peserta Ini" onclick="hapusSatuPeserta(${item.sheetRow}, '${item.nama}')">
+              <button class="btn btn-outline-danger btn-sm p-1 px-2" title="Hapus" onclick="hapusSatuPeserta(${item.sheetRow}, '${item.nama}')">
                 <i class="bi bi-trash"></i>
               </button>
             </td>
@@ -1046,11 +1254,11 @@
       const pageData = masterDataArsip.slice(start, end);
       const totalPages = Math.ceil(masterDataArsip.length / pageSize) || 1;
 
-      document.getElementById('pageInfoArsip').innerText = `Halaman ${page} dari ${totalPages} (Total ${masterDataArsip.length} Arsip)`;
+      document.getElementById('pageInfoArsip').innerText = `Hal ${page} dari ${totalPages}`;
 
       let htmlArsip = '';
       if(pageData.length === 0) {
-        htmlArsip = '<tr><td colspan="9" class="text-center text-muted">Belum ada data nilai yang diarsipkan.</td></tr>';
+        htmlArsip = '<tr><td colspan="9" class="text-center text-muted">Belum ada arsip.</td></tr>';
       } else {
         pageData.forEach(a => {
           htmlArsip += `<tr>
@@ -1075,11 +1283,11 @@
       const pageData = masterDataArsipSoal.slice(start, end);
       const totalPages = Math.ceil(masterDataArsipSoal.length / pageSize) || 1;
 
-      document.getElementById('pageInfoArsipSoal').innerText = `Halaman ${page} dari ${totalPages} (Total ${masterDataArsipSoal.length} Paket)`;
+      document.getElementById('pageInfoArsipSoal').innerText = `Hal ${page} dari ${totalPages}`;
 
       let htmlArsipSoal = '';
       if(pageData.length === 0) {
-        htmlArsipSoal = '<tr><td colspan="5" class="text-center text-muted">Belum ada paket soal yang diarsipkan.</td></tr>';
+        htmlArsipSoal = '<tr><td colspan="5" class="text-center text-muted">Belum ada arsip soal.</td></tr>';
       } else {
         pageData.forEach(s => {
           htmlArsipSoal += `<tr>
@@ -1089,7 +1297,7 @@
             <td class="small text-muted">${s.tglArsip}</td>
             <td class="text-center">
               <button class="btn btn-sm btn-success fw-bold" onclick="importArsipSoal('${s.paketId}', '${s.namaPaket}')">
-                <i class="bi bi-cloud-download me-1"></i> Import / Terapkan Soal Ini
+                <i class="bi bi-cloud-download me-1"></i> Pulihkan
               </button>
             </td>
           </tr>`;
@@ -1120,14 +1328,12 @@
 
   function hapusSatuPeserta(sheetRow, namaSiswa) {
     Swal.fire({
-      title: 'Hapus Data Peserta?',
-      text: `Apakah Anda yakin ingin menghapus hasil nilai milik "${namaSiswa}"?`,
+      title: 'Hapus Peserta?',
+      text: `Hapus nilai milik "${namaSiswa}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Ya, Hapus!',
-      cancelButtonText: 'Batal'
+      confirmButtonText: 'Ya, Hapus!'
     }).then((result) => {
       if (result.isConfirmed) {
         fetch(API_URL, {
@@ -1148,7 +1354,7 @@
   }
 
   function prosesArsipBankSoal() {
-    const namaPaket = prompt("Masukkan Nama / Label Paket Soal yang Ingin Diarsipkan:", "Paket Ujian Bahasa Indonesia Sesi 1");
+    const namaPaket = prompt("Nama Paket Soal:", "Paket Ujian Bahasa Indonesia Sesi 1");
     if (!namaPaket) return;
 
     fetch(API_URL, {
@@ -1158,26 +1364,25 @@
     .then(res => res.json())
     .then(res => {
       if(res.success) {
-        Swal.fire({ icon: 'success', title: 'Soal Diarsipkan!', text: `Berhasil menyimpan ${res.jumlah} soal ke dalam paket: "${res.namaPaket}"` });
+        Swal.fire({ icon: 'success', title: 'Berhasil Diarsipkan!', text: `${res.jumlah} soal tersimpan ke paket "${res.namaPaket}"` });
         loadBankSoalGuru();
       } else {
-        alert("Gagal mengarsipkan soal: " + res.error);
+        alert("Gagal mengarsipkan: " + res.error);
       }
     });
   }
 
   function importArsipSoal(paketId, namaPaket) {
     Swal.fire({
-      title: 'Terapkan Paket Soal Ini?',
-      text: `Perhatian: Soal aktif saat ini akan digantikan oleh paket soal "${namaPaket}". Lanjutkan?`,
+      title: 'Terapkan Soal Ini?',
+      text: `Soal aktif akan digantikan oleh paket "${namaPaket}".`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#16a34a',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Ya, Terapkan Paket Soal'
+      confirmButtonText: 'Ya, Terapkan'
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({ title: 'Menyinkronkan Soal...', text: 'Sistem sedang memasukkan paket soal ke Google Form.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        Swal.fire({ title: 'Menyinkronkan...', text: 'Memasukkan soal ke Google Form.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
         fetch(API_URL, {
           method: 'POST',
@@ -1186,10 +1391,10 @@
         .then(res => res.json())
         .then(res => {
           if (res.success) {
-            Swal.fire({ icon: 'success', title: 'Berhasil Diterapkan!', text: `${res.total} soal dari paket "${namaPaket}" berhasil dimasukkan ke Google Form!` });
+            Swal.fire({ icon: 'success', title: 'Diterapkan!', text: `${res.total} soal berhasil dimasukkan ke Google Form!` });
             loadBankSoalGuru();
           } else {
-            alert("Gagal mengimpor soal: " + res.error);
+            alert("Gagal mengimpor: " + res.error);
           }
         });
       }
@@ -1197,7 +1402,7 @@
   }
 
   function prosesArsipNilai() {
-    const namaLabel = prompt("Masukkan Label / Nama Ujian untuk Arsip Nilai ini:", "Try Out Bahasa Indonesia Sesi 1");
+    const namaLabel = prompt("Label Ujian untuk Arsip Nilai:", "Try Out Bahasa Indonesia Sesi 1");
     if (!namaLabel) return;
 
     fetch(API_URL, {
@@ -1207,7 +1412,7 @@
     .then(res => res.json())
     .then(res => {
       if(res.success) {
-        alert(`Berhasil mengarsipkan ${res.count} data nilai ke dalam label: "${res.label}"`);
+        alert(`Berhasil mengarsipkan ${res.count} data nilai.`);
         loadDataRekapGuru();
       } else {
         alert("Gagal mengarsipkan: " + res.error);
@@ -1216,9 +1421,7 @@
   }
 
   function konfirmasiResetNilai() {
-    if (confirm("Apakah Anda yakin ingin menghapus/mereset seluruh data nilai siswa? Pastikan Anda sudah mengarsipkan nilai terlebih dahulu!")) {
-      document.getElementById('bodyNilaiGuru').innerHTML = `<tr><td colspan="9" class="text-center text-muted">Mereset data nilai...</td></tr>`;
-      
+    if (confirm("Reset seluruh data nilai siswa aktif? Pastikan sudah diarsipkan!")) {
       fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: 'resetNilai' })
@@ -1226,10 +1429,10 @@
       .then(res => res.json())
       .then(res => {
         if(res.success) {
-          alert("Seluruh data nilai berhasil direset!");
+          alert("Data nilai berhasil direset!");
           loadDataRekapGuru();
         } else {
-          alert("Gagal mereset nilai: " + res.error);
+          alert("Gagal mereset: " + res.error);
         }
       });
     }
@@ -1262,7 +1465,7 @@
 
       if (!data || data.length === 0) {
         container.innerHTML = `<div class="alert alert-warning card card-cbt">
-          <b>Soal Aktif Tidak Ditemukan!</b> Impor paket soal dari arsip di atas atau buat soal di Google Form.
+          <b>Soal Aktif Tidak Ditemukan!</b> Impor paket soal dari arsip di atas atau buat di Google Form.
         </div>`;
         return;
       }
@@ -1281,18 +1484,18 @@
         });
 
         html += `<div class="soal-item-card shadow-sm mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="fw-bold mb-0" style="color:#4338ca">Soal No. ${idx + 1}</h6>
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <h6 class="fw-bold mb-0" style="color:var(--primary-color)">Soal No. ${idx + 1}</h6>
             <div class="d-flex gap-2">
               <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="previewSoal(${idx})">
                 <i class="bi bi-eye me-1"></i> Preview
               </button>
               <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEditSoal(${idx})">
-                <i class="bi bi-pencil-square me-1"></i> Edit Soal & Gambar
+                <i class="bi bi-pencil-square me-1"></i> Edit
               </button>
             </div>
           </div>
-          <p class="fw-medium mb-3">${item.soal}</p>
+          <p class="fw-medium mb-3 small fs-md-6">${item.soal}</p>
           ${item.imageUrl ? `<div class="mb-3"><img src="${item.imageUrl}" class="img-fluid rounded border" style="max-height:180px"></div>` : ''}
           <div class="bg-light p-3 rounded">
             ${optionsHtml}
@@ -1322,7 +1525,7 @@
     let htmlPilihan = '';
     item.pilihan.forEach((pil, pIdx) => {
       let imgOpsi = item.pilihanGambar && item.pilihanGambar[pIdx] ? `<br><img src="${item.pilihanGambar[pIdx]}" class="img-fluid rounded border mt-2" style="max-height:120px">` : '';
-      htmlPilihan += `<div class="option-card mb-2">
+      htmlPilihan += `<div class="option-card mb-2 small">
         <strong>${String.fromCharCode(65 + pIdx)}.</strong> ${pil}
         ${imgOpsi}
       </div>`;
@@ -1354,19 +1557,18 @@
       let existingImg = item.pilihanGambar && item.pilihanGambar[pIdx] ? item.pilihanGambar[pIdx] : '';
 
       pilHtml += `<div class="card p-2 mb-2 bg-light border">
-        <div class="input-group mb-2">
+        <div class="input-group input-group-sm mb-2">
           <div class="input-group-text">
-            <input class="form-check-input mt-0" type="radio" name="modalKunci" value="${pIdx}" ${isChecked} title="Pilih kunci jawaban">
+            <input class="form-check-input mt-0" type="radio" name="modalKunci" value="${pIdx}" ${isChecked}>
           </div>
           <span class="input-group-text fw-bold">${String.fromCharCode(65 + pIdx)}</span>
           <input type="text" class="form-control modal-pilihan-input" value="${p}" required>
         </div>
         <div class="d-flex align-items-center gap-2">
-          <small class="fw-bold text-muted" style="min-width:90px">Gambar Opsi:</small>
+          <small class="fw-bold text-muted" style="min-width:70px; font-size:0.75rem;">Gambar:</small>
           <input type="file" class="form-control form-control-sm modal-pilihan-file" accept="image/*" data-index="${pIdx}">
           <input type="hidden" class="modal-pilihan-existing" value="${existingImg}">
         </div>
-        ${existingImg ? `<div class="mt-1"><small class="text-muted">Ada Gambar:</small> <a href="${existingImg}" target="_blank" class="small">Lihat Gambar Opsi</a></div>` : ''}
       </div>`;
     });
     document.getElementById('editPilihanContainer').innerHTML = pilHtml;
@@ -1378,21 +1580,17 @@
     e.preventDefault();
     const btn = document.getElementById('btnSimpanSoal');
     btn.disabled = true;
-    btn.innerText = "Sistem Menyimpan...";
+    btn.innerText = "Menyimpan...";
 
     const itemId = document.getElementById('editItemId').value;
     const soalTeks = document.getElementById('editSoalTeks').value;
     const kunciIdx = document.querySelector('input[name="modalKunci"]:checked').value;
     
     let pilihanArr = [];
-    document.querySelectorAll('.modal-pilihan-input').forEach(input => {
-      pilihanArr.push(input.value);
-    });
+    document.querySelectorAll('.modal-pilihan-input').forEach(input => { pilihanArr.push(input.value); });
 
     let pilihanGambarExisting = [];
-    document.querySelectorAll('.modal-pilihan-existing').forEach(input => {
-      pilihanGambarExisting.push(input.value || null);
-    });
+    document.querySelectorAll('.modal-pilihan-existing').forEach(input => { pilihanGambarExisting.push(input.value || null); });
 
     const fileOpsiInputs = document.querySelectorAll('.modal-pilihan-file');
     let pilihanGambarBase64 = [null, null, null, null];
@@ -1459,15 +1657,15 @@
 
       if (res.success) {
         modalEditObj.hide();
-        alert("Soal dan gambar berhasil diperbarui!");
+        alert("Soal berhasil diperbarui!");
         loadBankSoalGuru();
       } else {
-        alert("Gagal memperbarui soal: " + res.error);
+        alert("Gagal memperbarui: " + res.error);
       }
     });
   }
 
-  // --- MENGISI & AUTOSAVE JAWABAN KE LOCALSTORAGE ---
+  // --- SISWA UJIAN LOGIC ---
   function mulaiUjian(e) {
     e.preventDefault();
     const nama = document.getElementById('namaSiswa').value;
@@ -1481,7 +1679,7 @@
     .then(res => res.json())
     .then(res => {
       if(!res.success) {
-        alert(res.message || "Akses ujian saat ini ditutup oleh Guru.");
+        alert(res.message || "Akses ujian ditutup oleh Guru.");
         btnMulai.disabled = false;
         btnMulai.innerText = "Mulai Ujian Fullscreen";
         return;
@@ -1498,9 +1696,8 @@
       }
 
       document.getElementById('hNama').innerText = nama;
-      document.getElementById('hKelas').innerText = "No/Kelas: " + kelas;
+      document.getElementById('hKelas').innerText = "Kelas: " + kelas;
 
-      // CEK APAKAH ADA AUTOSAVE JAWABAN LOKAL
       const saveKey = `cbt_answers_${nama}_${kelas}`;
       const saveBankKey = `cbt_banksoal_${nama}_${kelas}`;
       const savedAnswers = localStorage.getItem(saveKey);
@@ -1576,7 +1773,7 @@
     let htmlPilihan = '';
     bankSoal[index].pilihan.forEach((pil, pIdx) => {
       let isSelected = jawabanSiswa[index] === pIdx ? 'selected' : '';
-      let imgOpsi = bankSoal[index].pilihanGambar && bankSoal[index].pilihanGambar[pIdx] ? `<br><img src="${bankSoal[index].pilihanGambar[pIdx]}" class="img-fluid rounded border mt-2" style="max-height:130px">` : '';
+      let imgOpsi = bankSoal[index].pilihanGambar && bankSoal[index].pilihanGambar[pIdx] ? `<br><img src="${bankSoal[index].pilihanGambar[pIdx]}" class="img-fluid rounded border mt-2" style="max-height:120px">` : '';
 
       htmlPilihan += `<div class="option-card ${isSelected}" onclick="pilihJawaban(${pIdx})">
         <strong>${String.fromCharCode(65 + pIdx)}.</strong> ${pil}
@@ -1593,7 +1790,6 @@
   function pilihJawaban(pilihanIdx) {
     jawabanSiswa[currentSoalIndex] = pilihanIdx;
     
-    // AUTOSAVE KE LOCALSTORAGE
     const nama = document.getElementById('namaSiswa').value;
     const kelas = document.getElementById('kelasSiswa').value;
     const saveKey = `cbt_answers_${nama}_${kelas}`;
@@ -1643,7 +1839,7 @@
           body: JSON.stringify({ action: 'toggleStatusUjian', status: false })
         });
 
-        alert('Waktu ujian telah habis! Sistem akan mengirimkan jawaban Anda.');
+        alert('Waktu ujian telah habis! Jawaban Anda dikirim otomatis.');
         kirimJawaban();
       }
       sisaWaktu--;
@@ -1651,7 +1847,7 @@
   }
 
   function konfirmasiSelesai() {
-    if (confirm('Apakah Anda yakin ingin mengakhiri ujian dan mengirim jawaban?')) {
+    if (confirm('Yakin ingin mengakhiri ujian dan mengirim jawaban?')) {
       kirimJawaban();
     }
   }
@@ -1680,7 +1876,6 @@
     })
     .then(res => res.json())
     .then(res => {
-      // CLEAR AUTOSAVE SETELAH BERHASIL DIKIRIM
       localStorage.removeItem(`cbt_answers_${nama}_${kelas}`);
       localStorage.removeItem(`cbt_banksoal_${nama}_${kelas}`);
 
