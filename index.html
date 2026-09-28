@@ -23,9 +23,13 @@
     body { 
       background-color: #f4f6f9; 
       font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif; 
+      touch-action: manipulation;
+    }
+    
+    /* Mencegah seleksi teks HANYA saat ujian aktif berlangsung */
+    body.exam-mode-active {
       user-select: none; 
       -webkit-user-select: none;
-      touch-action: manipulation;
     }
     
     /* HEADER */
@@ -118,9 +122,7 @@
       padding: 20px;
     }
 
-    /* =========================================================
-       DESAIN SIDEBAR RESPONSIVE & COMPATIBLE UNTUK MODE GURU
-       ========================================================= */
+    /* DESAIN SIDEBAR MODE GURU */
     .guru-wrapper {
       display: flex;
       width: 100%;
@@ -140,19 +142,10 @@
       box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     }
 
-    .guru-sidebar.collapsed {
-      width: var(--sidebar-collapsed-width);
-    }
-
+    .guru-sidebar.collapsed { width: var(--sidebar-collapsed-width); }
     .guru-sidebar.collapsed .menu-text,
-    .guru-sidebar.collapsed .sidebar-header-title {
-      display: none !important;
-    }
-
-    .guru-sidebar.collapsed .sidebar-menu-btn {
-      justify-content: center;
-      padding: 12px 0;
-    }
+    .guru-sidebar.collapsed .sidebar-header-title { display: none !important; }
+    .guru-sidebar.collapsed .sidebar-menu-btn { justify-content: center; padding: 12px 0; }
 
     .guru-sidebar .sidebar-header {
       padding: 16px;
@@ -178,11 +171,7 @@
       text-align: left;
     }
 
-    .guru-sidebar .sidebar-menu-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: white;
-    }
-
+    .guru-sidebar .sidebar-menu-btn:hover { background: rgba(255, 255, 255, 0.08); color: white; }
     .guru-sidebar .sidebar-menu-btn.active {
       background: rgba(255, 255, 255, 0.15);
       color: white;
@@ -197,7 +186,6 @@
       transition: all 0.3s ease;
     }
 
-    /* OVERLAY MOBILE BAR SIDEBAR */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -206,7 +194,6 @@
       z-index: 1005;
     }
 
-    /* MEDIA QUERIES RESPONSIVE (DESKTOP, LAPTOP, TABLET, ANDROID, IPHONE) */
     @media (max-width: 991.98px) {
       .guru-sidebar {
         position: fixed;
@@ -215,28 +202,12 @@
         height: 100vh;
         z-index: 1030;
       }
-
-      .guru-sidebar.mobile-open {
-        left: 0;
-      }
-
-      .sidebar-overlay.mobile-open {
-        display: block;
-      }
-
-      .guru-sidebar.collapsed {
-        width: var(--sidebar-width);
-      }
-
+      .guru-sidebar.mobile-open { left: 0; }
+      .sidebar-overlay.mobile-open { display: block; }
+      .guru-sidebar.collapsed { width: var(--sidebar-width); }
       .guru-sidebar.collapsed .menu-text,
-      .guru-sidebar.collapsed .sidebar-header-title {
-        display: inline-block !important;
-      }
-
-      .guru-sidebar.collapsed .sidebar-menu-btn {
-        justify-content: flex-start;
-        padding: 12px 18px;
-      }
+      .guru-sidebar.collapsed .sidebar-header-title { display: inline-block !important; }
+      .guru-sidebar.collapsed .sidebar-menu-btn { justify-content: flex-start; padding: 12px 18px; }
     }
 
     @media (max-width: 575.98px) {
@@ -247,7 +218,7 @@
     }
   </style>
 </head>
-<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
+<body>
 
 <!-- OVERLAY ALARM MERAH PERINGATAN KECURANGAN -->
 <div id="cheatOverlay" class="d-none">
@@ -400,7 +371,7 @@
     </div>
   </div>
 
-  <!-- PANEL GURU (DENGAN HAMBURGER SIDEBAR RESPONSIVE) -->
+  <!-- PANEL GURU (SIDEBAR RESPONSIVE) -->
   <div id="section-guru" class="guru-wrapper d-none">
     
     <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleGuruSidebar()"></div>
@@ -473,7 +444,6 @@
             </div>
           </div>
 
-          <!-- PAGINATION CONTROLLER REKAP -->
           <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">
               <small class="fw-bold text-muted">Tampilkan:</small>
@@ -610,7 +580,6 @@
             <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelArsipNilai', 'Arsip_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh CSV</button>
           </div>
 
-          <!-- PAGINATION CONTROLLER ARSIP NILAI -->
           <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">
               <small class="fw-bold text-muted">Tampilkan:</small>
@@ -876,6 +845,20 @@
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
 
+    // LOGIKA PROTEKSI COPY-PASTE DENGAN DETEKSI KHUSUS SISWA
+    document.addEventListener('contextmenu', function(e) {
+      if (isUjianAktifMode) e.preventDefault();
+    });
+    document.addEventListener('copy', function(e) {
+      if (isUjianAktifMode) e.preventDefault();
+    });
+    document.addEventListener('cut', function(e) {
+      if (isUjianAktifMode) e.preventDefault();
+    });
+    document.addEventListener('paste', function(e) {
+      if (isUjianAktifMode) e.preventDefault();
+    });
+
     document.addEventListener('keydown', function(e) {
       if (isUjianAktifMode) {
         if (e.key === 'F12' || 
@@ -906,7 +889,7 @@
     });
   });
 
-  // FUNGSI TOGGLE SIDEBAR GURU (RESPONSIVE COMPATIBLE)
+  // FUNGSI TOGGLE SIDEBAR GURU
   function toggleGuruSidebar() {
     const sidebar = document.getElementById('guruSidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -1096,6 +1079,7 @@
 
   function bukaModeGuru() {
     isUjianAktifMode = false;
+    document.body.classList.remove('exam-mode-active'); // Bebaskan seleksi & copy paste
     document.getElementById('section-identitas').classList.add('d-none');
     document.getElementById('section-ujian').classList.add('d-none');
     document.getElementById('section-hasil').classList.add('d-none');
@@ -1739,6 +1723,7 @@
 
       sisaWaktu = globalConfig.durasi * 60;
       isUjianAktifMode = true;
+      document.body.classList.add('exam-mode-active'); // Aktifkan proteksi kecurangan pada CSS
       jumlahPelanggaran = 0;
 
       let elem = document.documentElement;
@@ -1854,6 +1839,7 @@
 
   function kirimJawaban() {
     isUjianAktifMode = false;
+    document.body.classList.remove('exam-mode-active');
     stopAlarmRepeat();
     clearInterval(timerInterval);
 
