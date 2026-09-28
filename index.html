@@ -15,7 +15,6 @@
   <style>
     body { background-color: #f4f6f9; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; -webkit-user-select: none; }
     
-    /* HEADER DENGAN DESAIN EDUKASI & SASTRA BAHASA INDONESIA */
     .cbt-header { 
       background: linear-gradient(135deg, #3730a3 0%, #4338ca 50%, #4f46e5 100%); 
       color: white; 
@@ -23,17 +22,6 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
       position: relative;
       overflow: hidden;
-    }
-    .cbt-header::after {
-      content: "";
-      position: absolute;
-      right: 15%;
-      top: -20px;
-      width: 250px;
-      height: 250px;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 50%;
-      pointer-events: none;
     }
     .cbt-badge { 
       background: white; 
@@ -44,8 +32,6 @@
       font-size: 1.2rem; 
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    
-    /* AKSEN IKON SASTRA & PENDIDIKAN */
     .sastra-badge {
       background: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -58,12 +44,7 @@
       align-items: center;
       gap: 5px;
     }
-    .accent-icon {
-      font-size: 1.15rem;
-      color: #fde047;
-      opacity: 0.9;
-    }
-
+    .accent-icon { font-size: 1.15rem; color: #fde047; opacity: 0.9; }
     .timer-box { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 16px; border-radius: 8px; font-weight: bold; color: #fde047; font-size: 1.1rem; }
     .card-cbt { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .box-nomor { width: 42px; height: 42px; line-height: 42px; text-align: center; border: 1px solid #ced4da; margin: 4px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #fff; }
@@ -108,7 +89,7 @@
   </button>
 </div>
 
-<!-- HEADER DENGAN SENTUHAN DESAIN LITERASI & SASTRA BAHASA INDONESIA -->
+<!-- HEADER -->
 <div class="cbt-header d-flex justify-content-between align-items-center flex-wrap gap-2">
   <div class="d-flex align-items-center gap-3">
     <div class="cbt-badge d-flex align-items-center gap-1">
@@ -149,7 +130,7 @@
 
 <div class="container py-4">
 
-  <!-- Identitas -->
+  <!-- Identitas Siswa -->
   <div id="section-identitas" class="row justify-content-center my-5">
     <div class="col-md-5">
       <div class="card card-cbt p-4">
@@ -172,7 +153,7 @@
             <div>Durasi Pengerjaan: <b id="textDurasiInformasi">60</b> Menit</div>
           </div>
           <div class="alert alert-warning py-2 small mb-4">
-            <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang membuka tab baru, pindah aplikasi, atau keluar dari layar Fullscreen! Maksimal toleransi 3x.
+            <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang membuka tab baru, pindah aplikasi, atau keluar dari layar Fullscreen!
           </div>
           <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white shadow-sm" style="background:#4338ca">Mulai Ujian Fullscreen</button>
         </form>
@@ -226,7 +207,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h3 class="fw-bold mb-0">Panel Pengelola CBT (Guru)</h3>
-        <p class="text-muted">Rekapitulasi hasil ujian peserta didik, arsip nilai & kelola bank soal.</p>
+        <p class="text-muted">Rekapitulasi hasil ujian peserta didik, pengaturan ujian & kelola bank soal.</p>
       </div>
     </div>
 
@@ -235,14 +216,17 @@
         <button class="nav-link active" onclick="switchTabGuru('rekap', event)"><i class="bi bi-bar-chart me-1"></i> Rekap Hasil Nilai</button>
       </li>
       <li class="nav-item">
+        <button class="nav-link" onclick="switchTabGuru('setting', event)"><i class="bi bi-gear-fill me-1"></i> Setting Ujian</button>
+      </li>
+      <li class="nav-item">
         <button class="nav-link" onclick="switchTabGuru('arsip', event)"><i class="bi bi-archive me-1"></i> Arsip Nilai Ujian</button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" onclick="switchTabGuru('banksoal', event)"><i class="bi bi-file-earmark-text me-1"></i> Kelola Bank Soal & Status Ujian</button>
+        <button class="nav-link" onclick="switchTabGuru('banksoal', event)"><i class="bi bi-file-earmark-text me-1"></i> Kelola & Arsip Bank Soal</button>
       </li>
     </ul>
 
-    <!-- Tab Rekap -->
+    <!-- Tab Rekap Nilai -->
     <div id="tabGuruRekap">
       <div class="row g-3 mb-4">
         <div class="col-md-4">
@@ -297,13 +281,71 @@
       </div>
     </div>
 
+    <!-- TAB SETTING UJIAN -->
+    <div id="tabGuruSetting" class="d-none">
+      <div class="card card-cbt p-4 max-w-2xl">
+        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-sliders me-2"></i>Pengaturan Aturan Ujian CBT</h5>
+        <form id="formSettingUjian" onsubmit="simpanSettingUjian(event)">
+          
+          <div class="card p-3 mb-3 border">
+            <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
+              <label class="form-check-label fw-bold" for="cfgAcakSoal">
+                <i class="bi bi-shuffle text-primary me-2"></i>Acak Urutan Soal
+                <div class="small text-muted fw-normal">Urutan soal akan diacak otomatis untuk setiap peserta.</div>
+              </label>
+              <input class="form-check-input ms-auto" type="checkbox" id="cfgAcakSoal">
+            </div>
+          </div>
+
+          <div class="card p-3 mb-3 border">
+            <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
+              <label class="form-check-label fw-bold" for="cfgAcakJawaban">
+                <i class="bi bi-arrow-repeat text-success me-2"></i>Acak Pilihan Jawaban
+                <div class="small text-muted fw-normal">Posisi A, B, C, D diacak otomatis per siswa (Kunci mengunci otomatis).</div>
+              </label>
+              <input class="form-check-input ms-auto" type="checkbox" id="cfgAcakJawaban">
+            </div>
+          </div>
+
+          <div class="card p-3 mb-3 border">
+            <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
+              <label class="form-check-label fw-bold" for="cfgHanyaSatuKali">
+                <i class="bi bi-person-lock text-warning me-2"></i>Batasi 1 Kali Mengerjakan
+                <div class="small text-muted fw-normal">Siswa dengan Nama & Kelas yang sama tidak dapat mengerjakan ujian 2x.</div>
+              </label>
+              <input class="form-check-input ms-auto" type="checkbox" id="cfgHanyaSatuKali">
+            </div>
+          </div>
+
+          <div class="card p-3 mb-4 border">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <label class="fw-bold mb-1"><i class="bi bi-shield-exclamation text-danger me-2"></i>Toleransi Pelanggaran Tab</label>
+                <div class="small text-muted">Jumlah maksimal siswa boleh keluar layar/pindah tab sebelum didiskualifikasi.</div>
+              </div>
+              <div class="col-md-4 mt-2 mt-md-0">
+                <div class="input-group input-group-sm">
+                  <input type="number" id="cfgToleransiTab" class="form-control text-center fw-bold fs-6" min="1" max="10" required>
+                  <span class="input-group-text">Kali</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="btnSaveConfig" class="btn btn-primary fw-bold px-4 shadow-sm" style="background:#4338ca">
+            <i class="bi bi-check-circle me-1"></i> Simpan Pengaturan Ujian
+          </button>
+        </form>
+      </div>
+    </div>
+
     <!-- TAB ARSIP NILAI -->
     <div id="tabGuruArsip" class="d-none">
       <div class="card card-cbt p-4">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <div>
             <h6 class="fw-bold mb-1"><i class="bi bi-archive-fill text-warning me-2"></i>Daftar Arsip Rekapitulasi Ujian</h6>
-            <p class="text-muted small mb-0">Seluruh data rekap nilai ujian terdahulu yang pernah diarsipkan tersimpan di sini.</p>
+            <p class="text-muted small mb-0">Seluruh data rekap nilai ujian terdahulu tersimpan rapi di sini.</p>
           </div>
           <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelArsipNilai', 'Arsip_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh Semua Arsip (CSV)</button>
         </div>
@@ -336,21 +378,14 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
           <div>
             <h5 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h5>
-            <p class="text-muted small mb-0">Ubah teks, upload gambar, sakelar akses ujian, durasi, dan preview soal.</p>
+            <p class="text-muted small mb-0">Edit soal, arsipkan bank soal lama, dan impor kembali paket soal terdahulu.</p>
           </div>
           <div class="d-flex gap-2 align-items-center flex-wrap">
+            <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipBankSoal()"><i class="bi bi-archive-fill me-1"></i> Arsipkan Bank Soal Ini</button>
             <div class="form-check form-switch bg-light border p-2 px-3 rounded d-flex align-items-center gap-2">
               <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="switchStatusUjian" onchange="toggleStatusUjian(this)">
               <label class="form-check-label fw-bold small text-dark mb-0" for="switchStatusUjian" id="lblStatusUjian">Status: Checking...</label>
             </div>
-
-            <div class="input-group input-group-sm" style="width:190px">
-              <span class="input-group-text bg-light fw-bold"><i class="bi bi-clock me-1"></i> Durasi</span>
-              <input type="number" id="inputDurasiWaktu" class="form-control text-center fw-bold" value="60" min="1">
-              <span class="input-group-text">mnt</span>
-              <button class="btn btn-primary btn-sm" onclick="simpanDurasiWaktu()" title="Simpan Durasi"><i class="bi bi-check-lg"></i></button>
-            </div>
-
             <a id="btnEditFormDirect" href="#" target="_blank" class="btn btn-outline-primary btn-sm fw-bold">
               <i class="bi bi-box-arrow-up-right me-1"></i> Google Form
             </a>
@@ -358,10 +393,31 @@
         </div>
       </div>
 
+      <!-- KARTU DAFTAR ARSIP BANK SOAL LAMA -->
+      <div class="card card-cbt p-4 mb-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-folder-symlink-fill text-warning me-2"></i>Daftar Arsip Paket Soal Terdahulu (Dapat Dipulihkan)</h6>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>NO</th>
+                <th>NAMA PAKET SOAL</th>
+                <th>JUMLAH SOAL</th>
+                <th>TGL DIARSIPKAN</th>
+                <th class="text-center">AKSI PULIHKAN</th>
+              </tr>
+            </thead>
+            <tbody id="bodyArsipSoal">
+              <tr><td colspan="5" class="text-center text-muted">Belum ada paket soal yang diarsipkan.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div id="listSoalGuruContainer">
         <div class="text-center py-5 card card-cbt">
           <div class="spinner-border text-primary mb-2" role="status"></div>
-          <div class="text-muted fw-bold">Memuat daftar soal...</div>
+          <div class="text-muted fw-bold">Memuat daftar soal aktif...</div>
         </div>
       </div>
     </div>
@@ -394,7 +450,7 @@
   </div>
 </div>
 
-<!-- MODAL EDIT SOAL & GAMBAR OPSI -->
+<!-- MODAL EDIT SOAL -->
 <div class="modal fade" id="modalEditSoal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow">
@@ -467,15 +523,22 @@
   let bankSoal = [];
   let jawabanSiswa = [];
   let currentSoalIndex = 0;
-  let durasiMenitGlobal = 60;
+
+  // KONFIGURASI UJIAN GLOBAL
+  let globalConfig = {
+    durasi: 60,
+    acakSoal: true,
+    acakJawaban: true,
+    hanyaSatuKali: true,
+    toleransiTab: 3
+  };
+
   let sisaWaktu = 60 * 60; 
   let timerInterval;
   let modalLoginObj, modalEditObj, modalPreviewObj;
 
-  // SYSTEM ANTI-CURANG VARIABEL
   let isUjianAktifMode = false;
   let jumlahPelanggaran = 0;
-  const MAX_TOLERANSI = 3;
   let audioCtx = null;
   let alarmInterval = null;
 
@@ -491,10 +554,10 @@
     fetch(`${API_URL}?action=getBankSoal`)
     .then(res => res.json())
     .then(res => {
-      if(res.durasi) {
-        durasiMenitGlobal = res.durasi;
-        document.getElementById('textDurasiInformasi').innerText = durasiMenitGlobal;
-        document.getElementById('inputDurasiWaktu').value = durasiMenitGlobal;
+      if(res.config) {
+        globalConfig = res.config;
+        document.getElementById('textDurasiInformasi').innerText = globalConfig.durasi;
+        applyConfigToUI();
       }
     });
 
@@ -528,14 +591,48 @@
     });
   });
 
+  function applyConfigToUI() {
+    document.getElementById('cfgAcakSoal').checked = globalConfig.acakSoal;
+    document.getElementById('cfgAcakJawaban').checked = globalConfig.acakJawaban;
+    document.getElementById('cfgHanyaSatuKali').checked = globalConfig.hanyaSatuKali;
+    document.getElementById('cfgToleransiTab').value = globalConfig.toleransiTab;
+  }
+
+  function simpanSettingUjian(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSaveConfig');
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...`;
+
+    const newCfg = {
+      durasi: globalConfig.durasi,
+      acakSoal: document.getElementById('cfgAcakSoal').checked,
+      acakJawaban: document.getElementById('cfgAcakJawaban').checked,
+      hanyaSatuKali: document.getElementById('cfgHanyaSatuKali').checked,
+      toleransiTab: parseInt(document.getElementById('cfgToleransiTab').value)
+    };
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveConfigUjian', durasi: newCfg.durasi, acakSoal: newCfg.acakSoal, acakJawaban: newCfg.acakJawaban, hanyaSatuKali: newCfg.hanyaSatuKali, toleransiTab: newCfg.toleransiTab })
+    })
+    .then(res => res.json())
+    .then(res => {
+      btn.disabled = false;
+      btn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Simpan Pengaturan Ujian`;
+      if (res.success) {
+        globalConfig = newCfg;
+        Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Aturan & Setting Ujian Berhasil Diperbarui!', timer: 1800, showConfirmButton: false });
+      } else {
+        alert("Gagal menyimpan setting: " + res.error);
+      }
+    });
+  }
+
   function membunyikanSirine() {
     try {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
 
       let osc = audioCtx.createOscillator();
       let gain = audioCtx.createGain();
@@ -554,23 +651,18 @@
 
   function startAlarmRepeat() {
     membunyikanSirine();
-    if(!alarmInterval) {
-      alarmInterval = setInterval(membunyikanSirine, 400);
-    }
+    if(!alarmInterval) alarmInterval = setInterval(membunyikanSirine, 400);
   }
 
   function stopAlarmRepeat() {
-    if(alarmInterval) {
-      clearInterval(alarmInterval);
-      alarmInterval = null;
-    }
+    if(alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; }
   }
 
   function trigPeringatanKecurangan(alasan) {
     if (!isUjianAktifMode) return;
 
     jumlahPelanggaran++;
-    let sisa = MAX_TOLERANSI - jumlahPelanggaran;
+    let sisa = globalConfig.toleransiTab - jumlahPelanggaran;
     
     startAlarmRepeat();
     document.getElementById('cheatOverlay').classList.remove('d-none');
@@ -594,9 +686,7 @@
     document.getElementById('cheatOverlay').classList.add('d-none');
     
     let elem = document.documentElement;
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen().catch(()=>{});
-    }
+    if (elem.requestFullscreen) elem.requestFullscreen().catch(()=>{});
   }
 
   function shuffleArray(array) {
@@ -644,16 +734,9 @@
           confirmButtonColor: '#4338ca',
           timer: 2000,
           timerProgressBar: true
-        }).then(() => {
-          bukaModeGuru();
-        });
+        }).then(() => { bukaModeGuru(); });
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Login Gagal',
-          text: res.message || 'Username atau Password salah!',
-          confirmButtonColor: '#dc2626'
-        });
+        Swal.fire({ icon: 'error', title: 'Login Gagal', text: res.message || 'Username atau Password salah!', confirmButtonColor: '#dc2626' });
       }
     });
   }
@@ -707,6 +790,7 @@
     document.querySelectorAll('.nav-tabs .nav-link').forEach(el => el.classList.remove('active'));
     
     document.getElementById('tabGuruRekap').classList.add('d-none');
+    document.getElementById('tabGuruSetting').classList.add('d-none');
     document.getElementById('tabGuruArsip').classList.add('d-none');
     document.getElementById('tabGuruBankSoal').classList.add('d-none');
 
@@ -714,6 +798,10 @@
       e.target.classList.add('active');
       document.getElementById('tabGuruRekap').classList.remove('d-none');
       loadDataRekapGuru();
+    } else if (tab === 'setting') {
+      e.target.classList.add('active');
+      document.getElementById('tabGuruSetting').classList.remove('d-none');
+      applyConfigToUI();
     } else if (tab === 'arsip') {
       e.target.classList.add('active');
       document.getElementById('tabGuruArsip').classList.remove('d-none');
@@ -742,26 +830,6 @@
       } else {
         alert("Gagal mengubah status ujian: " + res.error);
         chk.checked = !isAktif;
-      }
-    });
-  }
-
-  function simpanDurasiWaktu() {
-    const durasi = document.getElementById('inputDurasiWaktu').value;
-    if(!durasi || durasi < 1) return alert("Durasi tidak valid");
-
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'updateDurasi', durasi: durasi })
-    })
-    .then(res => res.json())
-    .then(res => {
-      if(res.success) {
-        durasiMenitGlobal = durasi;
-        document.getElementById('textDurasiInformasi').innerText = durasi;
-        alert("Durasi pengerjaan berhasil diubah menjadi " + durasi + " menit!");
-      } else {
-        alert("Gagal mengubah durasi: " + res.error);
       }
     });
   }
@@ -818,10 +886,30 @@
         });
       }
       document.getElementById('bodyArsipNilai').innerHTML = htmlArsip;
+
+      // Render Arsip Soal
+      let htmlArsipSoal = '';
+      if(!res.arsipSoal || res.arsipSoal.length === 0) {
+        htmlArsipSoal = '<tr><td colspan="5" class="text-center text-muted">Belum ada paket soal yang diarsipkan.</td></tr>';
+      } else {
+        res.arsipSoal.forEach(s => {
+          htmlArsipSoal += `<tr>
+            <td>${s.no}</td>
+            <td class="fw-bold text-primary">${s.namaPaket}</td>
+            <td><span class="badge bg-info text-dark fw-bold">${s.jumlahSoal} Soal</span></td>
+            <td class="small text-muted">${s.tglArsip}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-success fw-bold" onclick="importArsipSoal('${s.paketId}', '${s.namaPaket}')">
+                <i class="bi bi-cloud-download me-1"></i> Import / Terapkan Soal Ini
+              </button>
+            </td>
+          </tr>`;
+        });
+      }
+      document.getElementById('bodyArsipSoal').innerHTML = htmlArsipSoal;
     });
   }
 
-  // FUNGSI UNTUK MENGHAPUS SATU BARIS PESERTA
   function hapusSatuPeserta(sheetRow, namaSiswa) {
     Swal.fire({
       title: 'Hapus Data Peserta?',
@@ -841,13 +929,7 @@
         .then(res => res.json())
         .then(res => {
           if (res.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Berhasil Dihapus',
-              text: `Data nilai ${namaSiswa} telah dihapus dari rekap.`,
-              timer: 1500,
-              showConfirmButton: false
-            });
+            Swal.fire({ icon: 'success', title: 'Berhasil Dihapus', timer: 1500, showConfirmButton: false });
             loadDataRekapGuru();
           } else {
             alert("Gagal menghapus data: " + res.error);
@@ -857,8 +939,57 @@
     });
   }
 
+  function prosesArsipBankSoal() {
+    const namaPaket = prompt("Masukkan Nama / Label Paket Soal yang Ingin Diarsipkan:", "Paket Ujian Bahasa Indonesia Sesi 1");
+    if (!namaPaket) return;
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'arsipBankSoal', namaPaketSoal: namaPaket })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if(res.success) {
+        Swal.fire({ icon: 'success', title: 'Soal Diarsipkan!', text: `Berhasil menyimpan ${res.jumlah} soal ke dalam paket: "${res.namaPaket}"` });
+        loadBankSoalGuru();
+      } else {
+        alert("Gagal mengarsipkan soal: " + res.error);
+      }
+    });
+  }
+
+  function importArsipSoal(paketId, namaPaket) {
+    Swal.fire({
+      title: 'Terapkan Paket Soal Ini?',
+      text: `Perhatian: Soal aktif saat ini akan digantikan oleh paket soal "${namaPaket}". Lanjutkan?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Ya, Terapkan Paket Soal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({ title: 'Menyinkronkan Soal...', text: 'Sistem sedang memasukkan paket soal ke Google Form.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'importArsipSoalKeForm', paketId: paketId })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Berhasil Diterapkan!', text: `${res.total} soal dari paket "${namaPaket}" berhasil dimasukkan ke Google Form!` });
+            loadBankSoalGuru();
+          } else {
+            alert("Gagal mengimpor soal: " + res.error);
+          }
+        });
+      }
+    });
+  }
+
   function prosesArsipNilai() {
-    const namaLabel = prompt("Masukkan Label / Nama Ujian untuk Arsip ini:", "Try Out Bahasa Indonesia Sesi 1");
+    const namaLabel = prompt("Masukkan Label / Nama Ujian untuk Arsip Nilai ini:", "Try Out Bahasa Indonesia Sesi 1");
     if (!namaLabel) return;
 
     fetch(API_URL, {
@@ -900,9 +1031,7 @@
     fetch(`${API_URL}?action=getFormUrl`)
     .then(res => res.json())
     .then(res => {
-      if(res.success) {
-        document.getElementById('btnEditFormDirect').href = res.editUrl;
-      }
+      if(res.success) document.getElementById('btnEditFormDirect').href = res.editUrl;
     });
 
     fetch(`${API_URL}?action=getBankSoal&isGuru=true`)
@@ -918,15 +1047,14 @@
       lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
       lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
 
-      if(res.durasi) {
-        durasiMenitGlobal = res.durasi;
-        document.getElementById('inputDurasiWaktu').value = durasiMenitGlobal;
-        document.getElementById('textDurasiInformasi').innerText = durasiMenitGlobal;
+      if(res.config) {
+        globalConfig = res.config;
+        document.getElementById('textDurasiInformasi').innerText = globalConfig.durasi;
       }
 
       if (!data || data.length === 0) {
         container.innerHTML = `<div class="alert alert-warning card card-cbt">
-          <b>Soal Tidak Ditemukan!</b> Pastikan ID Google Form pada Code.gs sudah diisi dengan benar.
+          <b>Soal Aktif Tidak Ditemukan!</b> Impor paket soal dari arsip di atas atau buat soal di Google Form.
         </div>`;
         return;
       }
@@ -965,6 +1093,7 @@
       });
 
       container.innerHTML = html;
+      loadDataRekapGuru();
     });
   }
 
@@ -1130,7 +1259,7 @@
     });
   }
 
-  // --- SISWA LOGIC DENGAN PENGUNCIAN KUNCI JAWABAN PRESISI 100% ---
+  // LOGIKA PENGACAKAN SOAL & SETTING UJIAN SESUAI KONFIGURASI
   function mulaiUjian(e) {
     e.preventDefault();
     const nama = document.getElementById('namaSiswa').value;
@@ -1150,6 +1279,8 @@
         return;
       }
 
+      if(res.config) globalConfig = res.config;
+
       const data = res.data;
       if (!data || data.length === 0) {
         alert("Soal tidak ditemukan.");
@@ -1162,9 +1293,11 @@
       document.getElementById('hKelas').innerText = "No/Kelas: " + kelas;
 
       let rawData = JSON.parse(JSON.stringify(data));
-      let shuffledSoal = shuffleArray(rawData);
+      // Terapkan Aturan Acak Soal jika Diaktifkan
+      let processedSoal = globalConfig.acakSoal ? shuffleArray(rawData) : rawData;
 
-      shuffledSoal.forEach(sItem => {
+      // Terapkan Aturan Acak Jawaban jika Diaktifkan
+      processedSoal.forEach(sItem => {
         let combinedOps = [];
         sItem.pilihan.forEach((pText, pIdx) => {
           combinedOps.push({
@@ -1174,30 +1307,25 @@
           });
         });
 
-        let shufOps = shuffleArray(combinedOps);
+        let finalOps = globalConfig.acakJawaban ? shuffleArray(combinedOps) : combinedOps;
         sItem.pilihan = [];
         sItem.pilihanGambar = [];
-        shufOps.forEach((o, oIdx) => {
+        finalOps.forEach((o, oIdx) => {
           sItem.pilihan.push(o.txt);
           sItem.pilihanGambar.push(o.img);
-          if (o.isCorrect) {
-            sItem.jawabanBenar = oIdx;
-          }
+          if (o.isCorrect) sItem.jawabanBenar = oIdx;
         });
       });
 
-      bankSoal = shuffledSoal;
+      bankSoal = processedSoal;
       jawabanSiswa = new Array(bankSoal.length).fill(null);
-      if(res.durasi) durasiMenitGlobal = res.durasi;
-      sisaWaktu = durasiMenitGlobal * 60;
+      sisaWaktu = globalConfig.durasi * 60;
 
       isUjianAktifMode = true;
       jumlahPelanggaran = 0;
 
       let elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen().catch(()=>{});
-      }
+      if (elem.requestFullscreen) elem.requestFullscreen().catch(()=>{});
 
       document.getElementById('section-identitas').classList.add('d-none');
       document.getElementById('section-ujian').classList.remove('d-none');
@@ -1304,9 +1432,7 @@
     stopAlarmRepeat();
     clearInterval(timerInterval);
 
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(()=>{});
-    }
+    if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
 
     const nama = document.getElementById('namaSiswa').value;
     const kelas = document.getElementById('kelasSiswa').value;
@@ -1329,10 +1455,12 @@
       document.getElementById('headerInfoSiswa').classList.add('d-none');
       document.getElementById('headerTimer').classList.add('d-none');
       document.getElementById('section-hasil').classList.remove('d-none');
+      
       if (res.success) {
         document.getElementById('detailNilai').innerText = `Nilai: ${res.nilai}`;
       } else {
-        alert('Gagal menyimpan hasil: ' + res.error);
+        alert('Perhatian: ' + res.error);
+        document.getElementById('detailNilai').innerText = `Akses Ditolak`;
       }
     });
   }
