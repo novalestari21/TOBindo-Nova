@@ -11,12 +11,59 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <!-- SWEETALERT2 UNTUK ANIMASI POP-UP CEKLIST & DIALOG SAYONARA -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body { background-color: #f4f6f9; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; -webkit-user-select: none; }
-    .cbt-header { background-color: #4338ca; color: white; padding: 12px 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .cbt-badge { background: white; color: #4338ca; font-weight: 800; padding: 6px 14px; border-radius: 10px; font-size: 1.2rem; }
+    
+    /* HEADER DENGAN DESAIN EDUKASI & SASTRA BAHASA INDONESIA */
+    .cbt-header { 
+      background: linear-gradient(135deg, #3730a3 0%, #4338ca 50%, #4f46e5 100%); 
+      color: white; 
+      padding: 14px 24px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+      position: relative;
+      overflow: hidden;
+    }
+    .cbt-header::after {
+      content: "";
+      position: absolute;
+      right: 15%;
+      top: -20px;
+      width: 250px;
+      height: 250px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .cbt-badge { 
+      background: white; 
+      color: #4338ca; 
+      font-weight: 800; 
+      padding: 6px 14px; 
+      border-radius: 10px; 
+      font-size: 1.2rem; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    /* AKSEN IKON SASTRA & PENDIDIKAN */
+    .sastra-badge {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #e0e7ff;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .accent-icon {
+      font-size: 1.15rem;
+      color: #fde047;
+      opacity: 0.9;
+    }
+
     .timer-box { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 16px; border-radius: 8px; font-weight: bold; color: #fde047; font-size: 1.1rem; }
     .card-cbt { border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .box-nomor { width: 42px; height: 42px; line-height: 42px; text-align: center; border: 1px solid #ced4da; margin: 4px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #fff; }
@@ -61,16 +108,26 @@
   </button>
 </div>
 
-<div class="cbt-header d-flex justify-content-between align-items-center">
+<!-- HEADER DENGAN SENTUHAN DESAIN LITERASI & SASTRA BAHASA INDONESIA -->
+<div class="cbt-header d-flex justify-content-between align-items-center flex-wrap gap-2">
   <div class="d-flex align-items-center gap-3">
-    <div class="cbt-badge">CBT</div>
+    <div class="cbt-badge d-flex align-items-center gap-1">
+      <i class="bi bi-journal-bookmark-fill text-primary me-1"></i> CBT
+    </div>
     <div>
-      <h5 class="fw-bold mb-0 text-white">TRY OUT BAHASA INDONESIA</h5>
-      <small class="text-white-50">By. Bu Nova Lestari, S.Pd.,Gr.</small>
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="fw-bold mb-0 text-white">TRY OUT BAHASA INDONESIA</h5>
+        <i class="bi bi-feather accent-icon" title="Sastra & Puisi"></i>
+      </div>
+      <div class="d-flex align-items-center gap-2 mt-1">
+        <small class="text-white-50">By. Bu Nova Lestari, S.Pd.,Gr.</small>
+        <span class="sastra-badge"><i class="bi bi-book"></i> Kamus & Literasi</span>
+        <span class="sastra-badge d-none d-md-inline-flex"><i class="bi bi-chat-quote"></i> Puisi & Pantun</span>
+      </div>
     </div>
   </div>
 
-  <div class="d-flex align-items-center gap-4">
+  <div class="d-flex align-items-center gap-3">
     <div id="headerInfoSiswa" class="text-end d-none">
       <div id="hNama" class="fw-bold text-white">Nama Siswa</div>
       <small id="hKelas" class="text-white-50">No/Kelas: -</small>
@@ -80,11 +137,11 @@
       <i class="bi bi-clock me-1"></i> <span id="timer">60 : 00</span>
     </div>
 
-    <button id="btnModeGuru" class="btn btn-outline-light rounded-3 px-3 btn-sm" onclick="showModalLogin()">
+    <button id="btnModeGuru" class="btn btn-outline-light rounded-3 px-3 btn-sm shadow-sm" onclick="showModalLogin()">
       <i class="bi bi-shield-lock me-1"></i> Mode Guru
     </button>
     
-    <button id="btnModeSiswa" class="btn btn-outline-light rounded-3 px-3 btn-sm d-none" onclick="keModeSiswa()">
+    <button id="btnModeSiswa" class="btn btn-outline-light rounded-3 px-3 btn-sm d-none shadow-sm" onclick="keModeSiswa()">
       <i class="bi bi-box-arrow-right me-1"></i> Keluar Mode Guru
     </button>
   </div>
@@ -96,8 +153,11 @@
   <div id="section-identitas" class="row justify-content-center my-5">
     <div class="col-md-5">
       <div class="card card-cbt p-4">
-        <h4 class="text-center fw-bold text-primary mb-2">Ujian CBT Online</h4>
-        <p class="text-muted text-center small mb-4">Silakan isi identitas diri untuk memulai ujian</p>
+        <div class="text-center mb-3">
+          <i class="bi bi-mortarboard-fill text-primary display-4"></i>
+          <h4 class="fw-bold text-primary mt-2 mb-1">Ujian CBT Online</h4>
+          <p class="text-muted small">Bahasa Indonesia • Literasi & Bahasa</p>
+        </div>
         <form id="formIdentitas" onsubmit="mulaiUjian(event)">
           <div class="mb-3">
             <label class="form-label fw-semibold">Nama Lengkap</label>
@@ -114,7 +174,7 @@
           <div class="alert alert-warning py-2 small mb-4">
             <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang membuka tab baru, pindah aplikasi, atau keluar dari layar Fullscreen! Maksimal toleransi 3x.
           </div>
-          <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white" style="background:#4338ca">Mulai Ujian Fullscreen</button>
+          <button type="submit" id="btnMulai" class="btn w-100 py-2 fw-bold text-white shadow-sm" style="background:#4338ca">Mulai Ujian Fullscreen</button>
         </form>
       </div>
     </div>
@@ -142,9 +202,9 @@
 
     <div class="col-md-4">
       <div class="card card-cbt p-3">
-        <h6 class="fw-bold mb-3">Navigasi Soal</h6>
+        <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap-fill me-1 text-primary"></i> Navigasi Soal</h6>
         <div id="navigasiSoal" class="d-flex flex-wrap"></div>
-        <button class="btn btn-success w-100 mt-4 fw-bold" onclick="konfirmasiSelesai()">Selesai & Kirim</button>
+        <button class="btn btn-success w-100 mt-4 fw-bold shadow-sm" onclick="konfirmasiSelesai()">Selesai & Kirim</button>
       </div>
     </div>
   </div>
@@ -211,7 +271,7 @@
           <div class="d-flex gap-2">
             <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipNilai()"><i class="bi bi-archive me-1"></i> Arsipkan Hasil Nilai</button>
             <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelNilaiGuru', 'Rekap_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh CSV</button>
-            <button class="btn btn-danger btn-sm fw-bold" onclick="konfirmasiResetNilai()"><i class="bi bi-trash me-1"></i> Reset Nilai</button>
+            <button class="btn btn-danger btn-sm fw-bold" onclick="konfirmasiResetNilai()"><i class="bi bi-trash me-1"></i> Reset Semua Nilai</button>
           </div>
         </div>
         <div class="table-responsive">
@@ -226,10 +286,11 @@
                 <th>SALAH</th>
                 <th>PELANGGARAN TAB</th>
                 <th>NILAI (0-100)</th>
+                <th class="text-center">AKSI</th>
               </tr>
             </thead>
             <tbody id="bodyNilaiGuru">
-              <tr><td colspan="8" class="text-center text-muted">Memuat data nilai...</td></tr>
+              <tr><td colspan="9" class="text-center text-muted">Memuat data nilai...</td></tr>
             </tbody>
           </table>
         </div>
@@ -576,7 +637,6 @@
         sessionStorage.setItem("isGuruLoggedIn", "true");
         modalLoginObj.hide();
         
-        // POP-UP CEKLIST & UCAPAN SELAMAT DATANG (SWEETALERT2)
         Swal.fire({
           icon: 'success',
           title: 'Login Berhasil!',
@@ -614,7 +674,6 @@
   }
 
   function keModeSiswa() {
-    // POP-UP KONFIRMASI DILANJUTKAN UCAPAN SAYONARA (SWEETALERT2)
     Swal.fire({
       title: 'Apakah Anda Yakin?',
       text: "Anda akan keluar dari Panel Pengelola CBT",
@@ -718,7 +777,7 @@
 
       let html = '';
       if(res.data.length === 0) {
-        html = '<tr><td colspan="8" class="text-center text-muted">Belum ada data peserta yang menyelesaikan ujian aktif.</td></tr>';
+        html = '<tr><td colspan="9" class="text-center text-muted">Belum ada data peserta yang menyelesaikan ujian aktif.</td></tr>';
       } else {
         res.data.forEach(item => {
           html += `<tr>
@@ -730,6 +789,11 @@
             <td class="text-danger fw-bold">${item.salah}</td>
             <td><span class="badge bg-warning text-dark fw-bold">${item.pelanggaran}</span></td>
             <td class="fw-bold text-primary">${item.nilai}</td>
+            <td class="text-center">
+              <button class="btn btn-outline-danger btn-sm p-1 px-2" title="Hapus Data Peserta Ini" onclick="hapusSatuPeserta(${item.sheetRow}, '${item.nama}')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
           </tr>`;
         });
       }
@@ -757,6 +821,42 @@
     });
   }
 
+  // FUNGSI UNTUK MENGHAPUS SATU BARIS PESERTA
+  function hapusSatuPeserta(sheetRow, namaSiswa) {
+    Swal.fire({
+      title: 'Hapus Data Peserta?',
+      text: `Apakah Anda yakin ingin menghapus hasil nilai milik "${namaSiswa}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'hapusSatuNilai', rowIndex: sheetRow })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil Dihapus',
+              text: `Data nilai ${namaSiswa} telah dihapus dari rekap.`,
+              timer: 1500,
+              showConfirmButton: false
+            });
+            loadDataRekapGuru();
+          } else {
+            alert("Gagal menghapus data: " + res.error);
+          }
+        });
+      }
+    });
+  }
+
   function prosesArsipNilai() {
     const namaLabel = prompt("Masukkan Label / Nama Ujian untuk Arsip ini:", "Try Out Bahasa Indonesia Sesi 1");
     if (!namaLabel) return;
@@ -778,7 +878,7 @@
 
   function konfirmasiResetNilai() {
     if (confirm("Apakah Anda yakin ingin menghapus/mereset seluruh data nilai siswa? Pastikan Anda sudah mengarsipkan nilai terlebih dahulu!")) {
-      document.getElementById('bodyNilaiGuru').innerHTML = `<tr><td colspan="8" class="text-center text-muted">Mereset data nilai...</td></tr>`;
+      document.getElementById('bodyNilaiGuru').innerHTML = `<tr><td colspan="9" class="text-center text-muted">Mereset data nilai...</td></tr>`;
       
       fetch(API_URL, {
         method: 'POST',
