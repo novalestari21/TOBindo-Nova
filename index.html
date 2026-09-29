@@ -203,6 +203,15 @@
       z-index: 1005;
     }
 
+    /* BADGE KLIK BENAR SALAH */
+    .badge-clickable {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .badge-clickable:hover {
+      transform: scale(1.1);
+    }
+
     @media (max-width: 991.98px) {
       .guru-sidebar {
         position: fixed;
@@ -401,6 +410,10 @@
           <i class="bi bi-bar-chart fs-5"></i>
           <span class="menu-text">Rekap Hasil Nilai</span>
         </button>
+        <button class="sidebar-menu-btn" onclick="switchTabGuru('analisis', this)">
+          <i class="bi bi-pie-chart-fill fs-5"></i>
+          <span class="menu-text">Analisis Soal</span>
+        </button>
         <button class="sidebar-menu-btn" onclick="switchTabGuru('setting', this)">
           <i class="bi bi-sliders fs-5"></i>
           <span class="menu-text">Setting Ujian</span>
@@ -444,7 +457,10 @@
 
         <div class="card card-cbt p-3 p-md-4">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <h6 class="fw-bold mb-0">Daftar Nilai Peserta Didik Aktif</h6>
+            <div>
+              <h6 class="fw-bold mb-1">Daftar Nilai Peserta Didik Aktif</h6>
+              <p class="text-muted small mb-0">Klik pada angka <span class="badge bg-success">Benar</span> / <span class="badge bg-danger">Salah</span> untuk melihat rincian soal peserta.</p>
+            </div>
             <div class="d-flex gap-2 flex-wrap">
               <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipNilai()"><i class="bi bi-archive me-1"></i> Arsipkan Hasil</button>
               <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelNilaiGuru', 'Rekap_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> CSV</button>
@@ -488,6 +504,54 @@
               </thead>
               <tbody id="bodyNilaiGuru">
                 <tr><td colspan="9" class="text-center text-muted">Memuat data nilai...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB MENU BARU: ANALISIS SOAL -->
+      <div id="tabGuruAnalisis" class="d-none">
+        <div class="card card-cbt p-3 p-md-4 mb-4">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+              <h6 class="fw-bold mb-1"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Matriks Analisis Jawaban Per Nomor Soal</h6>
+              <p class="text-muted small mb-0">Indikator <span class="badge bg-success">✓</span> = Jawab Benar, <span class="badge bg-danger">✗</span> = Jawab Salah.</p>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle small text-center" id="tabelMatriksAnalisis">
+              <thead class="table-light">
+                <tr id="headerMatriksAnalisis">
+                  <th>NO</th>
+                  <th>NAMA PESERTA</th>
+                  <th>KELAS</th>
+                  <th>SKOR</th>
+                </tr>
+              </thead>
+              <tbody id="bodyMatriksAnalisis">
+                <tr><td colspan="4" class="text-center text-muted">Memuat data analisis...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card card-cbt p-3 p-md-4">
+          <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line-fill text-warning me-2"></i>Tingkat Keberhasilan / Kesukaran Per Nomor Soal</h6>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle small">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center" style="width: 80px;">NO SOAL</th>
+                  <th class="text-center">JUMLAH BENAR</th>
+                  <th class="text-center">JUMLAH SALAH</th>
+                  <th class="text-center">PERSENTASE BENAR</th>
+                  <th class="text-center">KATEGORI TINGKAT SOAL</th>
+                </tr>
+              </thead>
+              <tbody id="bodyStatSoalAnalisis">
+                <tr><td colspan="5" class="text-center text-muted">Belum ada data pengerjaan.</td></tr>
               </tbody>
             </table>
           </div>
@@ -799,6 +863,27 @@
   </div>
 </div>
 
+<!-- MODAL ANALISIS RINCIAN SOAL PER PESERTA -->
+<div class="modal fade" id="modalAnalisisPeserta" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header text-white" style="background:var(--primary-color)">
+        <div>
+          <h6 class="modal-title fw-bold text-white"><i class="bi bi-file-earmark-person me-2"></i>Rincian Jawaban: <span id="modalAnalisisNamaSiswa">-</span></h6>
+          <small class="text-white-50" id="modalAnalisisKelasSiswa">Kelas: -</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3 p-md-4">
+        <div id="listRincianAnalisisContainer"></div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary btn-sm fw-bold" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   // PASTE URL WEB APP APPS SCRIPT ANDA DI SINI
@@ -820,7 +905,7 @@
 
   let sisaWaktu = 60 * 60; 
   let timerInterval;
-  let modalLoginObj, modalEditObj, modalPreviewObj;
+  let modalLoginObj, modalEditObj, modalPreviewObj, modalAnalisisPesertaObj;
 
   let isUjianAktifMode = false;
   let jumlahPelanggaran = 0;
@@ -841,6 +926,7 @@
     modalLoginObj = new bootstrap.Modal(document.getElementById('modalLogin'));
     modalEditObj = new bootstrap.Modal(document.getElementById('modalEditSoal'));
     modalPreviewObj = new bootstrap.Modal(document.getElementById('modalPreview'));
+    modalAnalisisPesertaObj = new bootstrap.Modal(document.getElementById('modalAnalisisPeserta'));
 
     if (sessionStorage.getItem("isGuruLoggedIn") === "true") {
       bukaModeGuru();
@@ -1146,6 +1232,7 @@
     }
     
     document.getElementById('tabGuruRekap').classList.add('d-none');
+    document.getElementById('tabGuruAnalisis').classList.add('d-none');
     document.getElementById('tabGuruSetting').classList.add('d-none');
     document.getElementById('tabGuruArsip').classList.add('d-none');
     document.getElementById('tabGuruBankSoal').classList.add('d-none');
@@ -1153,6 +1240,9 @@
     if (tab === 'rekap') {
       document.getElementById('tabGuruRekap').classList.remove('d-none');
       loadDataRekapGuru();
+    } else if (tab === 'analisis') {
+      document.getElementById('tabGuruAnalisis').classList.remove('d-none');
+      renderMenuAnalisisSoal();
     } else if (tab === 'setting') {
       document.getElementById('tabGuruSetting').classList.remove('d-none');
       applyConfigToUI();
@@ -1223,17 +1313,29 @@
       if(pageData.length === 0) {
         html = '<tr><td colspan="9" class="text-center text-muted">Belum ada data peserta.</td></tr>';
       } else {
-        pageData.forEach(item => {
+        pageData.forEach((item, pIdx) => {
+          let realIdx = start + pIdx;
           html += `<tr>
             <td>${item.no}</td>
             <td class="fw-bold">${item.nama}</td>
             <td>${item.kelas}</td>
             <td>${item.waktu}</td>
-            <td class="text-success fw-bold">${item.benar}</td>
-            <td class="text-danger fw-bold">${item.salah}</td>
+            <td>
+              <span class="badge bg-success badge-clickable" title="Klik untuk lihat analisis soal" onclick="bukaModalAnalisisSiswa(${realIdx})">
+                <i class="bi bi-check-circle me-1"></i>${item.benar}
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-danger badge-clickable" title="Klik untuk lihat analisis soal" onclick="bukaModalAnalisisSiswa(${realIdx})">
+                <i class="bi bi-x-circle me-1"></i>${item.salah}
+              </span>
+            </td>
             <td><span class="badge bg-warning text-dark fw-bold">${item.pelanggaran}</span></td>
-            <td class="fw-bold text-primary">${item.nilai}</td>
+            <td class="fw-bold text-primary fs-6">${item.nilai}</td>
             <td class="text-center">
+              <button class="btn btn-outline-primary btn-sm p-1 px-2 me-1" title="Analisis Jawaban" onclick="bukaModalAnalisisSiswa(${realIdx})">
+                <i class="bi bi-search"></i>
+              </button>
               <button class="btn btn-outline-danger btn-sm p-1 px-2" title="Hapus" onclick="hapusSatuPeserta(${item.sheetRow}, '${item.nama}')">
                 <i class="bi bi-trash"></i>
               </button>
@@ -1320,6 +1422,169 @@
       renderPaginatedTable('arsip');
       renderPaginatedTable('arsipSoal');
     });
+  }
+
+  // FUNGSI MEMBUKA MODAL ANALISIS SOAL INDIVIDUAL PER PESERTA
+  function bukaModalAnalisisSiswa(realIndex) {
+    const sData = masterDataSiswa[realIndex];
+    if (!sData) return;
+
+    document.getElementById('modalAnalisisNamaSiswa').innerText = sData.nama;
+    document.getElementById('modalAnalisisKelasSiswa').innerText = `Kelas: ${sData.kelas} • Skor: ${sData.nilai} (${sData.benar} Benar / ${sData.salah} Salah)`;
+
+    const container = document.getElementById('listRincianAnalisisContainer');
+    const rincian = sData.rincianJawaban || [];
+
+    if (!rincian || rincian.length === 0) {
+      container.innerHTML = `<div class="alert alert-warning py-3 text-center mb-0">
+        <b>Data Rincian Tidak Tersedia!</b><br>
+        <small>Peserta ini mengerjakan ujian sebelum fitur Analisis Soal diaktifkan.</small>
+      </div>`;
+    } else {
+      let html = '';
+      rincian.forEach((item) => {
+        let statusBadge = item.isCorrect 
+          ? `<span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill me-1"></i> BENAR</span>` 
+          : `<span class="badge bg-danger fs-6"><i class="bi bi-x-circle-fill me-1"></i> SALAH</span>`;
+
+        let userJwbStr = item.jawabanUser !== null && item.jawabanUser !== undefined
+          ? `${String.fromCharCode(65 + item.jawabanUser)}. ${item.pilihan[item.jawabanUser] || ''}`
+          : `<i class="text-muted">Tidak Dijawab</i>`;
+
+        let kunciJwbStr = `${String.fromCharCode(65 + item.kunciBenar)}. ${item.pilihan[item.kunciBenar] || ''}`;
+
+        html += `<div class="card mb-3 border ${item.isCorrect ? 'border-success-subtle bg-success-subtle' : 'border-danger-subtle bg-danger-subtle'}" style="--bs-bg-opacity: 0.15;">
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold mb-0">Soal No. ${item.no}</h6>
+              ${statusBadge}
+            </div>
+            <p class="fw-medium small mb-2">${item.soal}</p>
+            ${item.imageUrl ? `<div class="mb-2"><img src="${item.imageUrl}" class="img-fluid rounded border" style="max-height:140px"></div>` : ''}
+            
+            <div class="row g-2 mt-2 pt-2 border-top small">
+              <div class="col-12 col-md-6">
+                <div class="p-2 rounded bg-white border">
+                  <small class="text-muted d-block fw-bold mb-1">Jawaban Peserta:</small>
+                  <span class="${item.isCorrect ? 'text-success fw-bold' : 'text-danger fw-bold'}">${userJwbStr}</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="p-2 rounded bg-white border">
+                  <small class="text-muted d-block fw-bold mb-1">Kunci Jawaban Benar:</small>
+                  <span class="text-success fw-bold">${kunciJwbStr}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    modalAnalisisPesertaObj.show();
+  }
+
+  // FUNGSI MEMBUAT TABEL MENUMATRIKS ANALISIS SOAL
+  function renderMenuAnalisisSoal() {
+    if (masterDataSiswa.length === 0) {
+      document.getElementById('bodyMatriksAnalisis').innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data pengerjaan siswa.</td></tr>`;
+      document.getElementById('bodyStatSoalAnalisis').innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data pengerjaan siswa.</td></tr>`;
+      return;
+    }
+
+    // Cari max total soal dari rincian
+    let maxSoal = 0;
+    masterDataSiswa.forEach(s => {
+      if (s.rincianJawaban && s.rincianJawaban.length > maxSoal) {
+        maxSoal = s.rincianJawaban.length;
+      }
+    });
+
+    if (maxSoal === 0) {
+      document.getElementById('bodyMatriksAnalisis').innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Data rincian analisis belum ada pada peserta aktif.</td></tr>`;
+      document.getElementById('bodyStatSoalAnalisis').innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Data rincian analisis belum ada pada peserta aktif.</td></tr>`;
+      return;
+    }
+
+    // Render Header Matriks
+    let headHtml = `<th>NO</th><th>NAMA PESERTA</th><th>KELAS</th><th>SKOR</th>`;
+    for (let i = 1; i <= maxSoal; i++) {
+      headHtml += `<th class="text-center">S${i}</th>`;
+    }
+    document.getElementById('headerMatriksAnalisis').innerHTML = headHtml;
+
+    // Render Body Matriks & Hitung Statistik Per Soal
+    let statSoalMap = {};
+    for (let i = 1; i <= maxSoal; i++) {
+      statSoalMap[i] = { benar: 0, salah: 0 };
+    }
+
+    let bodyMatriksHtml = '';
+    masterDataSiswa.forEach((s, idx) => {
+      bodyMatriksHtml += `<tr>
+        <td>${idx + 1}</td>
+        <td class="fw-bold text-start">${s.nama}</td>
+        <td>${s.kelas}</td>
+        <td class="fw-bold text-primary">${s.nilai}</td>`;
+
+      const rincian = s.rincianJawaban || [];
+      for (let i = 1; i <= maxSoal; i++) {
+        const itemS = rincian.find(r => r.no === i);
+        if (itemS) {
+          if (itemS.isCorrect) {
+            statSoalMap[i].benar++;
+            bodyMatriksHtml += `<td class="table-success text-success fw-bold">✓</td>`;
+          } else {
+            statSoalMap[i].salah++;
+            bodyMatriksHtml += `<td class="table-danger text-danger fw-bold">✗</td>`;
+          }
+        } else {
+          bodyMatriksHtml += `<td class="text-muted">-</td>`;
+        }
+      }
+      bodyMatriksHtml += `</tr>`;
+    });
+    document.getElementById('bodyMatriksAnalisis').innerHTML = bodyMatriksHtml;
+
+    // Render Tabel Tingkat Kesukaran Soal
+    let bodyStatHtml = '';
+    for (let i = 1; i <= maxSoal; i++) {
+      const totalS = statSoalMap[i].benar + statSoalMap[i].salah;
+      const pct = totalS > 0 ? Math.round((statSoalMap[i].benar / totalS) * 100) : 0;
+      
+      let kategori = '';
+      let badgeKategori = '';
+      if (pct >= 80) {
+        kategori = 'Sangat Mudah';
+        badgeKategori = 'bg-info text-dark';
+      } else if (pct >= 60) {
+        kategori = 'Mudah';
+        badgeKategori = 'bg-success';
+      } else if (pct >= 40) {
+        kategori = 'Sedang';
+        badgeKategori = 'bg-primary';
+      } else if (pct >= 20) {
+        kategori = 'Sukar';
+        badgeKategori = 'bg-warning text-dark';
+      } else {
+        kategori = 'Sangat Sukar';
+        badgeKategori = 'bg-danger';
+      }
+
+      bodyStatHtml += `<tr>
+        <td class="fw-bold text-center">Soal ${i}</td>
+        <td class="text-center text-success fw-bold">${statSoalMap[i].benar} Siswa</td>
+        <td class="text-center text-danger fw-bold">${statSoalMap[i].salah} Siswa</td>
+        <td class="text-center">
+          <div class="progress" style="height: 18px;">
+            <div class="progress-bar ${pct < 40 ? 'bg-danger' : 'bg-success'}" style="width: ${pct}%">${pct}%</div>
+          </div>
+        </td>
+        <td class="text-center"><span class="badge ${badgeKategori}">${kategori}</span></td>
+      </tr>`;
+    }
+    document.getElementById('bodyStatSoalAnalisis').innerHTML = bodyStatHtml;
   }
 
   function hapusSatuPeserta(sheetRow, namaSiswa) {
@@ -1585,7 +1850,6 @@
     modalPreviewObj.show();
   }
 
-  // FUNGSI UNTUK MEMBUKA MODAL EDIT SOAL LENGKAP DENGAN TOMBOL HAPUS GAMBAR
   function bukaModalEditSoal(idx) {
     const item = rawBankSoal[idx];
     document.getElementById('modalNoSoal').innerText = idx + 1;
@@ -1639,14 +1903,12 @@
     modalEditObj.show();
   }
 
-  // FUNGSI AKSI HAPUS GAMBAR SOAL STIMULUS DARI MODAL EDIT
   function hapusGambarSoalModal() {
     document.getElementById('editRemoveSoalImage').value = 'true';
     document.getElementById('previewGambarModal').classList.add('d-none');
     document.getElementById('imgModalPreview').src = '';
   }
 
-  // FUNGSI AKSI HAPUS GAMBAR OPSI DARI MODAL EDIT
   function hapusGambarOpsiModal(pIdx) {
     document.getElementById(`modalPilihanExisting_${pIdx}`).value = '';
     document.getElementById(`boxImgOpsiPreview_${pIdx}`).classList.replace('d-flex', 'd-none');
