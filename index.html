@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>TRY OUT BAHASA INDONESIA</title>
- <!-- FAVICON DARI GOOGLE DRIVE -->
-<link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1mplZAkzyhqBlO2ENydXsShY-5CtlIKwY">
-<link rel="shortcut icon" type="image/png" href="https://lh3.googleusercontent.com/d/1mplZAkzyhqBlO2ENydXsShY-5CtlIKwY">
+  
+  <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1mplZAkzyhqBlO2ENydXsShY-5CtlIKwY">
+  <link rel="shortcut icon" type="image/png" href="https://lh3.googleusercontent.com/d/1mplZAkzyhqBlO2ENydXsShY-5CtlIKwY">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -203,13 +203,17 @@
       z-index: 1005;
     }
 
-    /* BADGE KLIK BENAR SALAH */
     .badge-clickable {
       cursor: pointer;
       transition: transform 0.15s ease;
     }
     .badge-clickable:hover {
       transform: scale(1.1);
+    }
+
+    .link-arsip-clickable {
+      cursor: pointer;
+      text-decoration: underline;
     }
 
     @media (max-width: 991.98px) {
@@ -510,7 +514,7 @@
         </div>
       </div>
 
-      <!-- TAB MENU BARU: ANALISIS SOAL -->
+      <!-- TAB ANALISIS SOAL -->
       <div id="tabGuruAnalisis" class="d-none">
         <div class="card card-cbt p-3 p-md-4 mb-4">
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -643,13 +647,48 @@
 
       <!-- TAB ARSIP NILAI -->
       <div id="tabGuruArsip" class="d-none">
-        <div class="card card-cbt p-3 p-md-4">
+        
+        <!-- DUA TAMPILAN ARSIP: LIST SESI & LIST PESERTA SESI -->
+        
+        <!-- TAMPILAN 1: DAFTAR SESI KUMPULAN ARSIP -->
+        <div id="viewDaftarSesiArsip" class="card card-cbt p-3 p-md-4 mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div>
-              <h6 class="fw-bold mb-1"><i class="bi bi-archive-fill text-warning me-2"></i>Arsip Rekapitulasi Ujian</h6>
-              <p class="text-muted small mb-0">Seluruh data rekap nilai ujian terdahulu tersimpan rapi di sini.</p>
+              <h6 class="fw-bold mb-1"><i class="bi bi-archive-fill text-warning me-2"></i>Daftar Arsip Nilai Ujian Terdahulu</h6>
+              <p class="text-muted small mb-0">Klik pada label nama ujian atau tombol Buka untuk melihat rincian nama peserta.</p>
             </div>
-            <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelArsipNilai', 'Arsip_Nilai_CBT.csv')"><i class="bi bi-download me-1"></i> Unduh CSV</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle small" id="tabelDaftarSesiArsip">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 50px;">NO</th>
+                  <th>LABEL / UJIAN</th>
+                  <th>TANGGAL PENGARSIPAN</th>
+                  <th class="text-center">JUMLAH PESERTA</th>
+                  <th class="text-center" style="width: 100px;">LINK</th>
+                </tr>
+              </thead>
+              <tbody id="bodyDaftarSesiArsip">
+                <tr><td colspan="5" class="text-center text-muted py-3">Memuat daftar arsip...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAMPILAN 2: DAFTAR NAMA PESERTA ARSIP SESI YANG DIPILIH -->
+        <div id="viewDetailSesiArsip" class="card card-cbt p-3 p-md-4 d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 border-bottom pb-3">
+            <div>
+              <button class="btn btn-outline-secondary btn-sm fw-bold mb-2" onclick="kembaliKeDaftarSesiArsip()">
+                <i class="bi bi-arrow-left me-1"></i> Kembali ke Daftar Paket Arsip
+              </button>
+              <h5 class="fw-bold text-primary mb-0" id="titleSesiArsipAktif">Daftar Nilai Arsip</h5>
+            </div>
+            <button class="btn btn-success btn-sm fw-bold" onclick="exportTableToCSV('tabelDetailPesertaArsip', 'Daftar_Arsip_Nilai_Peserta.csv')">
+              <i class="bi bi-download me-1"></i> Unduh CSV / Excel
+            </button>
           </div>
 
           <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
@@ -672,8 +711,8 @@
           </div>
 
           <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle small" id="tabelArsipNilai">
-              <thead class="table-secondary">
+            <table class="table table-bordered table-hover align-middle small" id="tabelDetailPesertaArsip">
+              <thead class="table-light">
                 <tr>
                   <th>NO</th>
                   <th>LABEL / UJIAN</th>
@@ -687,11 +726,12 @@
                 </tr>
               </thead>
               <tbody id="bodyArsipNilai">
-                <tr><td colspan="9" class="text-center text-muted">Memuat arsip...</td></tr>
+                <tr><td colspan="9" class="text-center text-muted">Belum ada peserta di arsip ini.</td></tr>
               </tbody>
             </table>
           </div>
         </div>
+
       </div>
 
       <!-- Tab Bank Soal -->
@@ -915,6 +955,7 @@
   let masterDataSiswa = [];
   let masterDataArsip = [];
   let masterDataArsipSoal = [];
+  let filteredArsipPeserta = [];
 
   let paginationState = {
     rekap: { page: 1, pageSize: 25 },
@@ -1284,7 +1325,7 @@
   }
 
   function nextPage(type) {
-    const totalItems = type === 'rekap' ? masterDataSiswa.length : (type === 'arsip' ? masterDataArsip.length : masterDataArsipSoal.length);
+    const totalItems = type === 'rekap' ? masterDataSiswa.length : (type === 'arsip' ? filteredArsipPeserta.length : masterDataArsipSoal.length);
     const maxPage = Math.ceil(totalItems / paginationState[type].pageSize) || 1;
     if (paginationState[type].page < maxPage) {
       paginationState[type].page++;
@@ -1349,25 +1390,25 @@
       const { page, pageSize } = paginationState.arsip;
       const start = (page - 1) * pageSize;
       const end = start + pageSize;
-      const pageData = masterDataArsip.slice(start, end);
-      const totalPages = Math.ceil(masterDataArsip.length / pageSize) || 1;
+      const pageData = filteredArsipPeserta.slice(start, end);
+      const totalPages = Math.ceil(filteredArsipPeserta.length / pageSize) || 1;
 
       document.getElementById('pageInfoArsip').innerText = `Hal ${page} dari ${totalPages}`;
 
       let htmlArsip = '';
       if(pageData.length === 0) {
-        htmlArsip = '<tr><td colspan="9" class="text-center text-muted">Belum ada arsip.</td></tr>';
+        htmlArsip = '<tr><td colspan="9" class="text-center text-muted">Belum ada peserta pada arsip ini.</td></tr>';
       } else {
-        pageData.forEach(a => {
+        pageData.forEach((a, idx) => {
           htmlArsip += `<tr>
-            <td>${a.no}</td>
-            <td><span class="badge bg-primary">${a.label}</span></td>
+            <td>${start + idx + 1}</td>
+            <td><span class="badge bg-primary px-2 py-1">${a.label}</span></td>
             <td class="fw-bold">${a.nama}</td>
             <td>${a.kelas}</td>
-            <td class="fw-bold text-success">${a.nilai}</td>
+            <td class="fw-bold text-success fs-6">${a.nilai}</td>
             <td>${a.benarSalah}</td>
             <td>${a.waktu}</td>
-            <td>${a.pelanggaran}</td>
+            <td><span class="badge bg-warning text-dark">${a.pelanggaran}</span></td>
             <td class="small text-muted">${a.tglArsip}</td>
           </tr>`;
         });
@@ -1385,7 +1426,7 @@
 
       let htmlArsipSoal = '';
       if(pageData.length === 0) {
-        htmlArsipSoal = '<tr><td colspan="5" class="text-center text-muted">Belum ada arsip soal.</td></tr>';
+        htmlArsipSoal = '<tr><td colspan="5" class="text-center text-muted">Belum ada paket soal yang diarsipkan.</td></tr>';
       } else {
         pageData.forEach(s => {
           htmlArsipSoal += `<tr>
@@ -1418,13 +1459,82 @@
       masterDataArsip = res.arsip || [];
       masterDataArsipSoal = res.arsipSoal || [];
 
+      renderDaftarSesiArsip();
       renderPaginatedTable('rekap');
-      renderPaginatedTable('arsip');
       renderPaginatedTable('arsipSoal');
     });
   }
 
-  // FUNGSI MEMBUKA MODAL ANALISIS SOAL INDIVIDUAL PER PESERTA
+  // FUNGSI MENAMPILKAN TABEL DAFTAR SESI ARSIP
+  function renderDaftarSesiArsip() {
+    const container = document.getElementById('bodyDaftarSesiArsip');
+    if (!masterDataArsip || masterDataArsip.length === 0) {
+      container.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">Belum ada daftar arsip nilai ujian.</td></tr>`;
+      return;
+    }
+
+    // Kelompokkan data arsip berdasarkan Label/Ujian & TglArsip
+    let sesiMap = {};
+    masterDataArsip.forEach(item => {
+      let key = item.label + "___" + item.tglArsip;
+      if (!sesiMap[key]) {
+        sesiMap[key] = {
+          label: item.label,
+          tglArsip: item.tglArsip,
+          count: 0
+        };
+      }
+      sesiMap[key].count++;
+    });
+
+    let keys = Object.keys(sesiMap);
+    let html = '';
+    keys.forEach((k, idx) => {
+      let s = sesiMap[k];
+      let safeLabel = encodeURIComponent(s.label);
+      let safeTgl = encodeURIComponent(s.tglArsip);
+
+      html += `<tr>
+        <td>${idx + 1}</td>
+        <td>
+          <span class="badge bg-primary px-2 py-1 link-arsip-clickable" onclick="bukaDetailSesiArsip('${safeLabel}', '${safeTgl}')">
+            ${s.label}
+          </span>
+        </td>
+        <td>${s.tglArsip}</td>
+        <td class="text-center fw-bold">${s.count} Peserta</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-primary fw-bold px-3" onclick="bukaDetailSesiArsip('${safeLabel}', '${safeTgl}')">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Buka
+          </button>
+        </td>
+      </tr>`;
+    });
+
+    container.innerHTML = html;
+  }
+
+  // FUNGSI MEMBUKA DAFTAR PESERTA PER SESI ARSIP
+  function bukaDetailSesiArsip(encodedLabel, encodedTgl) {
+    const label = decodeURIComponent(encodedLabel);
+    const tgl = decodeURIComponent(encodedTgl);
+
+    filteredArsipPeserta = masterDataArsip.filter(a => a.label === label && a.tglArsip === tgl);
+
+    document.getElementById('titleSesiArsipAktif').innerHTML = `<i class="bi bi-folder2-open text-warning me-2"></i> ${label} <small class="fs-6 text-muted">(${tgl})</small>`;
+    
+    document.getElementById('viewDaftarSesiArsip').classList.add('d-none');
+    document.getElementById('viewDetailSesiArsip').classList.remove('d-none');
+
+    paginationState.arsip.page = 1;
+    renderPaginatedTable('arsip');
+  }
+
+  function kembaliKeDaftarSesiArsip() {
+    document.getElementById('viewDetailSesiArsip').classList.add('d-none');
+    document.getElementById('viewDaftarSesiArsip').classList.remove('d-none');
+  }
+
   function bukaModalAnalisisSiswa(realIndex) {
     const sData = masterDataSiswa[realIndex];
     if (!sData) return;
@@ -1485,7 +1595,6 @@
     modalAnalisisPesertaObj.show();
   }
 
-  // FUNGSI MEMBUAT TABEL MENUMATRIKS ANALISIS SOAL
   function renderMenuAnalisisSoal() {
     if (masterDataSiswa.length === 0) {
       document.getElementById('bodyMatriksAnalisis').innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data pengerjaan siswa.</td></tr>`;
@@ -1493,7 +1602,6 @@
       return;
     }
 
-    // Cari max total soal dari rincian
     let maxSoal = 0;
     masterDataSiswa.forEach(s => {
       if (s.rincianJawaban && s.rincianJawaban.length > maxSoal) {
@@ -1507,14 +1615,12 @@
       return;
     }
 
-    // Render Header Matriks
     let headHtml = `<th>NO</th><th>NAMA PESERTA</th><th>KELAS</th><th>SKOR</th>`;
     for (let i = 1; i <= maxSoal; i++) {
       headHtml += `<th class="text-center">S${i}</th>`;
     }
     document.getElementById('headerMatriksAnalisis').innerHTML = headHtml;
 
-    // Render Body Matriks & Hitung Statistik Per Soal
     let statSoalMap = {};
     for (let i = 1; i <= maxSoal; i++) {
       statSoalMap[i] = { benar: 0, salah: 0 };
@@ -1547,7 +1653,6 @@
     });
     document.getElementById('bodyMatriksAnalisis').innerHTML = bodyMatriksHtml;
 
-    // Render Tabel Tingkat Kesukaran Soal
     let bodyStatHtml = '';
     for (let i = 1; i <= maxSoal; i++) {
       const totalS = statSoalMap[i].benar + statSoalMap[i].salah;
@@ -1673,7 +1778,7 @@
     .then(res => res.json())
     .then(res => {
       if(res.success) {
-        alert(`Berhasil mengarsipkan ${res.count} data nilai.`);
+        Swal.fire({ icon: 'success', title: 'Berhasil Diarsipkan!', text: `Berhasil mengarsipkan ${res.count} data nilai.` });
         loadDataRekapGuru();
       } else {
         alert("Gagal mengarsipkan: " + res.error);
@@ -1918,7 +2023,7 @@
     e.preventDefault();
     const btn = document.getElementById('btnSimpanSoal');
     btn.disabled = true;
-    btn.innerText = "Menyimpan...";
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...`;
 
     const itemId = document.getElementById('editItemId').value;
     const soalTeks = document.getElementById('editSoalTeks').value;
@@ -1977,6 +2082,7 @@
     });
   }
 
+  // UPDATE BACKEND DENGAN NOTIFIKASI CEKLIST (SWEETALERT2)
   function kirimUpdateKeBackend(payload) {
     payload.action = "updateSoal";
 
@@ -1992,10 +2098,25 @@
 
       if (res.success) {
         modalEditObj.hide();
-        alert("Soal berhasil diperbarui!");
+        
+        // POP UP NOTIFIKASI CEKLIST (SWEETALERT2)
+        Swal.fire({
+          icon: 'success',
+          title: 'Soal Berhasil Diperbarui!',
+          text: 'Perubahan soal dan kunci jawaban telah tersimpan secara otomatis.',
+          confirmButtonColor: 'var(--primary-color)',
+          timer: 2000,
+          timerProgressBar: true
+        });
+
         loadBankSoalGuru();
       } else {
-        alert("Gagal memperbarui: " + res.error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Memperbarui',
+          text: res.error || 'Terjadi kesalahan saat menyimpan soal.',
+          confirmButtonColor: '#dc2626'
+        });
       }
     });
   }
