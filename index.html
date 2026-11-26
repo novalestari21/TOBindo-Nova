@@ -129,6 +129,16 @@
       padding-left: 1.6rem;
       margin: 0.35rem 0;
     }
+    .soal-unified-text ol[type="a"] { list-style-type: lower-alpha; }
+    .soal-unified-text ol[type="A"] { list-style-type: upper-alpha; }
+    .opsi-unified-text {
+      font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
     .soal-unified-text blockquote {
       border-left: 4px solid #6366f1;
       background: #f8fafc;
@@ -1176,7 +1186,9 @@
                 </div>
                 <div class="btn-group btn-group-sm">
                   <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'insertUnorderedList')" title="Daftar Poin"><i class="bi bi-list-ul"></i></button>
-                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'insertOrderedList')" title="Daftar Nomor"><i class="bi bi-list-ol"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'insertOrderedList')" title="Penomoran Angka (1, 2, 3)"><i class="bi bi-list-ol"></i></button>
+                  <button type="button" class="btn fw-bold" onclick="insertAlphaList('tambahSoalTeks', 'a')" title="Penomoran Huruf Kecil (a, b, c)">a.</button>
+                  <button type="button" class="btn fw-bold" onclick="insertAlphaList('tambahSoalTeks', 'A')" title="Penomoran Huruf Kapital (A, B, C)">A.</button>
                   <button type="button" class="btn" onclick="insertTabIndent('tambahSoalTeks')" title="Sisipkan Tab / Indentasi"><i class="bi bi-text-indent-left"></i></button>
                   <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'formatBlock', 'blockquote')" title="Kotak Kutipan Bacaan"><i class="bi bi-quote"></i></button>
                 </div>
@@ -1268,7 +1280,9 @@
                 </div>
                 <div class="btn-group btn-group-sm">
                   <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'insertUnorderedList')" title="Daftar Poin"><i class="bi bi-list-ul"></i></button>
-                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'insertOrderedList')" title="Daftar Nomor"><i class="bi bi-list-ol"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'insertOrderedList')" title="Penomoran Angka (1, 2, 3)"><i class="bi bi-list-ol"></i></button>
+                  <button type="button" class="btn fw-bold" onclick="insertAlphaList('editSoalTeks', 'a')" title="Penomoran Huruf Kecil (a, b, c)">a.</button>
+                  <button type="button" class="btn fw-bold" onclick="insertAlphaList('editSoalTeks', 'A')" title="Penomoran Huruf Kapital (A, B, C)">A.</button>
                   <button type="button" class="btn" onclick="insertTabIndent('editSoalTeks')" title="Sisipkan Tab / Indentasi"><i class="bi bi-text-indent-left"></i></button>
                   <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'formatBlock', 'blockquote')" title="Kotak Kutipan Bacaan"><i class="bi bi-quote"></i></button>
                 </div>
@@ -1535,6 +1549,33 @@
     if (!editor) return;
     editor.focus();
     document.execCommand('insertHTML', false, '&nbsp;&nbsp;&nbsp;&nbsp;');
+  }
+
+  function insertAlphaList(editorId, alphaType) {
+    const editor = document.getElementById(editorId);
+    if (!editor) return;
+    editor.focus();
+    document.execCommand('insertOrderedList', false, null);
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      let node = sel.getRangeAt(0).startContainer;
+      while (node && node !== editor) {
+        if (node.nodeName === 'OL') {
+          node.setAttribute('type', alphaType);
+          break;
+        }
+        node = node.parentNode;
+      }
+    }
+  }
+
+  function formatOpsiHtml(raw) {
+    if (!raw) return "";
+    return String(raw)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\r?\n/g, "<br>");
   }
 
   function getEditorCleanHtml(editorId) {
@@ -2635,15 +2676,15 @@
         return `
           <div class="d-flex align-items-start gap-2 mb-1 small ${isKunci ? 'fw-bold text-success' : 'text-secondary'}">
             <span>${hurufs[pIdx]}.</span>
-            <div>
-              <span>${pil || ''}</span>
+            <div class="opsi-unified-text">
+              <span>${formatOpsiHtml(pil)}</span>
               ${isKunci ? '<span class="badge bg-success ms-1">Kunci ✓</span>' : ''}
               ${opsiImg ? `<img src="${opsiImg}" class="img-opsi-preview">` : ''}
             </div>
           </div>
         `;
       }).join("");
-
+      
       return `
         <div id="card-soal-${s.itemId}" class="soal-item-card shadow-sm ${isDisabled ? 'soal-disabled' : ''} ${isChecked ? 'soal-checked' : ''} ${isJustUpdated ? 'soal-just-updated' : ''}"
              draggable="true"
@@ -2936,14 +2977,14 @@
     const hurufs = ['A', 'B', 'C', 'D', 'E'];
     let html = "";
     for (let i = 0; i < opsiCountTambah; i++) {
-      const txtVal = (savedTexts[i] || "").replace(/"/g, '&quot;');
+      const txtVal = (savedTexts[i] || "").replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const isChecked = savedChecks.length > 0 ? savedChecks.includes(i) : (i === 0);
       html += `
         <div class="card p-2 mb-2 bg-light border">
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <input class="form-check-input mt-0 chk-kunci-tambah" type="checkbox" value="${i}" ${isChecked ? 'checked' : ''} title="Centang sebagai kunci jawaban">
-            <span class="fw-bold small">${hurufs[i]}.</span>
-            <input type="text" class="form-control form-control-sm inp-pilihan-tambah" value="${txtVal}" placeholder="Teks pilihan ${hurufs[i]}">
+          <div class="d-flex align-items-start gap-2 mb-1">
+            <input class="form-check-input mt-1 chk-kunci-tambah" type="checkbox" value="${i}" ${isChecked ? 'checked' : ''} title="Centang sebagai kunci jawaban">
+            <span class="fw-bold small mt-1">${hurufs[i]}.</span>
+            <textarea rows="2" class="form-control form-control-sm inp-pilihan-tambah" placeholder="Teks pilihan ${hurufs[i]} (bisa tekan Enter untuk baris baru)">${txtVal}</textarea>
           </div>
           <div class="ps-4">
             <input type="file" class="form-control form-control-sm inp-gambar-opsi-tambah" accept="image/*">
@@ -3149,14 +3190,15 @@
     container.innerHTML = pilihanList.map((pil, idx) => {
       const existingOpsiImg = (!editRemovePilihanImages[idx] && editExistingOpsiImgs[idx]) ? editExistingOpsiImgs[idx] : null;
       const canDeleteOpsi = (pilihanList.length > 2 && idx === pilihanList.length - 1);
+      const safeVal = (pil || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       return `
         <div class="card p-2 mb-2 bg-light border">
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <input class="form-check-input mt-0 chk-kunci-edit" type="checkbox" value="${idx}" ${kunciArr.includes(idx) ? 'checked' : ''} title="Centang sebagai kunci jawaban">
-            <span class="fw-bold small">${hurufs[idx]}.</span>
-            <input type="text" class="form-control form-control-sm inp-pilihan-edit" value="${(pil || '').replace(/"/g, '&quot;')}" placeholder="Teks pilihan ${hurufs[idx]}">
+          <div class="d-flex align-items-start gap-2 mb-1">
+            <input class="form-check-input mt-1 chk-kunci-edit" type="checkbox" value="${idx}" ${kunciArr.includes(idx) ? 'checked' : ''} title="Centang sebagai kunci jawaban">
+            <span class="fw-bold small mt-1">${hurufs[idx]}.</span>
+            <textarea rows="2" class="form-control form-control-sm inp-pilihan-edit" placeholder="Teks pilihan ${hurufs[idx]} (bisa tekan Enter untuk baris baru)">${safeVal}</textarea>
             ${canDeleteOpsi ? `
-              <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="hapusOpsiTerakhirEdit()" title="Hapus opsi ${hurufs[idx]}">
+              <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 mt-1" onclick="hapusOpsiTerakhirEdit()" title="Hapus opsi ${hurufs[idx]}">
                 <i class="bi bi-x-lg"></i>
               </button>
             ` : ''}
@@ -3386,24 +3428,34 @@
       imgBox.classList.add("d-none");
     }
 
-    document.getElementById("prevSoalTeks").innerHTML = sanitizeSoalHtml(s.pertanyaan);
     const hurufs = ['A', 'B', 'C', 'D', 'E'];
     const kunciArr = Array.isArray(s.kunci) ? s.kunci.map(Number) : [Number(s.kunci || 0)];
+    const isMulti = s.isMultiple || kunciArr.length > 1;
+
+    const multiHintHtml = isMulti
+      ? `<div class="alert alert-primary py-1 px-3 small mb-3"><i class="bi bi-check2-square me-1"></i> <b>Pilihan Ganda Kompleks:</b> Pilih lebih dari satu jawaban yang benar.</div>`
+      : "";
+
+    document.getElementById("prevSoalTeks").innerHTML = sanitizeSoalHtml(s.pertanyaan) + multiHintHtml;
 
     document.getElementById("prevPilihanContainer").innerHTML = (s.pilihan || []).map((pil, idx) => {
       const isKunci = kunciArr.includes(idx);
       const opsiImg = (s.pilihanImages && s.pilihanImages[idx]) ? s.pilihanImages[idx] : null;
       return `
         <div class="option-card ${isKunci ? 'border-success bg-success-subtle' : ''}">
-          <div class="fw-bold small mb-1">${hurufs[idx]}. ${pil || ''} ${isKunci ? '<span class="badge bg-success ms-1">Kunci</span>' : ''}</div>
-          ${opsiImg ? `<img src="${opsiImg}" class="img-opsi-preview">` : ''}
+          <div class="d-flex align-items-start gap-2">
+            <span class="fw-bold">${hurufs[idx]}.</span>
+            <div class="opsi-unified-text flex-grow-1">
+              <div>${formatOpsiHtml(pil)} ${isKunci ? '<span class="badge bg-success ms-1">Kunci ✓</span>' : ''}</div>
+              ${opsiImg ? `<img src="${opsiImg}" class="img-opsi-preview">` : ''}
+            </div>
+          </div>
         </div>
       `;
     }).join("");
 
     new bootstrap.Modal(document.getElementById("modalPreview")).show();
   }
-
   // --- ARSIP & PULIHKAN BANK SOAL ---
   async function prosesArsipBankSoal() {
     const { value: namaPaket } = await Swal.fire({
@@ -3821,8 +3873,8 @@
         <div class="option-card ${isSelected ? 'selected' : ''}" onclick="pilihJawaban(${pIdx})">
           <div class="d-flex align-items-start gap-2">
             <span class="fw-bold">${hurufs[pIdx]}.</span>
-            <div>
-              <div>${pil || ''}</div>
+            <div class="opsi-unified-text flex-grow-1">
+              <div>${formatOpsiHtml(pil)}</div>
               ${opsiImg ? `<img src="${opsiImg}" class="img-opsi-preview">` : ''}
             </div>
           </div>
