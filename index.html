@@ -105,6 +105,93 @@
 
     .stat-card { background: #fff; border-radius: 10px; padding: 16px; border-left: 5px solid var(--primary-color); }
     
+    /* =========================================================================
+       STANDAR TUNGGAL TAMPILAN TEKS SOAL (IDENTIK DI EDITOR, PREVIEW & SISWA)
+       ========================================================================= */
+    .soal-unified-text {
+      font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      line-height: 1.75;
+      color: #1e293b;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      tab-size: 4;
+      -moz-tab-size: 4;
+    }
+    .soal-unified-text p,
+    .soal-unified-text div {
+      margin: 0;
+      padding: 0;
+      min-height: 1.75em;
+    }
+    .soal-unified-text ul,
+    .soal-unified-text ol {
+      white-space: normal;
+      padding-left: 1.6rem;
+      margin: 0.35rem 0;
+    }
+    .soal-unified-text blockquote {
+      border-left: 4px solid #6366f1;
+      background: #f8fafc;
+      padding: 8px 14px;
+      margin: 6px 0;
+      border-radius: 0 6px 6px 0;
+      color: #334155;
+    }
+
+    /* RICH TEXT EDITOR & TOOLBAR */
+    .rich-editor-wrapper {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .rich-editor-wrapper:focus-within {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(67, 56, 202, 0.18);
+    }
+    .rich-toolbar {
+      background: #f1f5f9;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+    .rich-toolbar .btn-group {
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .rich-toolbar .btn {
+      padding: 3px 8px;
+      font-size: 0.85rem;
+      color: #334155;
+      background: #fff;
+      border-color: #cbd5e1;
+    }
+    .rich-toolbar .btn:hover {
+      background: #e0e7ff;
+      color: var(--primary-color);
+      border-color: #818cf8;
+    }
+    .rich-editor-box {
+      min-height: 150px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 14px 16px;
+      outline: none;
+      background: #fff;
+    }
+    .rich-editor-box:empty:before {
+      content: attr(data-placeholder);
+      color: #94a3b8;
+      pointer-events: none;
+      display: block;
+    }
+
     /* TAB JENJANG WORKSPACE */
     .jenjang-tab-btn {
       border: 2px solid #e2e8f0;
@@ -277,18 +364,9 @@
       z-index: 1005;
     }
 
-    .badge-clickable {
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-    .badge-clickable:hover {
-      transform: scale(1.1);
-    }
-
-    .link-arsip-clickable {
-      cursor: pointer;
-      text-decoration: underline;
-    }
+    .badge-clickable { cursor: pointer; transition: transform 0.15s ease; }
+    .badge-clickable:hover { transform: scale(1.1); }
+    .link-arsip-clickable { cursor: pointer; text-decoration: underline; }
 
     @media (max-width: 991.98px) {
       .guru-sidebar {
@@ -438,7 +516,8 @@
           <div id="soalImgContainer" class="mb-3 text-center d-none">
             <img id="soalImg" src="" class="img-fluid rounded border" style="max-height: 250px;">
           </div>
-          <div id="soalContainer" class="fs-6 fs-md-5 mb-3 fw-medium">Memuat soal...</div>
+          <!-- KELAS TERPADU AGAR SAMA PERSIS DENGAN PREVIEW & EDITOR GURU -->
+          <div id="soalContainer" class="mb-3 soal-unified-text">Memuat soal...</div>
           <div id="multiSelectHint" class="alert alert-primary py-1 px-3 small mb-3 d-none">
             <i class="bi bi-check2-square me-1"></i> <b>Pilihan Ganda Kompleks:</b> Pilih lebih dari satu jawaban yang benar.
           </div>
@@ -484,7 +563,6 @@
 
   <!-- PANEL GURU -->
   <div id="section-guru" class="guru-wrapper d-none">
-    
     <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleGuruSidebar()"></div>
 
     <!-- SIDEBAR KIRI -->
@@ -669,7 +747,6 @@
           <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-sliders me-2"></i>Pengaturan Aturan Ujian &amp; Multi-Jenjang</h5>
           <form id="formSettingUjian" onsubmit="simpanSettingUjian(event)">
 
-            <!-- PENGATURAN MULTI-JENJANG / KELAS BERSAMAAN -->
             <div class="card p-3 mb-3 border-primary bg-light">
               <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
                 <label class="form-check-label fw-bold small text-primary" for="cfgMultiJenjangAktif">
@@ -785,7 +862,6 @@
 
       <!-- TAB ARSIP NILAI -->
       <div id="tabGuruArsip" class="d-none">
-        
         <div id="viewDaftarSesiArsip" class="card card-cbt p-3 p-md-4 mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div>
@@ -865,13 +941,10 @@
             </table>
           </div>
         </div>
-
       </div>
 
-      <!-- TAB BANK SOAL (HALAMAN INPUT & EDIT SOAL PER JENJANG) -->
+      <!-- TAB BANK SOAL -->
       <div id="tabGuruBankSoal" class="d-none">
-        
-        <!-- HEADER GLOBAL BANK SOAL -->
         <div class="card card-cbt p-3 p-md-4 mb-3">
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
@@ -900,7 +973,6 @@
             </div>
           </div>
 
-          <!-- TAB PILIH HALAMAN JENJANG -->
           <div class="mt-3 pt-3 border-top">
             <small class="fw-bold text-muted d-block mb-2"><i class="bi bi-layers-fill text-primary me-1"></i> PILIH HALAMAN JENJANG / TINGKAT KELAS:</small>
             <div id="jenjangWorkspaceTabsContainer" class="d-flex flex-wrap gap-2"></div>
@@ -1031,12 +1103,10 @@
             </table>
           </div>
         </div>
-
       </div>
 
     </div>
   </div>
-
 </div>
 
 <!-- Modal Login Guru -->
@@ -1084,8 +1154,44 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold small">Teks Pertanyaan / Soal</label>
-            <textarea id="tambahSoalTeks" class="form-control" rows="3" required placeholder="Tuliskan pertanyaan soal di sini..."></textarea>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label fw-bold small mb-0">Teks Pertanyaan / Soal</label>
+              <small class="text-muted" style="font-size:0.75rem;">Tampilan di bawah 100% sama dengan Preview &amp; Layar Siswa</small>
+            </div>
+            <div class="rich-editor-wrapper">
+              <div class="rich-toolbar" onmousedown="event.preventDefault()">
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'bold')" title="Tebal (Ctrl+B)"><i class="bi bi-type-bold"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'italic')" title="Miring (Ctrl+I)"><i class="bi bi-type-italic"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'underline')" title="Garis Bawah (Ctrl+U)"><i class="bi bi-type-underline"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'strikeThrough')" title="Coret"><i class="bi bi-type-strikethrough"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'justifyLeft')" title="Rata Kiri"><i class="bi bi-text-left"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'justifyCenter')" title="Rata Tengah"><i class="bi bi-text-center"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'justifyRight')" title="Rata Kanan"><i class="bi bi-text-right"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'justifyFull')" title="Rata Kanan-Kiri (Justify)"><i class="bi bi-justify"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'insertUnorderedList')" title="Daftar Poin"><i class="bi bi-list-ul"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'insertOrderedList')" title="Daftar Nomor"><i class="bi bi-list-ol"></i></button>
+                  <button type="button" class="btn" onclick="insertTabIndent('tambahSoalTeks')" title="Sisipkan Tab / Indentasi"><i class="bi bi-text-indent-left"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'formatBlock', 'blockquote')" title="Kotak Kutipan Bacaan"><i class="bi bi-quote"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'fontSize', '4')" title="Huruf Besar"><i class="bi bi-fonts"></i>+</button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'fontSize', '3')" title="Huruf Normal"><i class="bi bi-fonts"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'foreColor', '#dc2626')" title="Warna Teks Merah"><span class="fw-bold text-danger">A</span></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'hiliteColor', '#fef08a')" title="Stabilo Kuning"><i class="bi bi-highlighter text-warning"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'subscript')" title="Subscript">X<sub>2</sub></button>
+                  <button type="button" class="btn" onclick="execRichCmd('tambahSoalTeks', 'superscript')" title="Superscript">X<sup>2</sup></button>
+                  <button type="button" class="btn text-danger" onclick="execRichCmd('tambahSoalTeks', 'removeFormat')" title="Hapus Format"><i class="bi bi-eraser-fill"></i></button>
+                </div>
+              </div>
+              <div id="tambahSoalTeks" class="rich-editor-box soal-unified-text" contenteditable="true" data-placeholder="Tuliskan pertanyaan soal di sini... Enter & spasi akan tampil persis sama di layar siswa."></div>
+            </div>
           </div>
 
           <div class="mb-3">
@@ -1140,8 +1246,44 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold small">Teks Pertanyaan / Soal</label>
-            <textarea id="editSoalTeks" class="form-control" rows="3" required></textarea>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label fw-bold small mb-0">Teks Pertanyaan / Soal</label>
+              <small class="text-muted" style="font-size:0.75rem;">Tampilan di bawah 100% sama dengan Preview &amp; Layar Siswa</small>
+            </div>
+            <div class="rich-editor-wrapper">
+              <div class="rich-toolbar" onmousedown="event.preventDefault()">
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'bold')" title="Tebal (Ctrl+B)"><i class="bi bi-type-bold"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'italic')" title="Miring (Ctrl+I)"><i class="bi bi-type-italic"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'underline')" title="Garis Bawah (Ctrl+U)"><i class="bi bi-type-underline"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'strikeThrough')" title="Coret"><i class="bi bi-type-strikethrough"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'justifyLeft')" title="Rata Kiri"><i class="bi bi-text-left"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'justifyCenter')" title="Rata Tengah"><i class="bi bi-text-center"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'justifyRight')" title="Rata Kanan"><i class="bi bi-text-right"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'justifyFull')" title="Rata Kanan-Kiri (Justify)"><i class="bi bi-justify"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'insertUnorderedList')" title="Daftar Poin"><i class="bi bi-list-ul"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'insertOrderedList')" title="Daftar Nomor"><i class="bi bi-list-ol"></i></button>
+                  <button type="button" class="btn" onclick="insertTabIndent('editSoalTeks')" title="Sisipkan Tab / Indentasi"><i class="bi bi-text-indent-left"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'formatBlock', 'blockquote')" title="Kotak Kutipan Bacaan"><i class="bi bi-quote"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'fontSize', '4')" title="Huruf Besar"><i class="bi bi-fonts"></i>+</button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'fontSize', '3')" title="Huruf Normal"><i class="bi bi-fonts"></i></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'foreColor', '#dc2626')" title="Warna Teks Merah"><span class="fw-bold text-danger">A</span></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'hiliteColor', '#fef08a')" title="Stabilo Kuning"><i class="bi bi-highlighter text-warning"></i></button>
+                </div>
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'subscript')" title="Subscript">X<sub>2</sub></button>
+                  <button type="button" class="btn" onclick="execRichCmd('editSoalTeks', 'superscript')" title="Superscript">X<sup>2</sup></button>
+                  <button type="button" class="btn text-danger" onclick="execRichCmd('editSoalTeks', 'removeFormat')" title="Hapus Format"><i class="bi bi-eraser-fill"></i></button>
+                </div>
+              </div>
+              <div id="editSoalTeks" class="rich-editor-box soal-unified-text" contenteditable="true" data-placeholder="Tuliskan pertanyaan soal di sini..."></div>
+            </div>
           </div>
 
           <div class="mb-3">
@@ -1185,7 +1327,7 @@
         <div id="prevSoalImgContainer" class="mb-3 text-center d-none">
           <img id="prevSoalImg" src="" class="img-fluid rounded border" style="max-height: 250px;">
         </div>
-        <div id="prevSoalTeks" class="fs-6 fs-md-5 mb-4 fw-medium"></div>
+        <div id="prevSoalTeks" class="mb-4 soal-unified-text"></div>
         <div id="prevPilihanContainer"></div>
       </div>
       <div class="modal-footer bg-light">
@@ -1207,7 +1349,6 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-3 p-md-4">
-        
         <div class="alert alert-info py-2 small mb-3">
           <b><i class="bi bi-info-circle me-1"></i> Ketentuan Format File Word:</b>
           <ul class="mb-0 ps-3">
@@ -1215,7 +1356,6 @@
             <li>Nomor soal diawali angka dan titik (misal: <code>1.</code> atau <code>1)</code>).</li>
             <li>Pilihan jawaban diawali huruf kapital (misal: <code>A.</code>, <code>B.</code>, <code>C.</code>, <code>D.</code>).</li>
             <li>Kunci jawaban ditulis di bawah pilihan: <code>Kunci: A</code> atau untuk lebih dari 1 jawaban: <code>Kunci: A, C</code>.</li>
-            <li>Gambar soal otomatis terbaca jika di-insert langsung di file Word.</li>
           </ul>
         </div>
 
@@ -1239,7 +1379,6 @@
           </div>
         </div>
 
-        <!-- PREVIEW PRE-UPLOAD -->
         <div id="boxPreviewWord" class="d-none">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h6 class="fw-bold mb-0 text-primary"><i class="bi bi-eye-fill me-1"></i> Preview Soal Terbaca (<span id="countWordSoal">0</span> Soal)</h6>
@@ -1259,7 +1398,6 @@
             </table>
           </div>
         </div>
-
       </div>
       <div class="modal-footer bg-light">
         <button type="button" class="btn btn-light btn-sm fw-bold" data-bs-dismiss="modal">Batal</button>
@@ -1353,6 +1491,77 @@
     arsipSoal: { page: 1, pageSize: 10 }
   };
 
+  // =========================================================================
+  // HELPER PEMFORMATAN TEKS SOAL (IDENTIK DI EDITOR, PREVIEW & LAYAR SISWA)
+  // =========================================================================
+  function formatSoalHtml(rawStr) {
+    if (!rawStr) return "";
+    let str = String(rawStr);
+    // Hapus potensi tag script berbahaya namun pertahankan seluruh format teks
+    str = str.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+    const hasHtmlTags = /<\/?(b|strong|i|em|u|s|strike|div|p|br|ul|ol|li|sub|sup|span|blockquote|font)\b[^>]*>/i.test(str);
+    if (hasHtmlTags) {
+      return str;
+    }
+    // Jika teks polos dari Google Form lama / Word, pertahankan baris baru & spasi
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function execRichCmd(editorId, command, value = null) {
+    const editor = document.getElementById(editorId);
+    if (!editor) return;
+    editor.focus();
+    if (command === 'formatBlock' && value === 'blockquote') {
+      const currentBlock = document.queryCommandValue('formatBlock');
+      if (currentBlock && currentBlock.toLowerCase() === 'blockquote') {
+        document.execCommand('formatBlock', false, 'div');
+        return;
+      }
+    }
+    document.execCommand(command, false, value);
+  }
+
+  function insertTabIndent(editorId) {
+    const editor = document.getElementById(editorId);
+    if (!editor) return;
+    editor.focus();
+    document.execCommand('insertText', false, '\u00A0\u00A0\u00A0\u00A0');
+  }
+
+  function getRichEditorCleanHtml(editorId) {
+    const editor = document.getElementById(editorId);
+    if (!editor) return "";
+    const plainCheck = editor.innerText.replace(/\u00A0/g, ' ').trim();
+    if (!plainCheck) return "";
+    return editor.innerHTML.trim();
+  }
+
+  function setupRichEditorEvents(editorId) {
+    const editor = document.getElementById(editorId);
+    if (!editor) return;
+
+    // Pastikan tombol Enter membuat <div> baris baru yang konsisten di semua browser
+    try { document.execCommand('defaultParagraphSeparator', false, 'div'); } catch (e) {}
+
+    // Tombol Tab menyisipkan 4 spasi non-breaking agar indentasi paragraf presisi
+    editor.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        document.execCommand('insertText', false, '\u00A0\u00A0\u00A0\u00A0');
+      }
+    });
+
+    // Tempel (Paste) teks polos agar Enter & spasi terjaga rapi tanpa membawa CSS luar
+    editor.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
+    });
+  }
+
   // --- HELPER AMBIL DATA SOAL & CONFIG SUPER CEPAT ---
   async function fetchMasterDataUjian(forceFresh = false) {
     if (!forceFresh && preloadedMasterResponse) {
@@ -1397,7 +1606,6 @@
       activeBankSoalJenjang = listJenjang[0];
     }
 
-    // 1. Dropdown Login Siswa
     const boxSiswa = document.getElementById('boxPilihJenjangSiswa');
     const selSiswa = document.getElementById('selectJenjangSiswa');
     if (boxSiswa && selSiswa) {
@@ -1416,7 +1624,6 @@
       }
     }
 
-    // 2. Dropdown Modal Tambah, Edit, Import Word, Bulk Action
     ['tambahSoalJenjang', 'editSoalJenjang', 'selectJenjangImportWord', 'selectBulkJenjangTarget'].forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -1427,7 +1634,6 @@
       if (prev && (prev === 'Semua' || listJenjang.includes(prev))) el.value = prev;
     });
 
-    // 3. Dropdown Filter Rekap Nilai & Analisis Soal
     ['filterJenjangRekap', 'filterJenjangAnalisis'].forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -1510,6 +1716,9 @@
     modalPreviewObj = new bootstrap.Modal(document.getElementById('modalPreview'));
     modalAnalisisPesertaObj = new bootstrap.Modal(document.getElementById('modalAnalisisPeserta'));
     modalImportWordObj = new bootstrap.Modal(document.getElementById('modalImportWord'));
+
+    setupRichEditorEvents('tambahSoalTeks');
+    setupRichEditorEvents('editSoalTeks');
 
     if (sessionStorage.getItem("isGuruLoggedIn") === "true") {
       bukaModeGuru();
@@ -2294,7 +2503,7 @@
     });
   }
 
-  // --- FITUR GESER / UBAH URUTAN SOAL (DRAG & DROP + TOMBOL NAIK/TURUN) ---
+  // --- FITUR GESER / UBAH URUTAN SOAL ---
   function onDragStartSoal(e, itemId) {
     draggedItemId = String(itemId);
     e.dataTransfer.effectAllowed = "move";
@@ -2536,70 +2745,264 @@
       }
     });
   }
+  // --- LOAD & RENDER BANK SOAL GURU (IDENTIK DENGAN PREVIEW & SISWA) ---
+  function loadBankSoalGuru() {
+    const container = document.getElementById('listSoalGuruContainer');
+    const toolbar = document.getElementById('toolbarSeleksiSoal');
+    selectedItemIds.clear();
+    if (toolbar) toolbar.classList.add('d-none');
 
-  // --- FITUR TAMBAH SOAL BARU (KONTEKSTUAL SESUAI HALAMAN JENJANG AKTIF) ---
-  let jumlahOpsiTambah = 4;
+    container.innerHTML = `<div class="text-center py-5 card card-cbt">
+      <div class="spinner-border text-primary mb-2" role="status"></div>
+      <div class="text-muted fw-bold">Memuat daftar soal...</div>
+    </div>`;
 
-  function bukaModalTambahSoal() {
-    populateAllJenjangDropdowns();
-    const selJenjang = document.getElementById('tambahSoalJenjang');
-    selJenjang.value = activeBankSoalJenjang || "Semua";
+    fetch(`${API_URL}?action=getBankSoalGuru`)
+    .then(res => res.json())
+    .then(res => {
+      if(!res.success) {
+        container.innerHTML = `<div class="alert alert-danger">${res.error}</div>`;
+        return;
+      }
 
-    const badge = document.getElementById('badgeModalTambahJenjang');
-    if (badge) {
-      badge.innerText = activeBankSoalJenjang === "Semua" ? "Semua Jenjang" : activeBankSoalJenjang;
+      rawBankSoal = res.data || [];
+      if (res.config) {
+        globalConfig = { ...globalConfig, ...res.config };
+        populateAllJenjangDropdowns();
+      }
+      document.getElementById('btnEditFormDirect').href = res.editUrl;
+
+      const chk = document.getElementById('switchStatusUjian');
+      const lbl = document.getElementById('lblStatusUjian');
+      chk.checked = res.isAktif;
+      lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
+      lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
+
+      renderJenjangWorkspaceTabs();
+      renderDaftarSoalGuru();
+    });
+  }
+
+  function renderDaftarSoalGuru() {
+    const container = document.getElementById('listSoalGuruContainer');
+    const toolbar = document.getElementById('toolbarSeleksiSoal');
+    selectedItemIds.clear();
+    updateJenjangWorkspaceBanner();
+
+    displayedBankSoal = rawBankSoal.filter(s => {
+      const j = s.jenjang || "Semua";
+      return j === activeBankSoalJenjang;
+    });
+
+    if (displayedBankSoal.length === 0) {
+      if (toolbar) toolbar.classList.add('d-none');
+      const labelJ = activeBankSoalJenjang === "Semua" ? "Semua Jenjang (Umum)" : activeBankSoalJenjang;
+      container.innerHTML = `<div class="alert alert-warning text-center p-4">
+        <i class="bi bi-journal-x display-5 d-block mb-2"></i>
+        <b>Belum ada soal pada halaman "${labelJ}".</b><br>
+        <small class="text-muted">Klik tombol <b>Tambah Soal</b> atau <b>Import Word</b> di atas untuk mulai mengisi soal jenjang ini.</small>
+      </div>`;
+      return;
     }
 
-    document.getElementById('tambahSoalTeks').value = '';
+    if (toolbar) toolbar.classList.remove('d-none');
+    document.getElementById('lblTotalSoalAktif').innerText = displayedBankSoal.length;
+    const masterChk = document.getElementById('chkPilihSemuaSoal');
+    if (masterChk) { masterChk.checked = false; masterChk.indeterminate = false; }
+    updateBulkActionUI();
+
+    const hurufs = ['A', 'B', 'C', 'D', 'E'];
+    let html = '';
+
+    displayedBankSoal.forEach((s, idx) => {
+      let kunciArr = normalizeKunci(s.kunci);
+      let isPGK = kunciArr.length > 1;
+      let isNonaktif = s.isNonaktif === true;
+
+      let opsiHtml = '<ul class="list-unstyled mt-2 mb-0 small">';
+      s.pilihan.forEach((p, pIdx) => {
+        let isKunci = kunciArr.includes(pIdx);
+        let opsiImg = (s.pilihanImages && s.pilihanImages[pIdx]) ? `<img src="${s.pilihanImages[pIdx]}" class="img-opsi-preview">` : '';
+        opsiHtml += `<li class="mb-2 ${isKunci ? 'text-success fw-bold' : 'text-muted'}">
+          ${hurufs[pIdx]}. ${p || '(Gambar)'} ${isKunci ? '<span class="badge bg-success ms-1">Kunci ✓</span>' : ''}
+          ${opsiImg}
+        </li>`;
+      });
+      opsiHtml += '</ul>';
+
+      let imgHtml = s.imageUrl ? `<div class="my-2"><img src="${s.imageUrl}" class="img-fluid rounded border" style="max-height:150px"></div>` : '';
+      let pgkBadge = isPGK ? `<span class="badge bg-info text-dark ms-1">PG Kompleks</span>` : '';
+      let statusBadge = isNonaktif 
+        ? `<span class="badge bg-warning text-dark ms-1"><i class="bi bi-eye-slash-fill me-1"></i>NONAKTIF</span>` 
+        : `<span class="badge bg-success-subtle text-success border border-success ms-1">AKTIF</span>`;
+
+      let btnToggleStatus = isNonaktif
+        ? `<button class="btn btn-sm btn-success fw-bold" onclick="toggleSoalNonaktif('${s.itemId}', false)" title="Aktifkan Soal Ini"><i class="bi bi-eye-fill me-1"></i> Aktifkan</button>`
+        : `<button class="btn btn-sm btn-outline-warning text-dark fw-bold" onclick="toggleSoalNonaktif('${s.itemId}', true)" title="Nonaktifkan Soal Sementara"><i class="bi bi-eye-slash-fill me-1"></i> Nonaktifkan</button>`;
+
+      let btnUpDisabled = idx === 0 ? 'disabled' : '';
+      let btnDownDisabled = idx === displayedBankSoal.length - 1 ? 'disabled' : '';
+
+      html += `<div id="card-soal-${s.itemId}" class="soal-item-card shadow-sm ${isNonaktif ? 'soal-disabled' : ''}" 
+                    draggable="true"
+                    ondragstart="onDragStartSoal(event, '${s.itemId}')"
+                    ondragover="onDragOverSoal(event, '${s.itemId}')"
+                    ondragleave="onDragLeaveSoal('${s.itemId}')"
+                    ondrop="onDropSoal(event, '${s.itemId}')"
+                    ondragend="onDragEndSoal()">
+        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <input type="checkbox" class="form-check-input mt-0 chk-item-soal" data-itemid="${s.itemId}" onchange="toggleCeklistSoal(this, '${s.itemId}')" style="width: 1.15rem; height: 1.15rem; cursor: pointer;" title="Pilih soal ini">
+            <span class="drag-handle" title="Tarik untuk memindahkan urutan soal"><i class="bi bi-grip-vertical"></i></span>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-outline-secondary py-0 px-1" ${btnUpDisabled} onclick="geserUrutanSoal(${idx}, -1)" title="Geser Naik"><i class="bi bi-caret-up-fill"></i></button>
+              <button type="button" class="btn btn-outline-secondary py-0 px-1" ${btnDownDisabled} onclick="geserUrutanSoal(${idx}, 1)" title="Geser Turun"><i class="bi bi-caret-down-fill"></i></button>
+            </div>
+            <span class="badge bg-primary">Soal No. ${idx + 1}</span>
+            ${statusBadge}
+            ${pgkBadge}
+          </div>
+          <div class="d-flex gap-1 flex-wrap">
+            ${btnToggleStatus}
+            <button class="btn btn-sm btn-outline-info text-dark fw-bold" onclick="bukaModalPreview(${idx})">
+              <i class="bi bi-eye me-1"></i> Preview
+            </button>
+            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEdit(${idx})">
+              <i class="bi bi-pencil-square me-1"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-outline-danger fw-bold" onclick="hapusSoal('${s.itemId}', ${idx + 1})">
+              <i class="bi bi-trash-fill me-1"></i> Hapus
+            </button>
+          </div>
+        </div>
+        <!-- KELAS TERPADU AGAR SAMA PERSIS DENGAN EDITOR & LAYAR SISWA -->
+        <div class="mt-3 soal-unified-text">${formatSoalHtml(s.pertanyaan)}</div>
+        ${imgHtml}
+        ${opsiHtml}
+      </div>`;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function toggleSoalNonaktif(itemId, setNonaktif) {
+    const labelAksi = setNonaktif ? "Nonaktifkan" : "Aktifkan";
+    Swal.fire({
+      title: `${labelAksi} Soal Ini?`,
+      text: setNonaktif 
+        ? "Soal tidak akan ditampilkan ke siswa saat ujian berlangsung, namun tidak dihapus." 
+        : "Soal akan kembali muncul pada ujian siswa.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: setNonaktif ? '#eab308' : '#16a34a',
+      confirmButtonText: `Ya, ${labelAksi}!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'toggleSoalNonaktif', itemId: itemId, isNonaktif: setNonaktif })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Soal berhasil di-${labelAksi.toLowerCase()}.`, timer: 1400, showConfirmButton: false });
+            loadBankSoalGuru();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
+          }
+        });
+      }
+    });
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      if(!file) return resolve(null);
+      const reader = new FileReader();
+      reader.onload = () => resolve({
+        base64: reader.result.split(',')[1],
+        mimeType: file.type,
+        fileName: file.name
+      });
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function bukaModalTambahSoal() {
+    document.getElementById('tambahSoalTeks').innerHTML = '';
     document.getElementById('tambahSoalGambar').value = '';
-    jumlahOpsiTambah = 4;
-    document.getElementById('btnTambahOpsiE').classList.remove('d-none');
-    renderOpsiTambahSoal();
+    populateAllJenjangDropdowns();
+    document.getElementById('tambahSoalJenjang').value = activeBankSoalJenjang;
+    document.getElementById('badgeModalTambahJenjang').innerText = activeBankSoalJenjang === "Semua" ? "Semua Jenjang" : activeBankSoalJenjang;
+
+    const btnTambahE = document.getElementById('btnTambahOpsiE');
+    if (btnTambahE) btnTambahE.classList.remove('d-none');
+
+    const hurufs = ['A', 'B', 'C', 'D'];
+    let opsiHtml = '';
+
+    hurufs.forEach((h, idx) => {
+      opsiHtml += `<div class="card p-2 mb-2 bg-light border opsi-tambah-card">
+        <div class="input-group input-group-sm mb-2">
+          <div class="input-group-text bg-white">
+            <input class="form-check-input mt-0 chk-kunci-tambah" type="checkbox" value="${idx}" ${idx === 0 ? 'checked' : ''} title="Centang jika kunci benar">
+          </div>
+          <span class="input-group-text fw-bold bg-primary text-white">${h}</span>
+          <input type="text" class="form-control opsi-tambah-input" placeholder="Teks jawaban ${h} (opsional jika pakai gambar)">
+        </div>
+        <div>
+          <input type="file" class="form-control form-control-sm opsi-tambah-file" accept="image/*">
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('tambahPilihanContainer').innerHTML = opsiHtml;
     modalTambahObj.show();
+    setTimeout(() => { document.getElementById('tambahSoalTeks').focus(); }, 250);
   }
 
   function tambahOpsiBaruForm() {
-    if (jumlahOpsiTambah < 5) {
-      jumlahOpsiTambah = 5;
-      document.getElementById('btnTambahOpsiE').classList.add('d-none');
-      renderOpsiTambahSoal(true);
-    }
+    const container = document.getElementById('tambahPilihanContainer');
+    const existingCount = container.querySelectorAll('.opsi-tambah-card').length;
+    if (existingCount >= 5) return;
+
+    const idx = existingCount;
+    const h = 'E';
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'card p-2 mb-2 bg-light border opsi-tambah-card';
+    cardDiv.innerHTML = `
+      <div class="input-group input-group-sm mb-2">
+        <div class="input-group-text bg-white">
+          <input class="form-check-input mt-0 chk-kunci-tambah" type="checkbox" value="${idx}" title="Centang jika kunci benar">
+        </div>
+        <span class="input-group-text fw-bold bg-primary text-white">${h}</span>
+        <input type="text" class="form-control opsi-tambah-input" placeholder="Teks jawaban ${h} (opsional jika pakai gambar)">
+        <button type="button" class="btn btn-outline-danger" onclick="hapusOpsiEForm(this)" title="Hapus Opsi E"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div>
+        <input type="file" class="form-control form-control-sm opsi-tambah-file" accept="image/*">
+      </div>
+    `;
+    container.appendChild(cardDiv);
+
+    const btnTambahE = document.getElementById('btnTambahOpsiE');
+    if (btnTambahE) btnTambahE.classList.add('d-none');
   }
 
-  function renderOpsiTambahSoal(keepValues = false) {
-    let existingTexts = [];
-    let existingChecks = [];
-    if (keepValues) {
-      document.querySelectorAll('.tambah-pilihan-input').forEach(el => existingTexts.push(el.value));
-      document.querySelectorAll('input[name="tambahKunci"]').forEach(el => existingChecks.push(el.checked));
-    }
-
-    let pilHtml = '';
-    for (let pIdx = 0; pIdx < jumlahOpsiTambah; pIdx++) {
-      let valTxt = existingTexts[pIdx] || '';
-      let isChk = existingChecks[pIdx] ? 'checked' : (pIdx === 0 && !keepValues ? 'checked' : '');
-      pilHtml += `<div class="card p-2 mb-2 bg-light border">
-        <div class="input-group input-group-sm mb-2">
-          <div class="input-group-text" title="Centang jika opsi ini benar">
-            <input class="form-check-input mt-0" type="checkbox" name="tambahKunci" value="${pIdx}" ${isChk}>
-          </div>
-          <span class="input-group-text fw-bold">${String.fromCharCode(65 + pIdx)}</span>
-          <input type="text" class="form-control tambah-pilihan-input" value="${valTxt}" placeholder="Teks pilihan ${String.fromCharCode(65 + pIdx)}" required>
-        </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <small class="fw-bold text-muted" style="min-width:95px; font-size:0.75rem;">Gambar Opsi:</small>
-          <input type="file" class="form-control form-control-sm tambah-pilihan-file" accept="image/*" data-index="${pIdx}">
-        </div>
-      </div>`;
-    }
-    document.getElementById('tambahPilihanContainer').innerHTML = pilHtml;
+  function hapusOpsiEForm(btn) {
+    const card = btn.closest('.opsi-tambah-card');
+    if (card) card.remove();
+    const btnTambahE = document.getElementById('btnTambahOpsiE');
+    if (btnTambahE) btnTambahE.classList.remove('d-none');
   }
 
-  function simpanTambahSoal(e) {
+  async function simpanTambahSoal(e) {
     e.preventDefault();
-    const checkedNodes = document.querySelectorAll('input[name="tambahKunci"]:checked');
-    if (checkedNodes.length === 0) {
-      Swal.fire({ icon: 'warning', title: 'Pilih Kunci Jawaban', text: 'Centang minimal 1 jawaban yang benar!' });
+    const pertanyaanHtml = getRichEditorCleanHtml('tambahSoalTeks');
+    if (!pertanyaanHtml) {
+      Swal.fire({ icon: 'warning', title: 'Pertanyaan Kosong', text: 'Silakan tulis pertanyaan soal terlebih dahulu.' });
       return;
     }
 
@@ -2607,106 +3010,276 @@
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...`;
 
-    const soalJenjang = document.getElementById('tambahSoalJenjang').value;
-    const soalTeks = document.getElementById('tambahSoalTeks').value;
-    const kunciArr = Array.from(checkedNodes).map(el => parseInt(el.value));
+    try {
+      const soalFile = document.getElementById('tambahSoalGambar').files[0];
+      const soalImageBase64 = await fileToBase64(soalFile);
+      const jenjangTarget = document.getElementById('tambahSoalJenjang').value;
 
-    let pilihanArr = [];
-    document.querySelectorAll('.tambah-pilihan-input').forEach(input => { pilihanArr.push(input.value); });
+      const opsiInputs = document.querySelectorAll('.opsi-tambah-input');
+      const opsiFiles = document.querySelectorAll('.opsi-tambah-file');
+      let pilihanBaru = [];
+      let pilihanImagesBase64 = [];
 
-    const fileOpsiInputs = document.querySelectorAll('.tambah-pilihan-file');
-    let pilihanGambarBase64 = new Array(pilihanArr.length).fill(null);
-    let filePromises = [];
-
-    fileOpsiInputs.forEach((input, pIdx) => {
-      if (input.files[0]) {
-        let promise = new Promise((resolve) => {
-          let reader = new FileReader();
-          reader.onload = function(evt) {
-            pilihanGambarBase64[pIdx] = evt.target.result;
-            resolve();
-          };
-          reader.readAsDataURL(input.files[0]);
-        });
-        filePromises.push(promise);
+      for (let i = 0; i < opsiInputs.length; i++) {
+        pilihanBaru.push(opsiInputs[i].value);
+        let f = opsiFiles[i].files[0];
+        let b64 = await fileToBase64(f);
+        pilihanImagesBase64.push(b64);
       }
-    });
 
-    Promise.all(filePromises).then(() => {
-      const fileInputSoal = document.getElementById('tambahSoalGambar');
-      const fileSoal = fileInputSoal.files[0];
+      const checkedBoxes = document.querySelectorAll('.chk-kunci-tambah:checked');
+      let kunciBaru = Array.from(checkedBoxes).map(cb => Number(cb.value));
 
-      let payload = {
-        action: "tambahSoal",
-        jenjang: soalJenjang,
-        soal: soalTeks,
-        pilihan: pilihanArr,
-        jawabanBenar: kunciArr,
-        pilihanGambarBase64: pilihanGambarBase64
-      };
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'addSoalBaru',
+          pertanyaan: pertanyaanHtml,
+          jenjang: jenjangTarget,
+          pilihan: pilihanBaru,
+          kunci: kunciBaru,
+          soalImage: soalImageBase64,
+          pilihanImages: pilihanImagesBase64
+        })
+      }).then(r => r.json());
 
-      if (fileSoal) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          payload.imageBase64 = evt.target.result;
-          payload.imageName = fileSoal.name;
-          kirimTambahSoalKeBackend(payload);
-        };
-        reader.readAsDataURL(fileSoal);
-      } else {
-        kirimTambahSoalKeBackend(payload);
-      }
-    });
-  }
-
-  function kirimTambahSoalKeBackend(payload) {
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(res => {
-      const btn = document.getElementById('btnSimpanTambahSoal');
       btn.disabled = false;
       btn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Simpan Soal Baru`;
 
       if (res.success) {
         modalTambahObj.hide();
-        activeBankSoalJenjang = payload.jenjang || activeBankSoalJenjang;
-        Swal.fire({
-          icon: 'success',
-          title: 'Soal Baru Ditambahkan!',
-          text: `Soal berhasil disimpan ke halaman ${activeBankSoalJenjang === 'Semua' ? 'Semua Jenjang' : activeBankSoalJenjang}.`,
-          confirmButtonColor: 'var(--primary-color)',
-          timer: 1800,
-          timerProgressBar: true
-        });
+        activeBankSoalJenjang = jenjangTarget;
+        Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Soal baru ditambahkan ke "${jenjangTarget}"!`, timer: 1600, showConfirmButton: false });
         loadBankSoalGuru();
       } else {
+        alert("Gagal menambahkan soal: " + res.error);
+      }
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Simpan Soal Baru`;
+      alert("Kesalahan koneksi: " + err);
+    }
+  }
+
+  function bukaModalEdit(idx) {
+    const soal = displayedBankSoal[idx];
+    document.getElementById('modalNoSoal').innerText = idx + 1;
+    document.getElementById('editItemId').value = soal.itemId;
+    document.getElementById('editIndex').value = idx;
+    document.getElementById('editSoalTeks').innerHTML = formatSoalHtml(soal.pertanyaan);
+    document.getElementById('editSoalGambar').value = '';
+    document.getElementById('editRemoveSoalImage').value = 'false';
+
+    populateAllJenjangDropdowns();
+    const jVal = soal.jenjang || "Semua";
+    document.getElementById('editSoalJenjang').value = jVal;
+    document.getElementById('badgeModalEditJenjang').innerText = jVal === "Semua" ? "Semua Jenjang" : jVal;
+
+    const prevDiv = document.getElementById('previewGambarModal');
+    if (soal.imageUrl) {
+      prevDiv.classList.remove('d-none');
+      document.getElementById('imgModalPreview').src = soal.imageUrl;
+    } else {
+      prevDiv.classList.add('d-none');
+    }
+
+    const kunciArr = normalizeKunci(soal.kunci);
+    const hurufs = ['A', 'B', 'C', 'D', 'E'];
+    let opsiHtml = '';
+
+    soal.pilihan.forEach((p, pIdx) => {
+      let existingOpsiImg = (soal.pilihanImages && soal.pilihanImages[pIdx]) ? soal.pilihanImages[pIdx] : '';
+      let previewOpsiHtml = existingOpsiImg 
+        ? `<div class="mt-1 d-flex align-items-center gap-2">
+            <img src="${existingOpsiImg}" class="img-opsi-preview m-0">
+            <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" onclick="hapusGambarOpsiModal(${pIdx}, this)">
+              <i class="bi bi-trash"></i> Hapus Gambar
+            </button>
+          </div>` 
+        : '';
+      let isChecked = kunciArr.includes(pIdx) ? 'checked' : '';
+
+      opsiHtml += `<div class="card p-2 mb-2 bg-light border" id="cardOpsiEdit_${pIdx}">
+        <input type="hidden" class="opsi-remove-flag" value="false">
+        <div class="input-group input-group-sm mb-2">
+          <div class="input-group-text bg-white">
+            <input class="form-check-input mt-0 chk-kunci-edit" type="checkbox" value="${pIdx}" ${isChecked} title="Centang jika kunci benar">
+          </div>
+          <span class="input-group-text fw-bold bg-primary text-white">${hurufs[pIdx]}</span>
+          <input type="text" class="form-control opsi-edit-input" value="${p.replace(/"/g, '&quot;')}" placeholder="Teks jawaban ${hurufs[pIdx]} (opsional jika pakai gambar)">
+        </div>
+        <div>
+          <input type="file" class="form-control form-control-sm opsi-edit-file" accept="image/*">
+          ${previewOpsiHtml}
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('editPilihanContainer').innerHTML = opsiHtml;
+    modalEditObj.show();
+  }
+
+  function hapusGambarSoalModal() {
+    document.getElementById('editRemoveSoalImage').value = 'true';
+    document.getElementById('previewGambarModal').classList.add('d-none');
+    document.getElementById('editSoalGambar').value = '';
+    Swal.fire({ icon: 'info', title: 'Gambar Soal Ditandai Dihapus', text: 'Klik Simpan Perubahan untuk mengonfirmasi penghapusan.', timer: 1600, showConfirmButton: false });
+  }
+
+  function hapusGambarOpsiModal(pIdx, btnElem) {
+    const card = document.getElementById(`cardOpsiEdit_${pIdx}`);
+    card.querySelector('.opsi-remove-flag').value = 'true';
+    card.querySelector('.opsi-edit-file').value = '';
+    btnElem.parentElement.remove();
+    Swal.fire({ icon: 'info', title: 'Gambar Opsi Ditandai Dihapus', text: 'Klik Simpan Perubahan untuk menghapus permanen.', timer: 1600, showConfirmButton: false });
+  }
+
+  async function simpanEditSoal(e) {
+    e.preventDefault();
+    const pertanyaanHtml = getRichEditorCleanHtml('editSoalTeks');
+    if (!pertanyaanHtml) {
+      Swal.fire({ icon: 'warning', title: 'Pertanyaan Kosong', text: 'Pertanyaan soal tidak boleh kosong.' });
+      return;
+    }
+
+    const btn = document.getElementById('btnSimpanSoal');
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...`;
+
+    try {
+      const itemId = document.getElementById('editItemId').value;
+      const jenjangTarget = document.getElementById('editSoalJenjang').value;
+      const removeSoalImage = document.getElementById('editRemoveSoalImage').value === 'true';
+      const soalFile = document.getElementById('editSoalGambar').files[0];
+      const soalImageBase64 = await fileToBase64(soalFile);
+
+      const opsiInputs = document.querySelectorAll('.opsi-edit-input');
+      const opsiFiles = document.querySelectorAll('.opsi-edit-file');
+      const opsiRemoveFlags = document.querySelectorAll('.opsi-remove-flag');
+      let pilihanBaru = [];
+      let pilihanImagesBase64 = [];
+      let removePilihanImages = [];
+
+      for (let i = 0; i < opsiInputs.length; i++) {
+        pilihanBaru.push(opsiInputs[i].value);
+        let f = opsiFiles[i].files[0];
+        let b64 = await fileToBase64(f);
+        pilihanImagesBase64.push(b64);
+        removePilihanImages.push(opsiRemoveFlags[i].value === 'true');
+      }
+
+      const checkedBoxes = document.querySelectorAll('.chk-kunci-edit:checked');
+      let kunciBaru = Array.from(checkedBoxes).map(cb => Number(cb.value));
+
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'updateSoal',
+          itemId: itemId,
+          pertanyaan: pertanyaanHtml,
+          jenjang: jenjangTarget,
+          pilihan: pilihanBaru,
+          kunci: kunciBaru,
+          soalImage: soalImageBase64,
+          pilihanImages: pilihanImagesBase64,
+          removeSoalImage: removeSoalImage,
+          removePilihanImages: removePilihanImages
+        })
+      }).then(r => r.json());
+
+      btn.disabled = false;
+      btn.innerText = "Simpan Perubahan";
+
+      if (res.success) {
+        modalEditObj.hide();
+        Swal.fire({ icon: 'success', title: 'Tersimpan!', text: 'Perubahan Soal & Kunci Berhasil Disimpan!', timer: 1600, showConfirmButton: false });
+        loadBankSoalGuru();
+      } else {
+        alert("Gagal menyimpan perubahan: " + res.error);
+      }
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerText = "Simpan Perubahan";
+      alert("Kesalahan koneksi: " + err);
+    }
+  }
+
+  function hapusSoal(itemId, nomorSoal) {
+    Swal.fire({
+      title: `Hapus Soal No. ${nomorSoal}?`,
+      text: "Soal ini akan dihapus permanen dari Google Form dan Bank Soal!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Ya, Hapus Soal!'
+    }).then((result) => {
+      if (result.isConfirmed) {
         Swal.fire({
-          icon: 'error',
-          title: 'Gagal Menambah Soal',
-          text: res.error || 'Terjadi kesalahan saat menyimpan soal baru.',
-          confirmButtonColor: '#dc2626'
+          title: 'Menghapus...',
+          text: 'Menghapus item dari Google Form...',
+          allowOutsideClick: false,
+          didOpen: () => { Swal.showLoading(); }
+        });
+
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'deleteSoal', itemId: itemId })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Terhapus!', text: `Soal No. ${nomorSoal} berhasil dihapus.`, timer: 1500, showConfirmButton: false });
+            loadBankSoalGuru();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: res.error || 'Terjadi kesalahan.' });
+          }
         });
       }
     });
   }
 
-  // --- LOGIC FUNGSI IMPORT FILE WORD (.DOCX) ---
-  function bukaModalImportWord() {
-    populateAllJenjangDropdowns();
-    document.getElementById('selectJenjangImportWord').value = activeBankSoalJenjang || "Semua";
+  // --- FITUR PREVIEW SOAL (IDENTIK DENGAN EDITOR & SISWA) ---
+  function bukaModalPreview(idx) {
+    const soal = displayedBankSoal[idx];
+    document.getElementById('prevNoSoal').innerText = idx + 1;
+    document.getElementById('prevSoalTeks').innerHTML = formatSoalHtml(soal.pertanyaan);
 
-    const badge = document.getElementById('badgeModalImportJenjang');
-    if (badge) {
-      badge.innerText = activeBankSoalJenjang === "Semua" ? "Semua Jenjang" : activeBankSoalJenjang;
+    const imgCont = document.getElementById('prevSoalImgContainer');
+    if (soal.imageUrl) {
+      imgCont.classList.remove('d-none');
+      document.getElementById('prevSoalImg').src = soal.imageUrl;
+    } else {
+      imgCont.classList.add('d-none');
     }
 
+    const kunciArr = normalizeKunci(soal.kunci);
+    const hurufs = ['A', 'B', 'C', 'D', 'E'];
+    let opsiHtml = '';
+
+    soal.pilihan.forEach((p, pIdx) => {
+      let isKunci = kunciArr.includes(pIdx);
+      let opsiImg = (soal.pilihanImages && soal.pilihanImages[pIdx]) ? `<img src="${soal.pilihanImages[pIdx]}" class="img-opsi-preview mt-2">` : '';
+      opsiHtml += `<div class="option-card ${isKunci ? 'border-success bg-success-subtle text-dark fw-bold' : ''}">
+        <span class="fw-bold me-2">${hurufs[pIdx]}.</span> ${p || ''}
+        ${isKunci ? '<span class="badge bg-success float-end"><i class="bi bi-check-lg"></i> Kunci Jawaban</span>' : ''}
+        ${opsiImg}
+      </div>`;
+    });
+
+    document.getElementById('prevPilihanContainer').innerHTML = opsiHtml;
+    modalPreviewObj.show();
+  }
+
+  // --- FITUR IMPORT SOAL DARI WORD (.DOCX) ---
+  function bukaModalImportWord() {
+    parsedWordSoal = [];
     document.getElementById('fileWordInput').value = '';
     document.getElementById('boxPreviewWord').classList.add('d-none');
     document.getElementById('btnProsesImportWord').classList.add('d-none');
-    parsedWordSoal = [];
+    populateAllJenjangDropdowns();
+    document.getElementById('selectJenjangImportWord').value = activeBankSoalJenjang;
+    document.getElementById('badgeModalImportJenjang').innerText = activeBankSoalJenjang === "Semua" ? "Semua Jenjang" : activeBankSoalJenjang;
     modalImportWordObj.show();
   }
 
@@ -2716,97 +3289,102 @@
 
     Swal.fire({
       title: 'Membaca File Word...',
-      text: 'Mengekstrak teks, pilihan jawaban, kunci, dan gambar.',
+      text: 'Memparsing teks soal, paragraf, dan gambar stimulus...',
       allowOutsideClick: false,
       didOpen: () => { Swal.showLoading(); }
     });
 
     const reader = new FileReader();
-    reader.onload = function(evt) {
-      const arrayBuffer = evt.target.result;
+    reader.onload = function(event) {
+      const arrayBuffer = event.target.result;
 
-      mammoth.convertToHtml({
-        arrayBuffer: arrayBuffer,
-        convertImage: mammoth.images.imgElement(function(image) {
-          return image.read("base64").then(function(imageBuffer) {
-            let base64Src = "data:" + image.contentType + ";base64," + imageBuffer;
-            return { src: base64Src };
-          });
+      mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+        .then(function(result) {
+          Swal.close();
+          const html = result.value;
+          parseHtmlWordKeSoal(html);
         })
-      })
-      .then(function(result) {
-        parseHtmlWordToSoal(result.value);
-      })
-      .catch(function(err) {
-        Swal.close();
-        alert("Gagal membaca file Word: " + err.message);
-      });
+        .catch(function(err) {
+          Swal.fire({ icon: 'error', title: 'Gagal Membaca Word', text: err.message });
+        });
     };
     reader.readAsArrayBuffer(file);
   }
 
-  function parseHtmlWordToSoal(htmlStr) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlStr, 'text/html');
+  function parseHtmlWordKeSoal(htmlString) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
 
-    let elements = Array.from(doc.body.childNodes);
-    let listSoal = [];
+    let soalList = [];
     let currentSoal = null;
+    const hurufMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4 };
 
+    const elements = tempDiv.querySelectorAll('p, li');
     elements.forEach(el => {
-      let text = el.textContent ? el.textContent.trim() : '';
-      let imgEl = el.querySelector ? el.querySelector('img') : null;
-      let imgSrc = imgEl ? imgEl.src : null;
+      let text = el.textContent.trim();
+      let imgs = el.querySelectorAll('img');
+      let firstImgSrc = imgs.length > 0 ? imgs[0].src : null;
 
-      if (!text && !imgSrc) return;
+      if (!text && !firstImgSrc) return;
 
-      let isSoalMatch = text.match(/^(\d+)[\.\)]\s*(.+)/);
-      let isOpsiMatch = text.match(/^([A-Ea-e])[\.\)]\s*(.+)/);
-      let isKunciMatch = text.match(/^(kunci|jawaban)\s*:\s*([A-Ea-e,\s&dan]+)/i);
-
-      if (isSoalMatch) {
-        if (currentSoal && currentSoal.pilihan.length > 0) {
-          listSoal.push(currentSoal);
-        }
+      let matchNomor = text.match(/^(\d+)[\.\)]\s*(.*)/);
+      if (matchNomor && (!currentSoal || currentSoal.pilihan.length > 0 || currentSoal.pertanyaan !== "")) {
+        if (currentSoal) soalList.push(currentSoal);
         currentSoal = {
-          no: listSoal.length + 1,
-          soal: isSoalMatch[2],
-          imageBase64: imgSrc || null,
+          pertanyaan: matchNomor[2].trim(),
           pilihan: [],
-          jawabanBenar: [0]
+          kunci: [],
+          imageBase64: firstImgSrc
         };
-      } 
-      else if (isKunciMatch && currentSoal) {
-        let rawKunciStr = isKunciMatch[2].replace(/\bdan\b/gi, ',').toUpperCase();
-        let letters = rawKunciStr.match(/[A-E]/g) || ['A'];
-        let indices = [...new Set(letters.map(ch => ch.charCodeAt(0) - 65))].sort((a, b) => a - b);
-        currentSoal.jawabanBenar = indices.length > 0 ? indices : [0];
+        return;
       }
-      else if (isOpsiMatch && currentSoal) {
-        currentSoal.pilihan.push(isOpsiMatch[2]);
+
+      if (!currentSoal) return;
+
+      let matchOpsi = text.match(/^([A-E])[\.\)]\s*(.*)/);
+      if (matchOpsi) {
+        let huruf = matchOpsi[1].toUpperCase();
+        let teksOpsi = matchOpsi[2].trim();
+        let idx = hurufMap[huruf];
+        currentSoal.pilihan[idx] = teksOpsi || (firstImgSrc ? "" : "(Kosong)");
+        return;
       }
-      else if (currentSoal) {
-        if (imgSrc && !currentSoal.imageBase64) {
-          currentSoal.imageBase64 = imgSrc;
-        } else if (currentSoal.pilihan.length === 0 && text) {
-          currentSoal.soal += " " + text;
+
+      let matchKunci = text.match(/^(?:Kunci|Jawaban|Key)\s*[:\-]\s*([A-Ea-e,\s]+)/i);
+      if (matchKunci) {
+        let rawKunci = matchKunci[1].toUpperCase();
+        let letters = rawKunci.match(/[A-E]/g) || [];
+        currentSoal.kunci = letters.map(l => hurufMap[l]).filter(v => v !== undefined);
+        return;
+      }
+
+      if (currentSoal.pilihan.length === 0) {
+        if (text) {
+          currentSoal.pertanyaan += (currentSoal.pertanyaan ? "\n" : "") + text;
+        }
+        if (firstImgSrc && !currentSoal.imageBase64) {
+          currentSoal.imageBase64 = firstImgSrc;
         }
       }
     });
 
-    if (currentSoal && currentSoal.pilihan.length > 0) {
-      listSoal.push(currentSoal);
-    }
+    if (currentSoal) soalList.push(currentSoal);
 
-    parsedWordSoal = listSoal;
-    Swal.close();
+    soalList = soalList.filter(s => s.pertanyaan || s.imageBase64);
+    soalList.forEach(s => {
+      for (let i = 0; i < 4; i++) {
+        if (s.pilihan[i] === undefined) s.pilihan[i] = "";
+      }
+      if (!s.kunci || s.kunci.length === 0) s.kunci = [0];
+    });
+
+    parsedWordSoal = soalList;
 
     if (parsedWordSoal.length === 0) {
       Swal.fire({
         icon: 'warning',
-        title: 'Gagal Mengekstrak Soal',
-        text: 'Sistem tidak menemukan format soal yang cocok. Pastikan penulisan nomor diawali "1." dan pilihan diawali "A.", "B.", dst.',
-        confirmButtonColor: '#dc2626'
+        title: 'Tidak Ada Soal Terdeteksi',
+        text: 'Pastikan penomoran menggunakan format 1., A., B., C., D., dan Kunci: A'
       });
       return;
     }
@@ -2816,24 +3394,28 @@
 
   function renderPreviewWord() {
     const tbody = document.getElementById('bodyPreviewWord');
+    const hurufs = ['A', 'B', 'C', 'D', 'E'];
     document.getElementById('countWordSoal').innerText = parsedWordSoal.length;
 
     let html = '';
-    parsedWordSoal.forEach((item, idx) => {
-      let kunciArr = normalizeKunci(item.jawabanBenar);
-      let pilStr = item.pilihan.map((p, pIdx) => {
-        let mark = kunciArr.includes(pIdx) ? ' <span class="badge bg-success">✓</span>' : '';
-        return `${String.fromCharCode(65 + pIdx)}. ${p}${mark}`;
-      }).join('<br>');
-      let kunciStr = kunciArr.map(k => String.fromCharCode(65 + k)).join(', ');
-      let imgPrev = item.imageBase64 ? `<img src="${item.imageBase64}" class="img-fluid border rounded" style="max-height:80px">` : '<span class="text-muted">-</span>';
+    parsedWordSoal.forEach((s, idx) => {
+      let opsiStr = s.pilihan.map((p, pIdx) => {
+        let isK = s.kunci.includes(pIdx);
+        return `<div class="${isK ? 'text-success fw-bold' : ''}">${hurufs[pIdx]}. ${p} ${isK ? '✓' : ''}</div>`;
+      }).join('');
+
+      let imgTag = s.imageBase64 
+        ? `<img src="${s.imageBase64}" style="max-height:70px; border-radius:4px; border:1px solid #ddd;">` 
+        : '<span class="text-muted small">-</span>';
+
+      let kunciBadge = s.kunci.map(k => `<span class="badge bg-success me-1">${hurufs[k]}</span>`).join('');
 
       html += `<tr>
         <td class="fw-bold">${idx + 1}</td>
-        <td>${item.soal}</td>
-        <td class="text-center">${imgPrev}</td>
-        <td>${pilStr}</td>
-        <td class="fw-bold text-success text-center fs-6">${kunciStr}</td>
+        <td style="white-space:pre-wrap;">${s.pertanyaan}</td>
+        <td class="text-center">${imgTag}</td>
+        <td>${opsiStr}</td>
+        <td class="text-center">${kunciBadge}</td>
       </tr>`;
     });
 
@@ -2842,98 +3424,208 @@
     document.getElementById('btnProsesImportWord').classList.remove('d-none');
   }
 
-  function kirimImportWordKeForm() {
+  async function kirimImportWordKeForm() {
     if (parsedWordSoal.length === 0) return;
 
-    const modeOpsi = document.getElementById('selectModeImportWord').value;
+    const mode = document.getElementById('selectModeImportWord').value;
     const jenjangTarget = document.getElementById('selectJenjangImportWord').value;
+
+    const konfirmasi = await Swal.fire({
+      title: `Unggah ${parsedWordSoal.length} Soal ke "${jenjangTarget}"?`,
+      text: mode === 'timpa' 
+        ? `Soal yang ada pada "${jenjangTarget}" akan dihapus dan digantikan oleh file Word ini!` 
+        : `Semua soal baru akan ditambahkan ke halaman "${jenjangTarget}".`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: 'var(--primary-color)',
+      confirmButtonText: 'Ya, Unggah Sekarang!'
+    });
+
+    if (!konfirmasi.isConfirmed) return;
 
     Swal.fire({
       title: 'Mengunggah Soal...',
-      text: `Memasukkan ${parsedWordSoal.length} soal (${jenjangTarget}) ke Google Form & Firebase.`,
+      html: 'Memproses soal ke Google Form.<br>Mohon tunggu sebentar...',
       allowOutsideClick: false,
       didOpen: () => { Swal.showLoading(); }
     });
 
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'importBulkSoalKeForm',
-        listSoal: parsedWordSoal,
-        modeOpsi: modeOpsi,
-        jenjang: jenjangTarget
-      })
-    })
-    .then(res => res.json())
-    .then(res => {
+    const payloadSoal = parsedWordSoal.map(s => {
+      let imgObj = null;
+      if (s.imageBase64 && s.imageBase64.startsWith('data:')) {
+        let parts = s.imageBase64.split(',');
+        let mime = parts[0].match(/:(.*?);/)[1];
+        imgObj = { base64: parts[1], mimeType: mime, fileName: 'stimulus_word.png' };
+      }
+      return {
+        pertanyaan: s.pertanyaan,
+        pilihan: s.pilihan,
+        kunci: s.kunci,
+        soalImage: imgObj
+      };
+    });
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'importSoalBatch',
+          mode: mode,
+          jenjang: jenjangTarget,
+          soalList: payloadSoal
+        })
+      }).then(r => r.json());
+
       if (res.success) {
         modalImportWordObj.hide();
-        activeBankSoalJenjang = jenjangTarget || activeBankSoalJenjang;
+        activeBankSoalJenjang = jenjangTarget;
         Swal.fire({
           icon: 'success',
-          title: 'Import Word Berhasil!',
-          text: `Sebanyak ${res.count} soal baru (${jenjangTarget}) berhasil diunggah ke CBT.`,
-          confirmButtonColor: 'var(--primary-color)'
+          title: 'Import Berhasil!',
+          text: `${res.count} soal berhasil ditambahkan ke "${jenjangTarget}"!`
         });
         loadBankSoalGuru();
       } else {
-        alert("Gagal mengimpor: " + res.error);
+        Swal.fire({ icon: 'error', title: 'Gagal Import', text: res.error || 'Terjadi kesalahan.' });
+      }
+    } catch (e) {
+      Swal.fire({ icon: 'error', title: 'Kesalahan Koneksi', text: String(e) });
+    }
+  }
+
+  // --- ANALISIS SOAL ---
+  function renderMenuAnalisisSoal() {
+    const headerRow = document.getElementById('headerMatriksAnalisis');
+    const tbodyMatriks = document.getElementById('bodyMatriksAnalisis');
+    const tbodyStat = document.getElementById('bodyStatSoalAnalisis');
+    const filterJenjang = document.getElementById('filterJenjangAnalisis').value;
+
+    const pesertaList = filterJenjang === "ALL"
+      ? masterDataSiswa
+      : masterDataSiswa.filter(s => s.jenjang === filterJenjang || String(s.kelas).includes(`[${filterJenjang}]`));
+
+    if (!pesertaList || pesertaList.length === 0) {
+      tbodyMatriks.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">Belum ada peserta yang mengerjakan ujian.</td></tr>`;
+      tbodyStat.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-3">Belum ada data analisis soal.</td></tr>`;
+      return;
+    }
+
+    let maxSoal = 0;
+    pesertaList.forEach(s => {
+      if (s.rincian && Array.isArray(s.rincian) && s.rincian.length > maxSoal) {
+        maxSoal = s.rincian.length;
       }
     });
+
+    if (maxSoal === 0) {
+      tbodyMatriks.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">Data rincian nomor tidak tersedia.</td></tr>`;
+      return;
+    }
+
+    let thHtml = `<th>NO</th><th class="text-start">NAMA PESERTA</th><th>KELAS</th><th>NILAI</th>`;
+    for (let i = 1; i <= maxSoal; i++) {
+      thHtml += `<th style="min-width: 34px;">${i}</th>`;
+    }
+    headerRow.innerHTML = thHtml;
+
+    let soalStats = Array.from({ length: maxSoal }, () => ({ benar: 0, salah: 0 }));
+    let rowsHtml = '';
+
+    pesertaList.forEach((s, idx) => {
+      let masterIdx = masterDataSiswa.indexOf(s);
+      rowsHtml += `<tr>
+        <td>${idx + 1}</td>
+        <td class="text-start fw-bold text-primary link-arsip-clickable" onclick="bukaModalAnalisisSiswa(${masterIdx})">${s.nama}</td>
+        <td>${s.kelas}</td>
+        <td class="fw-bold">${s.nilai}</td>`;
+
+      for (let q = 0; q < maxSoal; q++) {
+        let item = (s.rincian && s.rincian[q]) ? s.rincian[q] : null;
+        if (item) {
+          if (item.isBenar) {
+            soalStats[q].benar++;
+            rowsHtml += `<td class="bg-success-subtle text-success fw-bold">✓</td>`;
+          } else {
+            soalStats[q].salah++;
+            rowsHtml += `<td class="bg-danger-subtle text-danger fw-bold">✗</td>`;
+          }
+        } else {
+          rowsHtml += `<td class="text-muted">-</td>`;
+        }
+      }
+      rowsHtml += `</tr>`;
+    });
+
+    tbodyMatriks.innerHTML = rowsHtml;
+
+    let statHtml = '';
+    soalStats.forEach((st, idx) => {
+      let total = st.benar + st.salah;
+      let persen = total > 0 ? Math.round((st.benar / total) * 100) : 0;
+      let kategoriBadge = '';
+
+      if (persen >= 75) {
+        kategoriBadge = `<span class="badge bg-success">Mudah (${persen}%)</span>`;
+      } else if (persen >= 40) {
+        kategoriBadge = `<span class="badge bg-warning text-dark">Sedang (${persen}%)</span>`;
+      } else {
+        kategoriBadge = `<span class="badge bg-danger">Sukar (${persen}%)</span>`;
+      }
+
+      statHtml += `<tr>
+        <td class="text-center fw-bold">Soal ${idx + 1}</td>
+        <td class="text-center text-success fw-bold">${st.benar} Siswa</td>
+        <td class="text-center text-danger fw-bold">${st.salah} Siswa</td>
+        <td class="text-center">
+          <div class="progress" style="height: 18px;">
+            <div class="progress-bar ${persen >= 75 ? 'bg-success' : (persen >= 40 ? 'bg-warning text-dark' : 'bg-danger')}" style="width: ${persen}%">
+              ${persen}%
+            </div>
+          </div>
+        </td>
+        <td class="text-center">${kategoriBadge}</td>
+      </tr>`;
+    });
+
+    tbodyStat.innerHTML = statHtml;
   }
 
-  function formatPilihanListStr(indicesVal, pilihanArr) {
-    const arr = normalizeKunci(indicesVal);
-    if (arr.length === 0) return null;
-    return arr.map(idx => `${String.fromCharCode(65 + idx)}. ${pilihanArr[idx] || ''}`).join(', ');
-  }
+  function bukaModalAnalisisSiswa(idx) {
+    const siswa = masterDataSiswa[idx];
+    if (!siswa) return;
 
-  function bukaModalAnalisisSiswa(realIndex) {
-    const sData = masterDataSiswa[realIndex];
-    if (!sData) return;
-
-    document.getElementById('modalAnalisisNamaSiswa').innerText = sData.nama;
-    document.getElementById('modalAnalisisKelasSiswa').innerText = `Kelas: ${sData.kelas} • Skor: ${sData.nilai} (${sData.benar} Benar / ${sData.salah} Salah)`;
+    document.getElementById('modalAnalisisNamaSiswa').innerText = siswa.nama;
+    document.getElementById('modalAnalisisKelasSiswa').innerText = `Kelas: ${siswa.kelas} | Nilai: ${siswa.nilai} (Benar: ${siswa.benar}, Salah: ${siswa.salah})`;
 
     const container = document.getElementById('listRincianAnalisisContainer');
-    const rincian = sData.rincianJawaban || [];
-
-    if (!rincian || rincian.length === 0) {
-      container.innerHTML = `<div class="alert alert-warning py-3 text-center mb-0">
-        <b>Data Rincian Tidak Tersedia!</b><br>
-        <small>Peserta ini mengerjakan ujian sebelum fitur Analisis Soal diaktifkan.</small>
-      </div>`;
+    if (!siswa.rincian || !Array.isArray(siswa.rincian) || siswa.rincian.length === 0) {
+      container.innerHTML = `<div class="alert alert-warning small">Data rincian jawaban per nomor soal belum tersedia untuk peserta ini.</div>`;
     } else {
       let html = '';
-      rincian.forEach((item) => {
-        let statusBadge = item.isCorrect 
-          ? `<span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill me-1"></i> BENAR</span>` 
-          : `<span class="badge bg-danger fs-6"><i class="bi bi-x-circle-fill me-1"></i> SALAH</span>`;
+      siswa.rincian.forEach((r, i) => {
+        let cardBorder = r.isBenar ? 'border-success' : 'border-danger';
+        let badgeStatus = r.isBenar 
+          ? `<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Benar</span>` 
+          : `<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Salah</span>`;
 
-        let formattedUser = formatPilihanListStr(item.jawabanUser, item.pilihan);
-        let userJwbStr = formattedUser ? formattedUser : `<i class="text-muted">Tidak Dijawab</i>`;
-        let kunciJwbStr = formatPilihanListStr(item.kunciBenar, item.pilihan) || '-';
-
-        html += `<div class="card mb-3 border ${item.isCorrect ? 'border-success-subtle bg-success-subtle' : 'border-danger-subtle bg-danger-subtle'}" style="--bs-bg-opacity: 0.15;">
+        html += `<div class="card mb-3 border-start border-4 ${cardBorder} shadow-sm">
           <div class="card-body p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold mb-0">Soal No. ${item.no}</h6>
-              ${statusBadge}
+              <span class="fw-bold text-primary">Soal No. ${r.no || (i + 1)}</span>
+              ${badgeStatus}
             </div>
-            <p class="fw-medium small mb-2">${item.soal}</p>
-            ${item.imageUrl ? `<div class="mb-2"><img src="${item.imageUrl}" class="img-fluid rounded border" style="max-height:140px"></div>` : ''}
-            
-            <div class="row g-2 mt-2 pt-2 border-top small">
+            <div class="mb-2 text-dark small soal-unified-text" style="font-size:0.95rem;">${formatSoalHtml(r.pertanyaan)}</div>
+            <div class="row g-2 small">
               <div class="col-12 col-md-6">
-                <div class="p-2 rounded bg-white border">
-                  <small class="text-muted d-block fw-bold mb-1">Jawaban Peserta:</small>
-                  <span class="${item.isCorrect ? 'text-success fw-bold' : 'text-danger fw-bold'}">${userJwbStr}</span>
+                <div class="p-2 rounded bg-light border">
+                  <span class="text-muted d-block">Jawaban Peserta:</span>
+                  <strong class="${r.isBenar ? 'text-success' : 'text-danger'}">${r.jawabanSiswa}</strong>
                 </div>
               </div>
               <div class="col-12 col-md-6">
-                <div class="p-2 rounded bg-white border">
-                  <small class="text-muted d-block fw-bold mb-1">Kunci Jawaban Benar:</small>
-                  <span class="text-success fw-bold">${kunciJwbStr}</span>
+                <div class="p-2 rounded bg-success-subtle border border-success">
+                  <span class="text-muted d-block">Kunci Jawaban Benar:</span>
+                  <strong class="text-success">${r.kunciBenar}</strong>
                 </div>
               </div>
             </div>
@@ -2946,177 +3638,60 @@
     modalAnalisisPesertaObj.show();
   }
 
-  function renderMenuAnalisisSoal() {
-    const filterJenjang = document.getElementById('filterJenjangAnalisis').value;
-    const dataset = filterJenjang === "ALL"
-      ? masterDataSiswa
-      : masterDataSiswa.filter(s => s.jenjang === filterJenjang || String(s.kelas).includes(`[${filterJenjang}]`));
-
-    if (dataset.length === 0) {
-      document.getElementById('bodyMatriksAnalisis').innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data pengerjaan siswa pada jenjang ini.</td></tr>`;
-      document.getElementById('bodyStatSoalAnalisis').innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Belum ada data pengerjaan siswa.</td></tr>`;
-      return;
-    }
-
-    let maxSoal = 0;
-    dataset.forEach(s => {
-      if (s.rincianJawaban && s.rincianJawaban.length > maxSoal) {
-        maxSoal = s.rincianJawaban.length;
-      }
-    });
-
-    if (maxSoal === 0) {
-      document.getElementById('bodyMatriksAnalisis').innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Data rincian analisis belum ada pada peserta aktif.</td></tr>`;
-      document.getElementById('bodyStatSoalAnalisis').innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Data rincian analisis belum ada pada peserta aktif.</td></tr>`;
-      return;
-    }
-
-    let headHtml = `<th>NO</th><th>NAMA PESERTA</th><th>KELAS</th><th>SKOR</th>`;
-    for (let i = 1; i <= maxSoal; i++) {
-      headHtml += `<th class="text-center">S${i}</th>`;
-    }
-    document.getElementById('headerMatriksAnalisis').innerHTML = headHtml;
-
-    let statSoalMap = {};
-    for (let i = 1; i <= maxSoal; i++) {
-      statSoalMap[i] = { benar: 0, salah: 0 };
-    }
-
-    let bodyMatriksHtml = '';
-    dataset.forEach((s, idx) => {
-      bodyMatriksHtml += `<tr>
-        <td>${idx + 1}</td>
-        <td class="fw-bold text-start">${s.nama}</td>
-        <td>${s.kelas}</td>
-        <td class="fw-bold text-primary">${s.nilai}</td>`;
-
-      const rincian = s.rincianJawaban || [];
-      for (let i = 1; i <= maxSoal; i++) {
-        const itemS = rincian.find(r => r.no === i);
-        if (itemS) {
-          if (itemS.isCorrect) {
-            statSoalMap[i].benar++;
-            bodyMatriksHtml += `<td class="table-success text-success fw-bold">✓</td>`;
-          } else {
-            statSoalMap[i].salah++;
-            bodyMatriksHtml += `<td class="table-danger text-danger fw-bold">✗</td>`;
-          }
-        } else {
-          bodyMatriksHtml += `<td class="text-muted">-</td>`;
-        }
-      }
-      bodyMatriksHtml += `</tr>`;
-    });
-    document.getElementById('bodyMatriksAnalisis').innerHTML = bodyMatriksHtml;
-
-    let bodyStatHtml = '';
-    for (let i = 1; i <= maxSoal; i++) {
-      const totalS = statSoalMap[i].benar + statSoalMap[i].salah;
-      const pct = totalS > 0 ? Math.round((statSoalMap[i].benar / totalS) * 100) : 0;
-      
-      let kategori = '';
-      let badgeKategori = '';
-      if (pct >= 80) {
-        kategori = 'Sangat Mudah';
-        badgeKategori = 'bg-info text-dark';
-      } else if (pct >= 60) {
-        kategori = 'Mudah';
-        badgeKategori = 'bg-success';
-      } else if (pct >= 40) {
-        kategori = 'Sedang';
-        badgeKategori = 'bg-primary';
-      } else if (pct >= 20) {
-        kategori = 'Sukar';
-        badgeKategori = 'bg-warning text-dark';
-      } else {
-        kategori = 'Sangat Sukar';
-        badgeKategori = 'bg-danger';
-      }
-
-      bodyStatHtml += `<tr>
-        <td class="fw-bold text-center">Soal ${i}</td>
-        <td class="text-center text-success fw-bold">${statSoalMap[i].benar} Siswa</td>
-        <td class="text-center text-danger fw-bold">${statSoalMap[i].salah} Siswa</td>
-        <td class="text-center">
-          <div class="progress" style="height: 18px;">
-            <div class="progress-bar ${pct < 40 ? 'bg-danger' : 'bg-success'}" style="width: ${pct}%">${pct}%</div>
-          </div>
-        </td>
-        <td class="text-center"><span class="badge ${badgeKategori}">${kategori}</span></td>
-      </tr>`;
-    }
-    document.getElementById('bodyStatSoalAnalisis').innerHTML = bodyStatHtml;
-  }
-
-  function hapusSatuPeserta(sheetRow, namaSiswa) {
+  function prosesArsipBankSoal() {
     Swal.fire({
-      title: 'Hapus Peserta?',
-      text: `Hapus nilai milik "${namaSiswa}"?`,
-      icon: 'warning',
+      title: 'Arsipkan Semua Bank Soal?',
+      input: 'text',
+      inputLabel: 'Masukkan Nama Paket Soal (misal: Soal PTS Ganjil 2026)',
+      inputPlaceholder: 'Nama Paket Soal...',
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#dc2626',
-      confirmButtonText: 'Ya, Hapus!'
+      confirmButtonColor: '#eab308',
+      confirmButtonText: 'Ya, Arsipkan & Kosongkan!',
+      inputValidator: (value) => { if (!value) return 'Nama paket soal tidak boleh kosong!'; }
     }).then((result) => {
       if (result.isConfirmed) {
+        Swal.fire({ title: 'Memproses Arsip...', text: 'Menyimpan soal ke arsip...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         fetch(API_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'hapusSatuNilai', rowIndex: sheetRow })
+          body: JSON.stringify({ action: 'arsipBankSoal', namaPaket: result.value })
         })
         .then(res => res.json())
         .then(res => {
           if (res.success) {
-            Swal.fire({ icon: 'success', title: 'Berhasil Dihapus', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Berhasil Diarsipkan!', text: `${res.count} soal berhasil diarsipkan.` });
+            loadBankSoalGuru();
             loadDataRekapGuru();
           } else {
-            alert("Gagal menghapus data: " + res.error);
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
           }
         });
       }
     });
   }
 
-  function prosesArsipBankSoal() {
-    const namaPaket = prompt("Nama Paket Soal:", "Paket Ujian Bahasa Indonesia Sesi 1");
-    if (!namaPaket) return;
-
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'arsipBankSoal', namaPaketSoal: namaPaket })
-    })
-    .then(res => res.json())
-    .then(res => {
-      if(res.success) {
-        Swal.fire({ icon: 'success', title: 'Berhasil Diarsipkan!', text: `${res.jumlah} soal tersimpan ke paket "${res.namaPaket}"` });
-        loadBankSoalGuru();
-      } else {
-        alert("Gagal mengarsipkan: " + res.error);
-      }
-    });
-  }
-
   function importArsipSoal(paketId, namaPaket) {
     Swal.fire({
-      title: 'Terapkan Soal Ini?',
-      text: `Soal aktif akan digantikan oleh paket "${namaPaket}".`,
+      title: 'Pulihkan Paket Soal?',
+      text: `Soal dari paket "${namaPaket}" akan ditambahkan kembali ke Bank Soal aktif.`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#16a34a',
-      confirmButtonText: 'Ya, Terapkan'
+      confirmButtonText: 'Ya, Pulihkan!'
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({ title: 'Menyinkronkan...', text: 'Memasukkan soal ke Google Form & Firebase.', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
+        Swal.fire({ title: 'Memulihkan Soal...', text: 'Menambahkan soal ke Form...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         fetch(API_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'importArsipSoalKeForm', paketId: paketId })
+          body: JSON.stringify({ action: 'importArsipSoal', paketId: paketId })
         })
         .then(res => res.json())
         .then(res => {
           if (res.success) {
-            Swal.fire({ icon: 'success', title: 'Diterapkan!', text: `${res.total} soal berhasil dimasukkan ke Google Form!` });
+            Swal.fire({ icon: 'success', title: 'Berhasil Dipulihkan!', text: `${res.count} soal berhasil ditambahkan.` });
             loadBankSoalGuru();
           } else {
-            alert("Gagal mengimpor: " + res.error);
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
           }
         });
       }
@@ -3124,193 +3699,39 @@
   }
 
   function prosesArsipNilai() {
-    const namaLabel = prompt("Label Ujian untuk Arsip Nilai:", "CBT Bahasa Indonesia Sesi 1");
-    if (!namaLabel) return;
-
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'arsipNilai', namaUjian: namaLabel })
-    })
-    .then(res => res.json())
-    .then(res => {
-      if(res.success) {
-        Swal.fire({ icon: 'success', title: 'Berhasil Diarsipkan!', text: `Berhasil mengarsipkan ${res.count} data nilai.` });
-        loadDataRekapGuru();
-      } else {
-        alert("Gagal mengarsipkan: " + res.error);
-      }
-    });
-  }
-
-  function konfirmasiResetNilai() {
-    if (confirm("Reset seluruh data nilai siswa aktif? Pastikan sudah diarsipkan!")) {
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'resetNilai' })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if(res.success) {
-          alert("Data nilai berhasil direset!");
-          loadDataRekapGuru();
-        } else {
-          alert("Gagal mereset: " + res.error);
-        }
-      });
-    }
-  }
-
-  function loadBankSoalGuru() {
-    selectedItemIds.clear();
-    updateBulkActionUI();
-
-    Promise.all([
-      fetch(`${API_URL}?action=getFormUrl`).then(r => r.json()).catch(() => ({})),
-      fetch(`${API_URL}?action=getBankSoal&isGuru=true`).then(r => r.json())
-    ]).then(([urlRes, res]) => {
-      if(urlRes && urlRes.success) document.getElementById('btnEditFormDirect').href = urlRes.editUrl;
-
-      rawBankSoal = res.data || [];
-
-      const chk = document.getElementById('switchStatusUjian');
-      const lbl = document.getElementById('lblStatusUjian');
-      chk.checked = res.isAktif;
-      lbl.innerText = res.isAktif ? "Status Global: AKTIF" : "Status Global: NONAKTIF";
-      lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
-
-      if(res.config) {
-        globalConfig = { ...globalConfig, ...res.config };
-        populateAllJenjangDropdowns();
-      }
-
-      renderJenjangWorkspaceTabs();
-      renderDaftarSoalGuru();
-    });
-  }
-
-  function renderDaftarSoalGuru() {
-    selectedItemIds.clear();
-    updateBulkActionUI();
-    updateJenjangWorkspaceBanner();
-
-    const container = document.getElementById('listSoalGuruContainer');
-    const toolbarSeleksi = document.getElementById('toolbarSeleksiSoal');
-
-    displayedBankSoal = rawBankSoal.filter(s => (s.jenjang || "Semua") === activeBankSoalJenjang);
-
-    const labelHalaman = activeBankSoalJenjang === "Semua" ? "Semua Jenjang (Umum)" : activeBankSoalJenjang;
-
-    if (displayedBankSoal.length === 0) {
-      toolbarSeleksi.classList.add('d-none');
-      container.innerHTML = `<div class="card card-cbt p-4 text-center border">
-        <i class="bi bi-journal-plus display-5 text-primary mb-2"></i>
-        <h6 class="fw-bold mb-1">Belum Ada Soal pada Halaman "${labelHalaman}"</h6>
-        <p class="text-muted small mb-3">Silakan buat soal baru atau impor file Word khusus untuk <b>${labelHalaman}</b>.</p>
-        <div class="d-flex justify-content-center gap-2 flex-wrap">
-          <button class="btn btn-success btn-sm fw-bold px-3" onclick="bukaModalTambahSoal()">
-            <i class="bi bi-plus-circle-fill me-1"></i> Buat Soal Pertama (${labelHalaman})
-          </button>
-          <button class="btn btn-primary btn-sm fw-bold px-3" onclick="bukaModalImportWord()">
-            <i class="bi bi-file-earmark-word-fill me-1"></i> Import Word (${labelHalaman})
-          </button>
-        </div>
-      </div>`;
-      return;
-    }
-
-    toolbarSeleksi.classList.remove('d-none');
-    document.getElementById('lblTotalSoalAktif').innerText = displayedBankSoal.length;
-    const masterChk = document.getElementById('chkPilihSemuaSoal');
-    if (masterChk) {
-      masterChk.checked = false;
-      masterChk.indeterminate = false;
-    }
-
-    let html = '';
-    displayedBankSoal.forEach((item, dispIdx) => {
-      const realIdx = rawBankSoal.indexOf(item);
-      let kunciArr = normalizeKunci(item.jawabanBenar);
-      let optionsHtml = '';
-      item.pilihan.forEach((p, pIdx) => {
-        let isBenar = kunciArr.includes(pIdx);
-        let imgOpsi = item.pilihanGambar && item.pilihanGambar[pIdx] ? `<br><img src="${item.pilihanGambar[pIdx]}" loading="lazy" class="img-opsi-preview">` : '';
-        
-        optionsHtml += `<div class="small mb-2 ${isBenar ? 'text-success fw-bold' : 'text-muted'}">
-          ${String.fromCharCode(65 + pIdx)}. ${p} ${isBenar ? '<span class="badge bg-success ms-1">Kunci</span>' : ''}
-          ${imgOpsi}
-        </div>`;
-      });
-
-      let cardClass = item.isNonaktif ? "soal-item-card soal-disabled shadow-sm mb-3" : "soal-item-card shadow-sm mb-3";
-      let statusBadge = item.isNonaktif ? `<span class="badge bg-warning text-dark"><i class="bi bi-eye-slash-fill me-1"></i> NONAKTIF</span>` : `<span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> AKTIF</span>`;
-      let jenjangLabel = item.jenjang && item.jenjang !== "Semua" ? item.jenjang : "Semua Jenjang";
-      let jenjangBadge = `<span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-diagram-3 me-1"></i>${jenjangLabel}</span>`;
-      let multiBadge = kunciArr.length > 1 ? `<span class="badge bg-info text-dark"><i class="bi bi-check2-square me-1"></i>PG Kompleks (${kunciArr.length} Kunci)</span>` : '';
-
-      html += `<div id="card-soal-${item.itemId}" class="${cardClass}" draggable="true"
-        ondragstart="onDragStartSoal(event, '${item.itemId}')"
-        ondragover="onDragOverSoal(event, '${item.itemId}')"
-        ondragleave="onDragLeaveSoal('${item.itemId}')"
-        ondrop="onDropSoal(event, '${item.itemId}')"
-        ondragend="onDragEndSoal()">
-        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-          <div class="d-flex align-items-center flex-wrap gap-2">
-            <span class="drag-handle" title="Tarik untuk menggeser urutan soal"><i class="bi bi-grip-vertical"></i></span>
-            <input class="form-check-input mt-0 chk-item-soal" type="checkbox" data-itemid="${item.itemId}" onchange="toggleCeklistSoal(this, '${item.itemId}')" style="width: 1.2rem; height: 1.2rem; cursor: pointer;" title="Pilih soal ini">
-            ${statusBadge}
-            ${jenjangBadge}
-            <h6 class="fw-bold mb-0" style="color:var(--primary-color)">Soal No. ${dispIdx + 1}</h6>
-            ${multiBadge}
-          </div>
-          <div class="d-flex gap-1 gap-sm-2 align-items-center flex-wrap">
-            <div class="btn-group btn-group-sm" role="group" title="Geser Urutan Soal">
-              <button type="button" class="btn btn-outline-secondary fw-bold px-2" ${dispIdx === 0 ? 'disabled' : ''} onclick="geserUrutanSoal(${dispIdx}, -1)" title="Geser Naik">▲</button>
-              <button type="button" class="btn btn-outline-secondary fw-bold px-2" ${dispIdx === displayedBankSoal.length - 1 ? 'disabled' : ''} onclick="geserUrutanSoal(${dispIdx}, 1)" title="Geser Turun">▼</button>
-            </div>
-            <button class="btn btn-sm ${item.isNonaktif ? 'btn-outline-success' : 'btn-outline-warning'} fw-bold" onclick="toggleStatusNonaktifSoal('${item.itemId}', ${!item.isNonaktif})">
-              <i class="bi ${item.isNonaktif ? 'bi-eye' : 'bi-eye-slash'} me-1"></i> ${item.isNonaktif ? 'Aktifkan' : 'Nonaktifkan'}
-            </button>
-            <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="previewSoal(${realIdx}, ${dispIdx + 1})">
-              <i class="bi bi-eye me-1"></i> Preview
-            </button>
-            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEditSoal(${realIdx}, ${dispIdx + 1})">
-              <i class="bi bi-pencil-square me-1"></i> Edit
-            </button>
-            <button class="btn btn-sm btn-outline-danger fw-bold" onclick="deleteSatuSoal('${item.itemId}', ${dispIdx + 1})">
-              <i class="bi bi-trash me-1"></i> Hapus
-            </button>
-          </div>
-        </div>
-        <p class="fw-medium mb-3 small fs-md-6">${item.soal}</p>
-        ${item.imageUrl ? `<div class="mb-3"><img src="${item.imageUrl}" loading="lazy" class="img-fluid rounded border" style="max-height:180px"></div>` : ''}
-        <div class="bg-light p-3 rounded">
-          ${optionsHtml}
-        </div>
-      </div>`;
-    });
-
-    container.innerHTML = html;
-  }
-
-  function toggleStatusNonaktifSoal(itemId, statusSet) {
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'toggleSoalNonaktif', itemId: itemId, isNonaktif: statusSet })
-    })
-    .then(res => res.json())
-    .then(res => {
-      if (res.success) {
-        loadBankSoalGuru();
-      } else {
-        alert("Gagal mengubah status soal: " + res.error);
-      }
-    });
-  }
-
-  function deleteSatuSoal(itemId, noSoal) {
     Swal.fire({
-      title: `Hapus Soal No. ${noSoal}?`,
-      text: "Soal ini akan dihapus permanen dari Google Form!",
+      title: 'Arsipkan Hasil Nilai?',
+      input: 'text',
+      inputLabel: 'Masukkan Label Ujian (misal: UH 1 Teks Laporan)',
+      inputPlaceholder: 'Label Ujian...',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#eab308',
+      confirmButtonText: 'Ya, Arsipkan!',
+      inputValidator: (value) => { if (!value) return 'Label ujian tidak boleh kosong!'; }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'arsipDataNilai', label: result.value })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Berhasil Diarsipkan!', text: 'Data nilai telah dipindah ke Arsip & Rekap Aktif dikosongkan.' });
+            loadDataRekapGuru();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Tidak ada data untuk diarsipkan.' });
+          }
+        });
+      }
+    });
+  }
+
+  function hapusSatuPeserta(sheetRow, nama) {
+    Swal.fire({
+      title: 'Hapus Peserta?',
+      text: `Yakin ingin menghapus data nilai milik "${nama}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#dc2626',
@@ -3319,623 +3740,337 @@
       if (result.isConfirmed) {
         fetch(API_URL, {
           method: 'POST',
-          body: JSON.stringify({ action: 'deleteSoal', itemId: itemId })
+          body: JSON.stringify({ action: 'deletePeserta', row: sheetRow })
         })
         .then(res => res.json())
         .then(res => {
-          if (res.success) {
-            Swal.fire({ icon: 'success', title: 'Terhapus!', timer: 1500, showConfirmButton: false });
-            loadBankSoalGuru();
-          } else {
-            alert("Gagal menghapus soal: " + res.error);
+          if(res.success) {
+            Swal.fire({ icon: 'success', title: 'Terhapus!', timer: 1200, showConfirmButton: false });
+            loadDataRekapGuru();
           }
         });
       }
     });
   }
 
-  function previewSoal(idx, dispNo) {
-    const item = rawBankSoal[idx];
-    const kunciArr = normalizeKunci(item.jawabanBenar);
-    const isMulti = kunciArr.length > 1;
-
-    document.getElementById('prevNoSoal').innerText = dispNo || (idx + 1);
-    document.getElementById('prevSoalTeks').innerText = item.soal;
-
-    const imgContainer = document.getElementById('prevSoalImgContainer');
-    const soalImg = document.getElementById('prevSoalImg');
-    if (item.imageUrl) {
-      soalImg.src = item.imageUrl;
-      imgContainer.classList.remove('d-none');
-    } else {
-      imgContainer.classList.add('d-none');
-    }
-
-    let htmlPilihan = isMulti 
-      ? `<div class="alert alert-primary py-1 px-3 small mb-3"><i class="bi bi-check2-square me-1"></i> Pilihan Ganda Kompleks (Lebih dari 1 jawaban benar)</div>` 
-      : '';
-
-    item.pilihan.forEach((pil, pIdx) => {
-      let imgOpsi = item.pilihanGambar && item.pilihanGambar[pIdx] ? `<br><img src="${item.pilihanGambar[pIdx]}" class="img-fluid rounded border mt-2" style="max-height:120px">` : '';
-      let iconPrefix = isMulti ? `<i class="bi bi-square me-2"></i>` : '';
-      htmlPilihan += `<div class="option-card mb-2 small">
-        ${iconPrefix}<strong>${String.fromCharCode(65 + pIdx)}.</strong> ${pil}
-        ${imgOpsi}
-      </div>`;
-    });
-    document.getElementById('prevPilihanContainer').innerHTML = htmlPilihan;
-
-    modalPreviewObj.show();
-  }
-
-  function bukaModalEditSoal(idx, dispNo) {
-    populateAllJenjangDropdowns();
-    const item = rawBankSoal[idx];
-    const kunciArr = normalizeKunci(item.jawabanBenar);
-    const jenjangItem = item.jenjang || "Semua";
-
-    document.getElementById('modalNoSoal').innerText = dispNo || (idx + 1);
-    const badge = document.getElementById('badgeModalEditJenjang');
-    if (badge) {
-      badge.innerText = jenjangItem === "Semua" ? "Semua Jenjang" : jenjangItem;
-    }
-
-    document.getElementById('editItemId').value = item.itemId;
-    document.getElementById('editIndex').value = idx;
-    document.getElementById('editSoalJenjang').value = jenjangItem;
-    document.getElementById('editSoalTeks').value = item.soal;
-    document.getElementById('editSoalGambar').value = '';
-    document.getElementById('editRemoveSoalImage').value = 'false';
-
-    const prevBox = document.getElementById('previewGambarModal');
-    if (item.imageUrl) {
-      prevBox.classList.remove('d-none');
-      document.getElementById('imgModalPreview').src = item.imageUrl;
-    } else {
-      prevBox.classList.add('d-none');
-    }
-
-    let pilHtml = '';
-    item.pilihan.forEach((p, pIdx) => {
-      let isChecked = kunciArr.includes(pIdx) ? 'checked' : '';
-      let existingImg = item.pilihanGambar && item.pilihanGambar[pIdx] ? item.pilihanGambar[pIdx] : '';
-
-      pilHtml += `<div class="card p-2 mb-2 bg-light border">
-        <div class="input-group input-group-sm mb-2">
-          <div class="input-group-text" title="Centang jika opsi ini benar">
-            <input class="form-check-input mt-0" type="checkbox" name="modalKunci" value="${pIdx}" ${isChecked}>
-          </div>
-          <span class="input-group-text fw-bold">${String.fromCharCode(65 + pIdx)}</span>
-          <input type="text" class="form-control modal-pilihan-input" value="${p}" required>
-        </div>
-        
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <small class="fw-bold text-muted" style="min-width:70px; font-size:0.75rem;">Ganti/Upload:</small>
-          <input type="file" class="form-control form-control-sm modal-pilihan-file" accept="image/*" data-index="${pIdx}">
-          <input type="hidden" id="modalPilihanExisting_${pIdx}" class="modal-pilihan-existing" value="${existingImg}">
-        </div>
-
-        <div id="boxImgOpsiPreview_${pIdx}" class="${existingImg ? 'd-flex' : 'd-none'} align-items-center justify-content-between mt-2 p-2 border rounded bg-white">
-          <div class="d-flex align-items-center gap-2">
-            <small class="fw-bold text-muted" style="font-size:0.7rem;">Gambar Opsi saat ini:</small>
-            <img id="imgOpsiModal_${pIdx}" src="${existingImg}" class="img-fluid border rounded" style="max-height:50px;">
-          </div>
-          <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 fw-bold" style="font-size:0.75rem;" onclick="hapusGambarOpsiModal(${pIdx})">
-            <i class="bi bi-trash me-1"></i> Hapus Gambar Opsi
-          </button>
-        </div>
-      </div>`;
-    });
-    document.getElementById('editPilihanContainer').innerHTML = pilHtml;
-
-    modalEditObj.show();
-  }
-
-  function hapusGambarSoalModal() {
-    document.getElementById('editRemoveSoalImage').value = 'true';
-    document.getElementById('previewGambarModal').classList.add('d-none');
-    document.getElementById('imgModalPreview').src = '';
-  }
-
-  function hapusGambarOpsiModal(pIdx) {
-    document.getElementById(`modalPilihanExisting_${pIdx}`).value = '';
-    document.getElementById(`boxImgOpsiPreview_${pIdx}`).classList.replace('d-flex', 'd-none');
-  }
-
-  function simpanEditSoal(e) {
-    e.preventDefault();
-    const checkedNodes = document.querySelectorAll('input[name="modalKunci"]:checked');
-    if (checkedNodes.length === 0) {
-      Swal.fire({ icon: 'warning', title: 'Pilih Kunci Jawaban', text: 'Centang minimal 1 jawaban yang benar!' });
-      return;
-    }
-
-    const btn = document.getElementById('btnSimpanSoal');
-    btn.disabled = true;
-    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...`;
-
-    const itemId = document.getElementById('editItemId').value;
-    const soalJenjang = document.getElementById('editSoalJenjang').value;
-    const soalTeks = document.getElementById('editSoalTeks').value;
-    const kunciArr = Array.from(checkedNodes).map(el => parseInt(el.value));
-    const removeSoalImage = document.getElementById('editRemoveSoalImage').value === 'true';
-
-    let pilihanArr = [];
-    document.querySelectorAll('.modal-pilihan-input').forEach(input => { pilihanArr.push(input.value); });
-
-    let pilihanGambarExisting = [];
-    document.querySelectorAll('.modal-pilihan-existing').forEach(input => { pilihanGambarExisting.push(input.value || null); });
-
-    const fileOpsiInputs = document.querySelectorAll('.modal-pilihan-file');
-    let pilihanGambarBase64 = new Array(pilihanArr.length).fill(null);
-    let filePromises = [];
-
-    fileOpsiInputs.forEach((input, pIdx) => {
-      if (input.files[0]) {
-        let promise = new Promise((resolve) => {
-          let reader = new FileReader();
-          reader.onload = function(evt) {
-            pilihanGambarBase64[pIdx] = evt.target.result;
-            resolve();
-          };
-          reader.readAsDataURL(input.files[0]);
-        });
-        filePromises.push(promise);
+  function konfirmasiResetNilai() {
+    Swal.fire({
+      title: 'Hapus Semua Data?',
+      text: "Seluruh daftar nilai aktif akan dihapus secara permanen! Arsipkan terlebih dahulu jika masih diperlukan.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      confirmButtonText: 'Ya, Kosongkan!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'resetNilai' }) })
+        .then(res => res.json())
+        .then(res => { if(res.success) { loadDataRekapGuru(); } });
       }
     });
-
-    Promise.all(filePromises).then(() => {
-      const fileInputSoal = document.getElementById('editSoalGambar');
-      const fileSoal = fileInputSoal.files[0];
-
-      let payload = {
-        itemId: itemId,
-        jenjang: soalJenjang,
-        soal: soalTeks,
-        pilihan: pilihanArr,
-        jawabanBenar: kunciArr,
-        pilihanGambarBase64: pilihanGambarBase64,
-        pilihanGambarExisting: pilihanGambarExisting,
-        removeSoalImage: removeSoalImage
-      };
-
-      if (fileSoal && !removeSoalImage) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          payload.imageBase64 = evt.target.result;
-          payload.imageName = fileSoal.name;
-          kirimUpdateKeBackend(payload);
-        };
-        reader.readAsDataURL(fileSoal);
-      } else {
-        kirimUpdateKeBackend(payload);
-      }
-    });
-  }
-
-  function kirimUpdateKeBackend(payload) {
-    payload.action = "updateSoal";
-
-    fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(res => {
-      const btn = document.getElementById('btnSimpanSoal');
-      btn.disabled = false;
-      btn.innerText = "Simpan Perubahan";
-
-      if (res.success) {
-        modalEditObj.hide();
-        
-        Swal.fire({
-          icon: 'success',
-          title: 'Soal Berhasil Diperbarui!',
-          text: 'Perubahan soal dan kunci jawaban telah tersimpan secara otomatis.',
-          confirmButtonColor: 'var(--primary-color)',
-          timer: 1800,
-          timerProgressBar: true
-        });
-
-        loadBankSoalGuru();
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Gagal Memperbarui',
-          text: res.error || 'Terjadi kesalahan saat menyimpan soal.',
-          confirmButtonColor: '#dc2626'
-        });
-      }
-    });
-  }
-
-  // --- SISWA UJIAN LOGIC (MULTI-JENJANG + INSTANT PRELOAD + FIREBASE) ---
-  function mulaiUjian(e) {
-    e.preventDefault();
-    const nama = document.getElementById('namaSiswa').value.trim();
-    const kelas = document.getElementById('kelasSiswa').value.trim();
-    const jenjang = globalConfig.multiJenjangAktif !== false
-      ? document.getElementById('selectJenjangSiswa').value
-      : "";
-
-    const btnMulai = document.getElementById('btnMulai');
-    btnMulai.disabled = true;
-    btnMulai.innerText = "Membuka Soal Ujian...";
-
-    fetchMasterDataUjian()
-    .then(res => {
-      if(!res || !res.success) {
-        alert((res && res.message) || "Akses ujian ditutup oleh Guru.");
-        btnMulai.disabled = false;
-        btnMulai.innerText = "Mulai Ujian Fullscreen";
-        return;
-      }
-
-      if(res.config) globalConfig = { ...globalConfig, ...res.config };
-
-      if (jenjang && globalConfig.statusPerJenjang && globalConfig.statusPerJenjang[jenjang] === false) {
-        alert(`Akses ujian untuk ${jenjang} saat ini sedang nonaktif oleh Guru.`);
-        btnMulai.disabled = false;
-        btnMulai.innerText = "Mulai Ujian Fullscreen";
-        return;
-      }
-
-      let data = res.data || [];
-      if (jenjang) {
-        data = data.filter(s => !s.jenjang || s.jenjang === "Semua" || s.jenjang === jenjang);
-      }
-
-      if (data.length === 0) {
-        alert(`Soal untuk ${jenjang || 'ujian ini'} belum tersedia atau masih nonaktif.`);
-        btnMulai.disabled = false;
-        btnMulai.innerText = "Mulai Ujian Fullscreen";
-        return;
-      }
-
-      document.getElementById('hNama').innerText = nama;
-      document.getElementById('hKelas').innerText = jenjang ? `${jenjang} • ${kelas}` : `Kelas: ${kelas}`;
-
-      const saveKey = `cbt_answers_${jenjang}_${nama}_${kelas}`;
-      const saveBankKey = `cbt_banksoal_${jenjang}_${nama}_${kelas}`;
-      const savedAnswers = localStorage.getItem(saveKey);
-      const savedBank = localStorage.getItem(saveBankKey);
-
-      if (savedAnswers && savedBank) {
-        bankSoal = JSON.parse(savedBank);
-        jawabanSiswa = JSON.parse(savedAnswers);
-      } else {
-        let rawData = JSON.parse(JSON.stringify(data));
-        let processedSoal = globalConfig.acakSoal ? shuffleArray(rawData) : rawData;
-
-        processedSoal.forEach(sItem => {
-          let kunciArr = normalizeKunci(sItem.jawabanBenar);
-          sItem.isMultiple = (kunciArr.length > 1) || Boolean(sItem.isMultiple);
-
-          let combinedOps = [];
-          sItem.pilihan.forEach((pText, pIdx) => {
-            combinedOps.push({
-              txt: pText,
-              img: sItem.pilihanGambar ? sItem.pilihanGambar[pIdx] : null,
-              isCorrect: kunciArr.includes(pIdx)
-            });
-          });
-
-          let finalOps = globalConfig.acakJawaban ? shuffleArray(combinedOps) : combinedOps;
-          sItem.pilihan = [];
-          sItem.pilihanGambar = [];
-          let newKunci = [];
-          finalOps.forEach((o, oIdx) => {
-            sItem.pilihan.push(o.txt);
-            sItem.pilihanGambar.push(o.img);
-            if (o.isCorrect) newKunci.push(oIdx);
-          });
-          sItem.jawabanBenar = newKunci;
-        });
-
-        bankSoal = processedSoal;
-        jawabanSiswa = bankSoal.map(s => s.isMultiple ? [] : null);
-
-        localStorage.setItem(saveBankKey, JSON.stringify(bankSoal));
-        localStorage.setItem(saveKey, JSON.stringify(jawabanSiswa));
-      }
-
-      const durasiMenit = (jenjang && globalConfig.durasiPerJenjang && globalConfig.durasiPerJenjang[jenjang])
-        ? globalConfig.durasiPerJenjang[jenjang]
-        : globalConfig.durasi;
-
-      sisaWaktu = durasiMenit * 60;
-      isUjianAktifMode = true;
-      document.body.classList.add('exam-mode-active');
-      jumlahPelanggaran = 0;
-
-      let elem = document.documentElement;
-      if (elem.requestFullscreen) elem.requestFullscreen().catch(()=>{});
-
-      document.getElementById('section-identitas').classList.add('d-none');
-      document.getElementById('section-ujian').classList.remove('d-none');
-      document.getElementById('headerInfoSiswa').classList.remove('d-none');
-      document.getElementById('headerTimer').classList.remove('d-none');
-
-      renderNavigasi();
-      tampilkanSoal(0);
-      startTimer();
-      updateConnectionStatus();
-    })
-    .catch(() => {
-      alert("Gagal terhubung ke server ujian. Periksa koneksi internet Anda.");
-      btnMulai.disabled = false;
-      btnMulai.innerText = "Mulai Ujian Fullscreen";
-    });
-  }
-
-  function tampilkanSoal(index) {
-    currentSoalIndex = index;
-    const soalObj = bankSoal[index];
-    const kunciArr = normalizeKunci(soalObj.jawabanBenar);
-    const isMulti = (kunciArr.length > 1) || Boolean(soalObj.isMultiple);
-
-    document.getElementById('noSoalTitle').innerText = index + 1;
-    document.getElementById('soalContainer').innerText = soalObj.soal;
-
-    const multiHint = document.getElementById('multiSelectHint');
-    if (isMulti) {
-      multiHint.classList.remove('d-none');
-    } else {
-      multiHint.classList.add('d-none');
-    }
-
-    const imgContainer = document.getElementById('soalImgContainer');
-    const soalImg = document.getElementById('soalImg');
-    if (soalObj.imageUrl) {
-      soalImg.src = soalObj.imageUrl;
-      imgContainer.classList.remove('d-none');
-    } else {
-      imgContainer.classList.add('d-none');
-    }
-
-    let currentAns = jawabanSiswa[index];
-    let htmlPilihan = '';
-
-    soalObj.pilihan.forEach((pil, pIdx) => {
-      let isSelected = isMulti 
-        ? (Array.isArray(currentAns) && currentAns.includes(pIdx)) 
-        : (currentAns === pIdx);
-      let selectedClass = isSelected ? 'selected' : '';
-      let checkIcon = isMulti 
-        ? (isSelected ? `<i class="bi bi-check-square-fill me-2"></i>` : `<i class="bi bi-square me-2"></i>`) 
-        : '';
-      let imgOpsi = soalObj.pilihanGambar && soalObj.pilihanGambar[pIdx] ? `<br><img src="${soalObj.pilihanGambar[pIdx]}" class="img-fluid rounded border mt-2" style="max-height:120px">` : '';
-
-      htmlPilihan += `<div class="option-card ${selectedClass}" onclick="pilihJawaban(${pIdx})">
-        ${checkIcon}<strong>${String.fromCharCode(65 + pIdx)}.</strong> ${pil}
-        ${imgOpsi}
-      </div>`;
-    });
-    document.getElementById('pilihanContainer').innerHTML = htmlPilihan;
-
-    document.getElementById('btnPrev').disabled = (index === 0);
-    document.getElementById('btnNext').disabled = (index === bankSoal.length - 1);
-    updateNavigasiUI();
-  }
-
-  function pilihJawaban(pilihanIdx) {
-    const soalObj = bankSoal[currentSoalIndex];
-    const kunciArr = normalizeKunci(soalObj.jawabanBenar);
-    const isMulti = (kunciArr.length > 1) || Boolean(soalObj.isMultiple);
-
-    if (isMulti) {
-      let arr = Array.isArray(jawabanSiswa[currentSoalIndex]) ? [...jawabanSiswa[currentSoalIndex]] : [];
-      const pos = arr.indexOf(pilihanIdx);
-      if (pos > -1) {
-        arr.splice(pos, 1);
-      } else {
-        arr.push(pilihanIdx);
-      }
-      jawabanSiswa[currentSoalIndex] = arr.sort((a, b) => a - b);
-    } else {
-      jawabanSiswa[currentSoalIndex] = pilihanIdx;
-    }
-    
-    const nama = document.getElementById('namaSiswa').value.trim();
-    const kelas = document.getElementById('kelasSiswa').value.trim();
-    const jenjang = globalConfig.multiJenjangAktif !== false ? document.getElementById('selectJenjangSiswa').value : "";
-    const saveKey = `cbt_answers_${jenjang}_${nama}_${kelas}`;
-    localStorage.setItem(saveKey, JSON.stringify(jawabanSiswa));
-
-    updateConnectionStatus();
-    tampilkanSoal(currentSoalIndex);
-  }
-
-  function nextSoal() {
-    if (currentSoalIndex < bankSoal.length - 1) tampilkanSoal(currentSoalIndex + 1);
-  }
-
-  function prevSoal() {
-    if (currentSoalIndex > 0) tampilkanSoal(currentSoalIndex - 1);
-  }
-
-  function renderNavigasi() {
-    let htmlNav = '';
-    bankSoal.forEach((_, idx) => {
-      htmlNav += `<div id="box-nav-${idx}" class="box-nomor" onclick="tampilkanSoal(${idx})">${idx + 1}</div>`;
-    });
-    document.getElementById('navigasiSoal').innerHTML = htmlNav;
-  }
-
-  function updateNavigasiUI() {
-    bankSoal.forEach((_, idx) => {
-      let box = document.getElementById(`box-nav-${idx}`);
-      box.className = 'box-nomor';
-      const ans = jawabanSiswa[idx];
-      const isTerjawab = Array.isArray(ans) ? ans.length > 0 : (ans !== null && ans !== undefined);
-      if (isTerjawab) box.classList.add('terjawab');
-      if (idx === currentSoalIndex) box.classList.add('active');
-    });
-  }
-
-  function startTimer() {
-    timerInterval = setInterval(() => {
-      let menit = Math.floor(sisaWaktu / 60);
-      let detik = sisaWaktu % 60;
-      document.getElementById('timer').innerText = 
-        `${menit.toString().padStart(2, '0')} : ${detik.toString().padStart(2, '0')}`;
-      
-      if (sisaWaktu <= 0) {
-        clearInterval(timerInterval);
-        alert('Waktu ujian telah habis! Jawaban Anda dikirim otomatis.');
-        kirimJawaban();
-      }
-      sisaWaktu--;
-    }, 1000);
-  }
-
-  function konfirmasiSelesai() {
-    if (confirm('Yakin ingin mengakhiri ujian dan mengirim jawaban?')) {
-      kirimJawaban();
-    }
-  }
-
-  function hitungSkorLokal() {
-    let jumlahBenar = 0;
-    let jawabanByItemId = {};
-
-    bankSoal.forEach((item, idx) => {
-      const userArr = normalizeKunci(jawabanSiswa[idx]);
-      const kunciArr = normalizeKunci(item.jawabanBenar);
-      jawabanByItemId[item.itemId] = userArr;
-
-      if (userArr.length > 0 && userArr.length === kunciArr.length && userArr.every((v, i) => v === kunciArr[i])) {
-        jumlahBenar++;
-      }
-    });
-
-    const totalSoal = bankSoal.length;
-    const jumlahSalah = totalSoal - jumlahBenar;
-    const nilai = totalSoal > 0 ? Math.round((jumlahBenar / totalSoal) * 100) : 0;
-
-    return { nilai, jumlahBenar, jumlahSalah, totalSoal, jawabanByItemId };
-  }
-
-  async function kirimJawaban() {
-    isUjianAktifMode = false;
-    document.body.classList.remove('exam-mode-active');
-    stopAlarmRepeat();
-    clearInterval(timerInterval);
-
-    if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
-
-    const nama = document.getElementById('namaSiswa').value.trim();
-    const kelas = document.getElementById('kelasSiswa').value.trim();
-    const jenjang = globalConfig.multiJenjangAktif !== false ? document.getElementById('selectJenjangSiswa').value : "";
-    const hasilLokal = hitungSkorLokal();
-    const submissionId = `SUB_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-
-    document.getElementById('section-ujian').innerHTML = `<div class="text-center py-5"><h4>Mengirim jawaban Anda... Mohon tunggu.</h4></div>`;
-
-    if (isFirebaseReady()) {
-      try {
-        await fetch(`${FIREBASE_DB_URL}/cbt_submissions/${submissionId}.json`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            nama: nama,
-            kelas: kelas,
-            jenjang: jenjang,
-            nilai: hasilLokal.nilai,
-            jumlahBenar: hasilLokal.jumlahBenar,
-            jumlahSalah: hasilLokal.jumlahSalah,
-            totalSoal: hasilLokal.totalSoal,
-            jawabanSiswa: jawabanSiswa,
-            jawabanByItemId: hasilLokal.jawabanByItemId,
-            jumlahPelanggaran: jumlahPelanggaran,
-            waktuSelesai: new Date().toLocaleString("id-ID"),
-            syncedToSheet: false
-          })
-        });
-      } catch (e) {}
-    }
-
-    const payloadGAS = JSON.stringify({
-      action: 'simpanHasil',
-      nama: nama,
-      kelas: kelas,
-      jenjang: jenjang,
-      jawabanSiswa: jawabanSiswa,
-      jawabanByItemId: hasilLokal.jawabanByItemId,
-      jumlahPelanggaran: jumlahPelanggaran,
-      submissionId: submissionId
-    });
-
-    if (isFirebaseReady()) {
-      fetch(API_URL, { method: 'POST', body: payloadGAS }).catch(()=>{});
-
-      localStorage.removeItem(`cbt_answers_${jenjang}_${nama}_${kelas}`);
-      localStorage.removeItem(`cbt_banksoal_${jenjang}_${nama}_${kelas}`);
-
-      document.getElementById('section-ujian').classList.add('d-none');
-      document.getElementById('headerInfoSiswa').classList.add('d-none');
-      document.getElementById('headerTimer').classList.add('d-none');
-      document.getElementById('section-hasil').classList.remove('d-none');
-
-      if (globalConfig.tampilHasil) {
-        document.getElementById('detailNilaiContainer').classList.remove('d-none');
-        document.getElementById('detailNilai').innerText = hasilLokal.nilai;
-        document.getElementById('detailBenar').innerText = hasilLokal.jumlahBenar;
-        document.getElementById('detailSalah').innerText = hasilLokal.jumlahSalah;
-      } else {
-        document.getElementById('detailNilaiContainer').classList.add('d-none');
-      }
-    } else {
-      fetch(API_URL, {
-        method: 'POST',
-        body: payloadGAS
-      })
-      .then(res => res.json())
-      .then(res => {
-        localStorage.removeItem(`cbt_answers_${jenjang}_${nama}_${kelas}`);
-        localStorage.removeItem(`cbt_banksoal_${jenjang}_${nama}_${kelas}`);
-
-        document.getElementById('section-ujian').classList.add('d-none');
-        document.getElementById('headerInfoSiswa').classList.add('d-none');
-        document.getElementById('headerTimer').classList.add('d-none');
-        document.getElementById('section-hasil').classList.remove('d-none');
-        
-        if (res.success) {
-          if (res.tampilHasil) {
-            document.getElementById('detailNilaiContainer').classList.remove('d-none');
-            document.getElementById('detailNilai').innerText = res.nilai;
-            document.getElementById('detailBenar').innerText = res.jumlahBenar;
-            document.getElementById('detailSalah').innerText = res.jumlahSalah;
-          } else {
-            document.getElementById('detailNilaiContainer').classList.add('d-none');
-          }
-        } else {
-          alert('Perhatian: ' + res.error);
-          document.getElementById('detailNilaiContainer').classList.add('d-none');
-        }
-      });
-    }
   }
 
   function exportTableToCSV(tableId, filename) {
-    let table = document.getElementById(tableId);
-    let rows = table.querySelectorAll("tr");
     let csv = [];
+    let rows = document.querySelectorAll(`#${tableId} tr`);
     for (let i = 0; i < rows.length; i++) {
       let row = [], cols = rows[i].querySelectorAll("td, th");
-      for (let j = 0; j < cols.length; j++) 
-        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+      for (let j = 0; j < cols.length; j++) {
+        if (tableId === 'tabelNilaiGuru' && j === cols.length - 1) continue; 
+        let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, " ").trim();
+        row.push('"' + data + '"');
+      }
       csv.push(row.join(","));
     }
     let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
     let downloadLink = document.createElement("a");
-    downloadLink.download = filename || "Data_Nilai_CBT.csv";
-    downloadLink.href = window.URL.createObjectURL ? window.URL.createObjectURL(csvFile) : window.webkitURL.createObjectURL(csvFile);
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
     downloadLink.style.display = "none";
     document.body.appendChild(downloadLink);
     downloadLink.click();
   }
-</script>
 
+  // --- LOGIKA UJIAN SISWA (INSTANT LOAD + MULTI-JENJANG) ---
+  async function mulaiUjian(e) {
+    e.preventDefault();
+    const nama = document.getElementById('namaSiswa').value.trim();
+    const kelas = document.getElementById('kelasSiswa').value.trim();
+    const jenjang = (globalConfig.multiJenjangAktif !== false)
+      ? document.getElementById('selectJenjangSiswa').value
+      : "";
+
+    let elem = document.documentElement;
+    if (elem.requestFullscreen) elem.requestFullscreen().catch(()=>{});
+
+    const btnMulai = document.getElementById('btnMulai');
+    btnMulai.disabled = true;
+    btnMulai.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Menyiapkan Lembar Ujian...`;
+
+    try {
+      const [resSoal, resCheck] = await Promise.all([
+        fetchMasterDataUjian(false),
+        fetch(`${API_URL}?action=checkPeserta&nama=${encodeURIComponent(nama)}&kelas=${encodeURIComponent(kelas)}&jenjang=${encodeURIComponent(jenjang)}`).then(r => r.json())
+      ]);
+
+      btnMulai.disabled = false;
+      btnMulai.innerText = "Mulai Ujian Fullscreen";
+
+      if (resCheck && resCheck.sudahMengerjakan) {
+        if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+        Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: resCheck.message });
+        return;
+      }
+
+      if (!resSoal || !resSoal.success) {
+        if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+        Swal.fire({ icon: 'warning', title: 'Ujian Nonaktif', text: (resSoal && resSoal.message) || "Soal ujian belum dibuka oleh guru." });
+        return;
+      }
+
+      if (resSoal.config) globalConfig = { ...globalConfig, ...resSoal.config };
+
+      if (jenjang && globalConfig.statusPerJenjang && globalConfig.statusPerJenjang[jenjang] === false) {
+        if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+        Swal.fire({ icon: 'warning', title: `Ujian ${jenjang} Nonaktif`, text: `Sesi ujian untuk ${jenjang} sedang ditutup oleh guru.` });
+        return;
+      }
+
+      let rawData = resSoal.data || [];
+      if (jenjang) {
+        rawData = rawData.filter(s => !s.jenjang || s.jenjang === "Semua" || s.jenjang === jenjang);
+      }
+
+      if (rawData.length === 0) {
+        if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+        Swal.fire({ icon: 'info', title: 'Soal Belum Tersedia', text: `Belum ada soal aktif untuk ${jenjang || 'ujian ini'}.` });
+        return;
+      }
+
+      if (globalConfig.acakSoal) rawData = shuffleArray(rawData);
+
+      bankSoal = rawData.map(soal => {
+        let kunciArr = normalizeKunci(soal.kunci);
+        let mappedPilihan = soal.pilihan.map((teks, idx) => ({
+          teks: teks,
+          isKunci: kunciArr.includes(idx),
+          img: (soal.pilihanImages && soal.pilihanImages[idx]) ? soal.pilihanImages[idx] : ''
+        }));
+
+        if (globalConfig.acakJawaban) {
+          mappedPilihan = shuffleArray(mappedPilihan);
+        }
+
+        return {
+          pertanyaan: soal.pertanyaan,
+          imageUrl: soal.imageUrl,
+          isPGK: kunciArr.length > 1,
+          pilihanObj: mappedPilihan
+        };
+      });
+
+      const durasiTerpakai = (jenjang && globalConfig.durasiPerJenjang && globalConfig.durasiPerJenjang[jenjang])
+        ? globalConfig.durasiPerJenjang[jenjang]
+        : globalConfig.durasi;
+
+      sisaWaktu = durasiTerpakai * 60;
+      const timerMins = String(durasiTerpakai).padStart(2, '0');
+      document.getElementById('timer').innerText = `${timerMins} : 00`;
+
+      jawabanSiswa = new Array(bankSoal.length).fill(null).map(() => []);
+      document.getElementById('hNama').innerText = nama;
+      document.getElementById('hKelas').innerText = jenjang ? `${jenjang} • ${kelas}` : `Kelas: ${kelas}`;
+      
+      document.getElementById('section-identitas').classList.add('d-none');
+      document.getElementById('btnModeGuru').classList.add('d-none');
+      document.getElementById('section-ujian').classList.remove('d-none');
+      document.getElementById('headerInfoSiswa').classList.remove('d-none');
+      document.getElementById('headerTimer').classList.remove('d-none');
+      
+      isUjianAktifMode = true;
+      document.body.classList.add('exam-mode-active');
+      jumlahPelanggaran = 0;
+
+      updateConnectionStatus();
+      renderNavigasi();
+      tampilkanSoal(0);
+      mulaiTimer();
+
+    } catch (err) {
+      btnMulai.disabled = false;
+      btnMulai.innerText = "Mulai Ujian Fullscreen";
+      alert("Gagal menghubungi server: " + err);
+    }
+  }
+
+  function mulaiTimer() {
+    timerInterval = setInterval(() => {
+      sisaWaktu--;
+      let mins = Math.floor(sisaWaktu / 60);
+      let secs = sisaWaktu % 60;
+      document.getElementById('timer').innerText = `${String(mins).padStart(2, '0')} : ${String(secs).padStart(2, '0')}`;
+      if (sisaWaktu <= 0) {
+        clearInterval(timerInterval);
+        alert("Waktu habis!");
+        kirimJawaban();
+      }
+    }, 1000);
+  }
+
+  function tampilkanSoal(index) {
+    currentSoalIndex = index;
+    const soal = bankSoal[index];
+    document.getElementById('noSoalTitle').innerText = index + 1;
+    // MENGGUNAKAN FORMAT IDENTIK DENGAN PREVIEW & EDITOR GURU
+    document.getElementById('soalContainer').innerHTML = formatSoalHtml(soal.pertanyaan);
+    
+    const multiHint = document.getElementById('multiSelectHint');
+    if (soal.isPGK) multiHint.classList.remove('d-none');
+    else multiHint.classList.add('d-none');
+
+    const imgCont = document.getElementById('soalImgContainer');
+    if (soal.imageUrl) {
+      imgCont.classList.remove('d-none');
+      document.getElementById('soalImg').src = soal.imageUrl;
+    } else {
+      imgCont.classList.add('d-none');
+    }
+
+    const pilihanCont = document.getElementById('pilihanContainer');
+    pilihanCont.innerHTML = '';
+    const hurufs = ['A', 'B', 'C', 'D', 'E'];
+    const currentSelected = jawabanSiswa[index] || [];
+
+    soal.pilihanObj.forEach((pObj, i) => {
+      const btn = document.createElement('div');
+      const isSelected = currentSelected.includes(i);
+      btn.className = `option-card ${isSelected ? 'selected' : ''}`;
+      let opsiImgHtml = pObj.img ? `<img src="${pObj.img}" class="img-opsi-preview mt-2">` : '';
+      let iconIndicator = soal.isPGK 
+        ? `<i class="bi ${isSelected ? 'bi-check-square-fill' : 'bi-square'} me-2"></i>` 
+        : '';
+
+      btn.innerHTML = `${iconIndicator}<span class="fw-bold me-2">${hurufs[i]}.</span> ${pObj.teks || ''} ${opsiImgHtml}`;
+      btn.onclick = () => {
+        if (soal.isPGK) {
+          let arr = [...(jawabanSiswa[index] || [])];
+          if (arr.includes(i)) arr = arr.filter(x => x !== i);
+          else arr.push(i);
+          jawabanSiswa[index] = arr;
+        } else {
+          jawabanSiswa[index] = [i];
+        }
+        tampilkanSoal(index);
+        renderNavigasi();
+      };
+      pilihanCont.appendChild(btn);
+    });
+
+    document.getElementById('btnPrev').disabled = index === 0;
+    document.getElementById('btnNext').innerText = index === bankSoal.length - 1 ? 'Selesai' : 'Berikutnya';
+    renderNavigasi();
+  }
+
+  function renderNavigasi() {
+    const navCont = document.getElementById('navigasiSoal');
+    navCont.innerHTML = '';
+    bankSoal.forEach((_, i) => {
+      const box = document.createElement('div');
+      const hasAnswered = jawabanSiswa[i] && jawabanSiswa[i].length > 0;
+      box.className = `box-nomor ${i === currentSoalIndex ? 'active' : ''} ${hasAnswered ? 'terjawab' : ''}`;
+      box.innerText = i + 1;
+      box.onclick = () => tampilkanSoal(i);
+      navCont.appendChild(box);
+    });
+  }
+
+  function prevSoal() { if (currentSoalIndex > 0) tampilkanSoal(currentSoalIndex - 1); }
+  function nextSoal() { if (currentSoalIndex < bankSoal.length - 1) tampilkanSoal(currentSoalIndex + 1); else konfirmasiSelesai(); }
+
+  function konfirmasiSelesai() {
+    const kosong = jawabanSiswa.filter(j => !j || j.length === 0).length;
+    if (kosong > 0) {
+      if (!confirm(`Masih ada ${kosong} soal yang belum dijawab. Yakin selesai?`)) return;
+    } else if (!confirm("Yakin ingin mengumpulkan seluruh jawaban Anda?")) return;
+    kirimJawaban();
+  }
+
+  function kirimJawaban() {
+    isUjianAktifMode = false;
+    document.body.classList.remove('exam-mode-active');
+    stopAlarmRepeat();
+    clearInterval(timerInterval);
+    document.getElementById('cheatOverlay').classList.add('d-none');
+
+    if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+
+    let jumlahBenar = 0;
+    const hurufs = ['A', 'B', 'C', 'D', 'E'];
+    let rincianJawabanList = [];
+
+    bankSoal.forEach((soal, idx) => {
+      let jwbIndices = (jawabanSiswa[idx] || []).slice().sort((a, b) => a - b);
+      let kunciIndices = [];
+      soal.pilihanObj.forEach((p, pIdx) => {
+        if (p.isKunci) kunciIndices.push(pIdx);
+      });
+
+      let isBenar = jwbIndices.length === kunciIndices.length && jwbIndices.every((val, i) => val === kunciIndices[i]);
+      if (isBenar) jumlahBenar++;
+
+      let jwbText = jwbIndices.length > 0
+        ? jwbIndices.map(i => `${hurufs[i]}. ${soal.pilihanObj[i].teks || '(Gambar)'}`).join(' | ')
+        : '(Tidak Dijawab)';
+
+      let kunciText = kunciIndices.length > 0
+        ? kunciIndices.map(i => `${hurufs[i]}. ${soal.pilihanObj[i].teks || '(Gambar)'}`).join(' | ')
+        : '-';
+
+      rincianJawabanList.push({
+        no: idx + 1,
+        pertanyaan: soal.pertanyaan,
+        jawabanSiswa: jwbText,
+        kunciBenar: kunciText,
+        isBenar: isBenar
+      });
+    });
+
+    const totalSoal = bankSoal.length;
+    const jumlahSalah = totalSoal - jumlahBenar;
+    const nilai = Math.round((jumlahBenar / totalSoal) * 100);
+    const jenjang = (globalConfig.multiJenjangAktif !== false)
+      ? document.getElementById('selectJenjangSiswa').value
+      : "";
+
+    const dataPost = {
+      action: 'submitJawaban',
+      nama: document.getElementById('namaSiswa').value,
+      kelas: document.getElementById('kelasSiswa').value,
+      jenjang: jenjang,
+      nilai: nilai,
+      benar: jumlahBenar,
+      salah: jumlahSalah,
+      total: totalSoal,
+      pelanggaran: jumlahPelanggaran,
+      rincian: rincianJawabanList
+    };
+
+    document.getElementById('section-ujian').classList.add('d-none');
+    document.getElementById('headerTimer').classList.add('d-none');
+    document.getElementById('section-hasil').classList.remove('d-none');
+    document.getElementById('btnModeGuru').classList.remove('d-none');
+
+    if (globalConfig.tampilHasil) {
+      document.getElementById('detailNilaiContainer').classList.remove('d-none');
+      document.getElementById('detailNilai').innerText = nilai;
+      document.getElementById('detailBenar').innerText = jumlahBenar;
+      document.getElementById('detailSalah').innerText = jumlahSalah;
+    } else {
+      document.getElementById('detailNilaiContainer').classList.add('d-none');
+    }
+
+    fetch(API_URL, { method: 'POST', body: JSON.stringify(dataPost) }).catch(()=>{});
+  }
+</script>
 </body>
 </html>
