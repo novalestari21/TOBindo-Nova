@@ -1930,7 +1930,7 @@
         populateAllJenjangDropdowns();
         Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Aturan Ujian & Multi-Jenjang Berhasil Diperbarui!', timer: 1800, showConfirmButton: false });
       } else {
-        alert("Gagal menyimpan setting: " + res.error);
+        alert("Gagal menyimpan setting: " + (res.error || res.message || "Terjadi kesalahan."));
       }
     });
   }
@@ -2151,7 +2151,7 @@
         lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
         lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
       } else {
-        alert("Gagal mengubah status: " + res.error);
+        alert("Gagal mengubah status: " + (res.error || res.message));
         chk.checked = !isAktif;
       }
     });
@@ -2313,7 +2313,7 @@
     fetch(`${API_URL}?action=getDataGuru`)
     .then(res => res.json())
     .then(res => {
-      if(!res.success) return alert("Gagal memuat rekap: " + res.error);
+      if(!res.success) return alert("Gagal memuat rekap: " + (res.error || res.message));
 
       masterDataSiswa = res.data || [];
       masterDataArsip = res.arsip || [];
@@ -2498,7 +2498,7 @@
         chk.checked = !isOn;
         globalConfig.statusPerJenjang[activeBankSoalJenjang] = !isOn;
         updateJenjangWorkspaceBanner();
-        alert("Gagal mengubah status jenjang: " + res.error);
+        alert("Gagal mengubah status jenjang: " + (res.error || res.message));
       }
     });
   }
@@ -2588,7 +2588,7 @@
         if (res.success) {
           Toast.fire({ icon: 'success', title: 'Urutan soal tersimpan!' });
         } else {
-          Swal.fire({ icon: 'error', title: 'Gagal menyimpan urutan', text: res.error || '' });
+          Swal.fire({ icon: 'error', title: 'Gagal menyimpan urutan', text: res.error || res.message || '' });
         }
       });
     }, 650);
@@ -2676,7 +2676,7 @@
             Swal.fire({ icon: 'success', title: 'Berhasil!', text: `${res.count} soal dipindahkan ke "${targetJenjang}".`, timer: 1600, showConfirmButton: false });
             loadBankSoalGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || res.message || 'Terjadi kesalahan.' });
           }
         });
       }
@@ -2708,7 +2708,7 @@
             Swal.fire({ icon: 'success', title: 'Berhasil!', text: `${res.count} soal berhasil di-${labelAksi.toLowerCase()}.`, timer: 1600, showConfirmButton: false });
             loadBankSoalGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || res.message || 'Terjadi kesalahan.' });
           }
         });
       }
@@ -2739,14 +2739,14 @@
             Swal.fire({ icon: 'success', title: 'Terhapus!', text: `${res.count} soal berhasil dihapus.`, timer: 1600, showConfirmButton: false });
             loadBankSoalGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: res.error || 'Terjadi kesalahan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: res.error || res.message || 'Terjadi kesalahan.' });
           }
         });
       }
     });
   }
-  // --- LOAD & RENDER BANK SOAL GURU (IDENTIK DENGAN PREVIEW & SISWA) ---
-  function loadBankSoalGuru() {
+  // --- LOAD & RENDER BANK SOAL GURU (DENGAN FALLBACK & PESAN ERROR JELAS) ---
+  async function loadBankSoalGuru() {
     const container = document.getElementById('listSoalGuruContainer');
     const toolbar = document.getElementById('toolbarSeleksiSoal');
     selectedItemIds.clear();
@@ -2757,12 +2757,25 @@
       <div class="text-muted fw-bold">Memuat daftar soal...</div>
     </div>`;
 
-    fetch(`${API_URL}?action=getBankSoalGuru`)
-    .then(res => res.json())
-    .then(res => {
-      if(!res.success) {
-        container.innerHTML = `<div class="alert alert-danger">${res.error}</div>`;
-        return;
+    try {
+      let res = await fetch(`${API_URL}?action=getBankSoalGuru`).then(r => r.json());
+
+      // Fallback otomatis jika Apps Script versi lama belum memiliki action=getBankSoalGuru
+      if (!res || !res.success) {
+        const fallbackRes = await fetch(`${API_URL}?action=getBankSoal`).then(r => r.json()).catch(() => null);
+        if (fallbackRes && fallbackRes.success && Array.isArray(fallbackRes.data)) {
+          res = fallbackRes;
+        } else {
+          const pesanError = (res && (res.error || res.message))
+            ? (res.error || res.message)
+            : "Server Google Apps Script (Code.gs) belum memiliki fungsi 'getBankSoalGuru' atau belum di-deploy ulang sebagai Versi Baru.";
+          container.innerHTML = `<div class="alert alert-danger shadow-sm">
+            <h6 class="fw-bold mb-1"><i class="bi bi-exclamation-octagon-fill me-2"></i>Gagal Memuat Bank Soal</h6>
+            <div class="small mb-2">${pesanError}</div>
+            <div class="small text-muted">Pastikan kode <b>Code.gs</b> sudah diperbarui dan di-deploy sebagai <b>Versi Baru (New Version)</b>.</div>
+          </div>`;
+          return;
+        }
       }
 
       rawBankSoal = res.data || [];
@@ -2770,17 +2783,22 @@
         globalConfig = { ...globalConfig, ...res.config };
         populateAllJenjangDropdowns();
       }
-      document.getElementById('btnEditFormDirect').href = res.editUrl;
+      document.getElementById('btnEditFormDirect').href = res.editUrl || "#";
 
       const chk = document.getElementById('switchStatusUjian');
       const lbl = document.getElementById('lblStatusUjian');
-      chk.checked = res.isAktif;
-      lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
-      lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
+      const isAktif = res.isAktif !== false;
+      chk.checked = isAktif;
+      lbl.innerText = isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
+      lbl.className = isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
 
       renderJenjangWorkspaceTabs();
       renderDaftarSoalGuru();
-    });
+    } catch (err) {
+      container.innerHTML = `<div class="alert alert-danger shadow-sm">
+        <b>Kesalahan Koneksi:</b> ${err.message}
+      </div>`;
+    }
   }
 
   function renderDaftarSoalGuru() {
@@ -2909,7 +2927,7 @@
             Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Soal berhasil di-${labelAksi.toLowerCase()}.`, timer: 1400, showConfirmButton: false });
             loadBankSoalGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || res.message || 'Terjadi kesalahan.' });
           }
         });
       }
@@ -3052,7 +3070,7 @@
         Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Soal baru ditambahkan ke "${jenjangTarget}"!`, timer: 1600, showConfirmButton: false });
         loadBankSoalGuru();
       } else {
-        alert("Gagal menambahkan soal: " + res.error);
+        alert("Gagal menambahkan soal: " + (res.error || res.message));
       }
     } catch (err) {
       btn.disabled = false;
@@ -3195,7 +3213,7 @@
         Swal.fire({ icon: 'success', title: 'Tersimpan!', text: 'Perubahan Soal & Kunci Berhasil Disimpan!', timer: 1600, showConfirmButton: false });
         loadBankSoalGuru();
       } else {
-        alert("Gagal menyimpan perubahan: " + res.error);
+        alert("Gagal menyimpan perubahan: " + (res.error || res.message));
       }
     } catch (err) {
       btn.disabled = false;
@@ -3232,7 +3250,7 @@
             Swal.fire({ icon: 'success', title: 'Terhapus!', text: `Soal No. ${nomorSoal} berhasil dihapus.`, timer: 1500, showConfirmButton: false });
             loadBankSoalGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: res.error || 'Terjadi kesalahan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: res.error || res.message || 'Terjadi kesalahan.' });
           }
         });
       }
@@ -3412,7 +3430,7 @@
 
       html += `<tr>
         <td class="fw-bold">${idx + 1}</td>
-        <td style="white-space:pre-wrap;">${s.pertanyaan}</td>
+        <td class="soal-unified-text" style="font-size:0.9rem;">${formatSoalHtml(s.pertanyaan)}</td>
         <td class="text-center">${imgTag}</td>
         <td>${opsiStr}</td>
         <td class="text-center">${kunciBadge}</td>
@@ -3486,7 +3504,7 @@
         });
         loadBankSoalGuru();
       } else {
-        Swal.fire({ icon: 'error', title: 'Gagal Import', text: res.error || 'Terjadi kesalahan.' });
+        Swal.fire({ icon: 'error', title: 'Gagal Import', text: res.error || res.message || 'Terjadi kesalahan.' });
       }
     } catch (e) {
       Swal.fire({ icon: 'error', title: 'Kesalahan Koneksi', text: String(e) });
@@ -3663,7 +3681,7 @@
             loadBankSoalGuru();
             loadDataRekapGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || res.message || 'Terjadi kesalahan.' });
           }
         });
       }
@@ -3691,7 +3709,7 @@
             Swal.fire({ icon: 'success', title: 'Berhasil Dipulihkan!', text: `${res.count} soal berhasil ditambahkan.` });
             loadBankSoalGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || res.message || 'Terjadi kesalahan.' });
           }
         });
       }
@@ -3721,7 +3739,7 @@
             Swal.fire({ icon: 'success', title: 'Berhasil Diarsipkan!', text: 'Data nilai telah dipindah ke Arsip & Rekap Aktif dikosongkan.' });
             loadDataRekapGuru();
           } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Tidak ada data untuk diarsipkan.' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || res.message || 'Tidak ada data untuk diarsipkan.' });
           }
         });
       }
