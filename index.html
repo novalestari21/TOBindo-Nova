@@ -3428,34 +3428,24 @@
       imgBox.classList.add("d-none");
     }
 
+    document.getElementById("prevSoalTeks").innerHTML = sanitizeSoalHtml(s.pertanyaan);
     const hurufs = ['A', 'B', 'C', 'D', 'E'];
     const kunciArr = Array.isArray(s.kunci) ? s.kunci.map(Number) : [Number(s.kunci || 0)];
-    const isMulti = s.isMultiple || kunciArr.length > 1;
-
-    const multiHintHtml = isMulti
-      ? `<div class="alert alert-primary py-1 px-3 small mb-3"><i class="bi bi-check2-square me-1"></i> <b>Pilihan Ganda Kompleks:</b> Pilih lebih dari satu jawaban yang benar.</div>`
-      : "";
-
-    document.getElementById("prevSoalTeks").innerHTML = sanitizeSoalHtml(s.pertanyaan) + multiHintHtml;
 
     document.getElementById("prevPilihanContainer").innerHTML = (s.pilihan || []).map((pil, idx) => {
       const isKunci = kunciArr.includes(idx);
       const opsiImg = (s.pilihanImages && s.pilihanImages[idx]) ? s.pilihanImages[idx] : null;
       return `
         <div class="option-card ${isKunci ? 'border-success bg-success-subtle' : ''}">
-          <div class="d-flex align-items-start gap-2">
-            <span class="fw-bold">${hurufs[idx]}.</span>
-            <div class="opsi-unified-text flex-grow-1">
-              <div>${formatOpsiHtml(pil)} ${isKunci ? '<span class="badge bg-success ms-1">Kunci ✓</span>' : ''}</div>
-              ${opsiImg ? `<img src="${opsiImg}" class="img-opsi-preview">` : ''}
-            </div>
-          </div>
+          <div class="fw-bold small mb-1">${hurufs[idx]}. ${pil || ''} ${isKunci ? '<span class="badge bg-success ms-1">Kunci</span>' : ''}</div>
+          ${opsiImg ? `<img src="${opsiImg}" class="img-opsi-preview">` : ''}
         </div>
       `;
     }).join("");
 
     new bootstrap.Modal(document.getElementById("modalPreview")).show();
   }
+  
   // --- ARSIP & PULIHKAN BANK SOAL ---
   async function prosesArsipBankSoal() {
     const { value: namaPaket } = await Swal.fire({
@@ -3873,8 +3863,8 @@
         <div class="option-card ${isSelected ? 'selected' : ''}" onclick="pilihJawaban(${pIdx})">
           <div class="d-flex align-items-start gap-2">
             <span class="fw-bold">${hurufs[pIdx]}.</span>
-            <div class="opsi-unified-text flex-grow-1">
-              <div>${formatOpsiHtml(pil)}</div>
+            <div>
+              <div>${pil || ''}</div>
               ${opsiImg ? `<img src="${opsiImg}" class="img-opsi-preview">` : ''}
             </div>
           </div>
