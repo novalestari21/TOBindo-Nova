@@ -744,9 +744,14 @@
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
               <h6 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h6>
-              <p class="text-muted small mb-0">Edit, nonaktifkan, hapus soal, upload dari Word, dan arsipkan bank soal lama.</p>
+              <p class="text-muted small mb-0">Tambah soal baru, edit, nonaktifkan, hapus soal, upload dari Word, dan arsipkan bank soal lama.</p>
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
+              <!-- TOMBOL TAMBAH SOAL BARU -->
+              <button class="btn btn-success btn-sm fw-bold" onclick="bukaModalTambahSoal()">
+                <i class="bi bi-plus-circle-fill me-1"></i> Tambah Soal Baru
+              </button>
+
               <!-- TOMBOL UNDUH TEMPLATE WORD -->
               <a href="https://docs.google.com/document/d/1CXso7Yn_-KWc6eqHGGSbE_Q1dnjFWFMJ/export?format=docx" 
                  target="_blank" 
@@ -853,9 +858,51 @@
   </div>
 </div>
 
+<!-- MODAL TAMBAH SOAL BARU -->
+<div class="modal fade" id="modalTambahSoal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-success text-white">
+        <h6 class="modal-title fw-bold text-white"><i class="bi bi-plus-circle-fill me-1"></i> Tambah Soal Baru</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3 p-md-4">
+        <form id="formTambahSoal" onsubmit="simpanTambahSoal(event)">
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Teks Pertanyaan / Soal</label>
+            <textarea id="tambahSoalTeks" class="form-control" rows="3" required placeholder="Tuliskan pertanyaan soal di sini..."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Gambar Soal Stimulus (Opsional)</label>
+            <input type="file" id="tambahSoalGambar" class="form-control form-control-sm" accept="image/*">
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label fw-bold small mb-0">Pilihan Jawaban &amp; Kunci (Bisa Centang &gt;1 Jawaban)</label>
+              <button type="button" id="btnTambahOpsiE" class="btn btn-outline-primary btn-sm py-0 px-2 fw-bold" style="font-size:0.75rem;" onclick="tambahOpsiBaruForm()">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Opsi E
+              </button>
+            </div>
+            <div id="tambahPilihanContainer"></div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" id="btnSimpanTambahSoal" class="btn btn-success px-4 fw-bold">
+              <i class="bi bi-check-circle me-1"></i> Simpan Soal Baru
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EDIT SOAL -->
 <div class="modal fade" id="modalEditSoal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content border-0 shadow">
       <div class="modal-header text-white" style="background:var(--primary-color)">
         <h6 class="modal-title fw-bold text-white"><i class="bi bi-pencil-square me-1"></i> Edit Soal No. <span id="modalNoSoal">1</span></h6>
@@ -1040,7 +1087,7 @@
 
   let sisaWaktu = 60 * 60; 
   let timerInterval;
-  let modalLoginObj, modalEditObj, modalPreviewObj, modalAnalisisPesertaObj, modalImportWordObj;
+  let modalLoginObj, modalTambahObj, modalEditObj, modalPreviewObj, modalAnalisisPesertaObj, modalImportWordObj;
 
   let isUjianAktifMode = false;
   let jumlahPelanggaran = 0;
@@ -1090,6 +1137,7 @@
 
   document.addEventListener("DOMContentLoaded", function() {
     modalLoginObj = new bootstrap.Modal(document.getElementById('modalLogin'));
+    modalTambahObj = new bootstrap.Modal(document.getElementById('modalTambahSoal'));
     modalEditObj = new bootstrap.Modal(document.getElementById('modalEditSoal'));
     modalPreviewObj = new bootstrap.Modal(document.getElementById('modalPreview'));
     modalAnalisisPesertaObj = new bootstrap.Modal(document.getElementById('modalAnalisisPeserta'));
@@ -1560,6 +1608,7 @@
       const pageData = masterDataArsipSoal.slice(start, end);
       const totalPages = Math.ceil(masterDataArsipSoal.length / pageSize) || 1;
 
+      document.getElementById('pageInfoArsipSoal').innerText = `Hal ${page} dari 1`;
       document.getElementById('pageInfoArsipSoal').innerText = `Hal ${page} dari ${totalPages}`;
 
       let htmlArsipSoal = '';
@@ -1668,6 +1717,150 @@
   function kembaliKeDaftarSesiArsip() {
     document.getElementById('viewDetailSesiArsip').classList.add('d-none');
     document.getElementById('viewDaftarSesiArsip').classList.remove('d-none');
+  }
+
+  // --- FITUR TAMBAH SOAL BARU ---
+  let jumlahOpsiTambah = 4;
+
+  function bukaModalTambahSoal() {
+    document.getElementById('tambahSoalTeks').value = '';
+    document.getElementById('tambahSoalGambar').value = '';
+    jumlahOpsiTambah = 4;
+    document.getElementById('btnTambahOpsiE').classList.remove('d-none');
+    renderOpsiTambahSoal();
+    modalTambahObj.show();
+  }
+
+  function tambahOpsiBaruForm() {
+    if (jumlahOpsiTambah < 5) {
+      jumlahOpsiTambah = 5;
+      document.getElementById('btnTambahOpsiE').classList.add('d-none');
+      renderOpsiTambahSoal(true);
+    }
+  }
+
+  function renderOpsiTambahSoal(keepValues = false) {
+    let existingTexts = [];
+    let existingChecks = [];
+    if (keepValues) {
+      document.querySelectorAll('.tambah-pilihan-input').forEach(el => existingTexts.push(el.value));
+      document.querySelectorAll('input[name="tambahKunci"]').forEach(el => existingChecks.push(el.checked));
+    }
+
+    let pilHtml = '';
+    for (let pIdx = 0; pIdx < jumlahOpsiTambah; pIdx++) {
+      let valTxt = existingTexts[pIdx] || '';
+      let isChk = existingChecks[pIdx] ? 'checked' : (pIdx === 0 && !keepValues ? 'checked' : '');
+      pilHtml += `<div class="card p-2 mb-2 bg-light border">
+        <div class="input-group input-group-sm mb-2">
+          <div class="input-group-text" title="Centang jika opsi ini benar">
+            <input class="form-check-input mt-0" type="checkbox" name="tambahKunci" value="${pIdx}" ${isChk}>
+          </div>
+          <span class="input-group-text fw-bold">${String.fromCharCode(65 + pIdx)}</span>
+          <input type="text" class="form-control tambah-pilihan-input" value="${valTxt}" placeholder="Teks pilihan ${String.fromCharCode(65 + pIdx)}" required>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <small class="fw-bold text-muted" style="min-width:95px; font-size:0.75rem;">Gambar Opsi:</small>
+          <input type="file" class="form-control form-control-sm tambah-pilihan-file" accept="image/*" data-index="${pIdx}">
+        </div>
+      </div>`;
+    }
+    document.getElementById('tambahPilihanContainer').innerHTML = pilHtml;
+  }
+
+  function simpanTambahSoal(e) {
+    e.preventDefault();
+    const checkedNodes = document.querySelectorAll('input[name="tambahKunci"]:checked');
+    if (checkedNodes.length === 0) {
+      Swal.fire({ icon: 'warning', title: 'Pilih Kunci Jawaban', text: 'Centang minimal 1 jawaban yang benar!' });
+      return;
+    }
+
+    const btn = document.getElementById('btnSimpanTambahSoal');
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...`;
+
+    const soalTeks = document.getElementById('tambahSoalTeks').value;
+    const kunciArr = Array.from(checkedNodes).map(el => parseInt(el.value));
+
+    let pilihanArr = [];
+    document.querySelectorAll('.tambah-pilihan-input').forEach(input => { pilihanArr.push(input.value); });
+
+    const fileOpsiInputs = document.querySelectorAll('.tambah-pilihan-file');
+    let pilihanGambarBase64 = new Array(pilihanArr.length).fill(null);
+    let filePromises = [];
+
+    fileOpsiInputs.forEach((input, pIdx) => {
+      if (input.files[0]) {
+        let promise = new Promise((resolve) => {
+          let reader = new FileReader();
+          reader.onload = function(evt) {
+            pilihanGambarBase64[pIdx] = evt.target.result;
+            resolve();
+          };
+          reader.readAsDataURL(input.files[0]);
+        });
+        filePromises.push(promise);
+      }
+    });
+
+    Promise.all(filePromises).then(() => {
+      const fileInputSoal = document.getElementById('tambahSoalGambar');
+      const fileSoal = fileInputSoal.files[0];
+
+      let payload = {
+        action: "tambahSoal",
+        soal: soalTeks,
+        pilihan: pilihanArr,
+        jawabanBenar: kunciArr,
+        pilihanGambarBase64: pilihanGambarBase64
+      };
+
+      if (fileSoal) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          payload.imageBase64 = evt.target.result;
+          payload.imageName = fileSoal.name;
+          kirimTambahSoalKeBackend(payload);
+        };
+        reader.readAsDataURL(fileSoal);
+      } else {
+        kirimTambahSoalKeBackend(payload);
+      }
+    });
+  }
+
+  function kirimTambahSoalKeBackend(payload) {
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(res => {
+      const btn = document.getElementById('btnSimpanTambahSoal');
+      btn.disabled = false;
+      btn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Simpan Soal Baru`;
+
+      if (res.success) {
+        modalTambahObj.hide();
+        Swal.fire({
+          icon: 'success',
+          title: 'Soal Baru Ditambahkan!',
+          text: 'Soal baru berhasil disimpan ke Google Form & Firebase.',
+          confirmButtonColor: 'var(--primary-color)',
+          timer: 2000,
+          timerProgressBar: true
+        });
+        loadBankSoalGuru();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Menambah Soal',
+          text: res.error || 'Terjadi kesalahan saat menyimpan soal baru.',
+          confirmButtonColor: '#dc2626'
+        });
+      }
+    });
   }
 
   // --- LOGIC FUNGSI IMPORT FILE WORD (.DOCX) - MENDUKUNG KUNCI TUNGGAL & JAMAK ---
@@ -2145,7 +2338,7 @@
 
       if (!data || data.length === 0) {
         container.innerHTML = `<div class="alert alert-warning card card-cbt">
-          <b>Soal Aktif Tidak Ditemukan!</b> Impor paket soal dari Word, arsip di atas, atau buat di Google Form.
+          <b>Soal Aktif Tidak Ditemukan!</b> Klik <b>Tambah Soal Baru</b>, impor paket soal dari Word, arsip di atas, atau buat di Google Form.
         </div>`;
         return;
       }
@@ -2369,7 +2562,7 @@
     document.querySelectorAll('.modal-pilihan-existing').forEach(input => { pilihanGambarExisting.push(input.value || null); });
 
     const fileOpsiInputs = document.querySelectorAll('.modal-pilihan-file');
-    let pilihanGambarBase64 = [null, null, null, null];
+    let pilihanGambarBase64 = new Array(pilihanArr.length).fill(null);
     let filePromises = [];
 
     fileOpsiInputs.forEach((input, pIdx) => {
@@ -2754,7 +2947,6 @@
     });
 
     if (isFirebaseReady()) {
-      // Kirim non-blocking ke Apps Script agar siswa langsung mendapat respons cepat
       fetch(API_URL, { method: 'POST', body: payloadGAS }).catch(()=>{});
 
       localStorage.removeItem(`cbt_answers_${nama}_${kelas}`);
@@ -2774,7 +2966,6 @@
         document.getElementById('detailNilaiContainer').classList.add('d-none');
       }
     } else {
-      // Fallback jika Firebase belum diisi
       fetch(API_URL, {
         method: 'POST',
         body: payloadGAS
