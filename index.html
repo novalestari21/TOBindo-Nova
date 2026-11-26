@@ -118,6 +118,21 @@
       background: #fefce8 !important;
       opacity: 0.85;
     }
+    .soal-item-card.soal-checked {
+      outline: 2px solid var(--primary-color);
+      background-color: #eef2ff;
+    }
+
+    .bulk-action-bar {
+      position: sticky;
+      top: 10px;
+      z-index: 1000;
+      background: #1e1b4b;
+      color: white;
+      border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 20px rgba(30, 27, 75, 0.25);
+    }
 
     .img-opsi-preview { max-height: 90px; border-radius: 6px; border: 1px solid #ddd; margin-top: 6px; display: block; }
     
@@ -321,9 +336,12 @@
               <label class="form-label fw-semibold small">Nomor Ujian / Kelas</label>
               <input type="text" id="kelasSiswa" class="form-control" required placeholder="Contoh: 9A">
             </div>
-            <div class="alert alert-info py-2 small mb-3 d-flex align-items-center">
-              <i class="bi bi-clock-history fs-5 me-2"></i>
-              <div>Durasi Ujian: <b id="textDurasiInformasi">60</b> Menit</div>
+            <div class="alert alert-info py-2 small mb-3 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-clock-history fs-5 me-2"></i>
+                <div>Durasi Ujian: <b id="textDurasiInformasi">60</b> Menit</div>
+              </div>
+              <span id="badgePreloadStatus" class="badge bg-secondary-subtle text-secondary">Menyiapkan soal...</span>
             </div>
             <div class="alert alert-warning py-2 small mb-4">
               <i class="bi bi-shield-exclamation me-1"></i> <b>Sistem Anti-Curang Aktif:</b> Dilarang keluar layar/pindah tab!
@@ -744,7 +762,7 @@
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
               <h6 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal & Status Ujian</h6>
-              <p class="text-muted small mb-0">Tambah soal baru, edit, nonaktifkan, hapus soal, upload dari Word, dan arsipkan bank soal lama.</p>
+              <p class="text-muted small mb-0">Tambah soal baru, ceklist untuk hapus/nonaktifkan massal, upload dari Word, dan arsipkan bank soal.</p>
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
               <!-- TOMBOL TAMBAH SOAL BARU -->
@@ -817,6 +835,43 @@
                 <tr><td colspan="5" class="text-center text-muted">Belum ada paket soal yang diarsipkan.</td></tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- TOOLBAR PILIH SEMUA & AKSI MASSAL SOAL -->
+        <div id="toolbarSeleksiSoal" class="card card-cbt p-3 mb-3 d-none">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="form-check d-flex align-items-center gap-2 mb-0">
+              <input class="form-check-input mt-0" type="checkbox" id="chkPilihSemuaSoal" onchange="togglePilihSemuaSoal(this)" style="width: 1.2rem; height: 1.2rem; cursor: pointer;">
+              <label class="form-check-label fw-bold small mb-0" for="chkPilihSemuaSoal" style="cursor: pointer;">
+                Pilih Semua Soal (<span id="lblTotalSoalAktif">0</span> Soal)
+              </label>
+            </div>
+            <div class="text-muted small">
+              Centang beberapa soal untuk hapus atau ubah status sekaligus
+            </div>
+          </div>
+
+          <div id="bulkActionBar" class="bulk-action-bar mt-3 d-none">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div class="fw-bold small">
+                <i class="bi bi-check2-all text-warning me-1"></i> <span id="lblJumlahTerpilih">0</span> soal dipilih
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-success btn-sm fw-bold" onclick="bulkUbahStatusSoal(false)">
+                  <i class="bi bi-eye me-1"></i> Aktifkan Terpilih
+                </button>
+                <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="bulkUbahStatusSoal(true)">
+                  <i class="bi bi-eye-slash me-1"></i> Nonaktifkan Terpilih
+                </button>
+                <button class="btn btn-danger btn-sm fw-bold" onclick="bulkHapusSoalTerpilih()">
+                  <i class="bi bi-trash-fill me-1"></i> Hapus Terpilih
+                </button>
+                <button class="btn btn-outline-light btn-sm" onclick="batalPilihSemuaSoal()">
+                  Batal
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1066,15 +1121,19 @@
   // PASTE URL FIREBASE REALTIME DATABASE ANDA DI SINI (TANPA '/' DI AKHIR)
   const FIREBASE_DB_URL = "https://console.firebase.google.com/project/cbt-bu-nova/database/cbt-bu-nova-default-rtdb/data/~2F";
 
+  const LOCAL_MASTER_CACHE_KEY = "cbt_master_preload_cache_v1";
+
   function isFirebaseReady() {
     return FIREBASE_DB_URL && !FIREBASE_DB_URL.includes("GANTI-DENGAN-PROJECT-ID");
   }
 
   let rawBankSoal = [];
+  let selectedItemIds = new Set();
   let bankSoal = [];
   let jawabanSiswa = [];
   let currentSoalIndex = 0;
   let parsedWordSoal = [];
+  let preloadedMasterResponse = null;
 
   let globalConfig = {
     durasi: 60,
@@ -1105,27 +1164,72 @@
     arsipSoal: { page: 1, pageSize: 10 }
   };
 
-  // --- HELPER AMBIL DATA SOAL & CONFIG (PRIORITAS FIREBASE -> FALLBACK APPS SCRIPT) ---
-  async function fetchMasterDataUjian() {
+  // --- HELPER AMBIL DATA SOAL & CONFIG SUPER CEPAT (MEMORY -> FIREBASE -> LOCAL CACHE -> GAS) ---
+  async function fetchMasterDataUjian(forceFresh = false) {
+    if (!forceFresh && preloadedMasterResponse) {
+      return preloadedMasterResponse;
+    }
+
     if (isFirebaseReady()) {
       try {
         const fbRes = await fetch(`${FIREBASE_DB_URL}/cbt_master.json`, { cache: "no-store" });
         const fbData = await fbRes.json();
         if (fbData && fbData.soalAktif && Array.isArray(fbData.soalAktif) && fbData.soalAktif.length > 0) {
-          if (fbData.isAktif === false) {
-            return { success: false, isAktif: false, message: "Akses Soal Ujian Saat Ini Sedang Nonaktif oleh Guru." };
-          }
-          return {
-            success: true,
-            isAktif: fbData.isAktif !== false,
-            data: fbData.soalAktif,
-            config: fbData.config || globalConfig
-          };
+          const resultObj = fbData.isAktif === false
+            ? { success: false, isAktif: false, message: "Akses Soal Ujian Saat Ini Sedang Nonaktif oleh Guru." }
+            : {
+                success: true,
+                isAktif: fbData.isAktif !== false,
+                data: fbData.soalAktif,
+                config: fbData.config || globalConfig
+              };
+          preloadedMasterResponse = resultObj;
+          try { localStorage.setItem(LOCAL_MASTER_CACHE_KEY, JSON.stringify({ ts: Date.now(), payload: resultObj })); } catch(e){}
+          return resultObj;
         }
       } catch (e) {}
     }
+
     const gasRes = await fetch(`${API_URL}?action=getBankSoal`);
-    return await gasRes.json();
+    const gasJson = await gasRes.json();
+    if (gasJson) {
+      preloadedMasterResponse = gasJson;
+      try { localStorage.setItem(LOCAL_MASTER_CACHE_KEY, JSON.stringify({ ts: Date.now(), payload: gasJson })); } catch(e){}
+    }
+    return gasJson;
+  }
+
+  function preloadSoalDiLatarBelakang() {
+    const badge = document.getElementById('badgePreloadStatus');
+    try {
+      const cached = JSON.parse(localStorage.getItem(LOCAL_MASTER_CACHE_KEY) || "null");
+      if (cached && cached.payload && cached.payload.config && (Date.now() - cached.ts < 5 * 60 * 1000)) {
+        globalConfig = cached.payload.config;
+        document.getElementById('textDurasiInformasi').innerText = globalConfig.durasi;
+      }
+    } catch (e) {}
+
+    fetchMasterDataUjian(true).then(res => {
+      if (res && res.config) {
+        globalConfig = res.config;
+        document.getElementById('textDurasiInformasi').innerText = globalConfig.durasi;
+        applyConfigToUI();
+      }
+      if (badge) {
+        if (res && res.success) {
+          badge.className = "badge bg-success-subtle text-success border border-success";
+          badge.innerHTML = `<i class="bi bi-lightning-charge-fill me-1"></i> Siap (${res.data.length} Soal)`;
+        } else {
+          badge.className = "badge bg-danger-subtle text-danger";
+          badge.innerText = "Ujian Nonaktif";
+        }
+      }
+    }).catch(() => {
+      if (badge) {
+        badge.className = "badge bg-warning-subtle text-dark";
+        badge.innerText = "Mode Standar";
+      }
+    });
   }
 
   function normalizeKunci(val) {
@@ -1145,15 +1249,9 @@
 
     if (sessionStorage.getItem("isGuruLoggedIn") === "true") {
       bukaModeGuru();
+    } else {
+      preloadSoalDiLatarBelakang();
     }
-    
-    fetchMasterDataUjian().then(res => {
-      if (res && res.config) {
-        globalConfig = res.config;
-        document.getElementById('textDurasiInformasi').innerText = globalConfig.durasi;
-        applyConfigToUI();
-      }
-    }).catch(() => {});
 
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
@@ -1386,7 +1484,7 @@
           title: 'Login Berhasil!',
           text: 'Selamat Datang di Panel Pengelola CBT (Guru)',
           confirmButtonColor: 'var(--primary-color)',
-          timer: 2000,
+          timer: 1500,
           timerProgressBar: true
         }).then(() => { bukaModeGuru(); });
       } else {
@@ -1429,7 +1527,7 @@
           icon: 'info',
           title: 'Sayonara! 👋',
           text: 'Sesi pengelola Anda diakhiri secara aman.',
-          timer: 1500,
+          timer: 1200,
           showConfirmButton: false
         }).then(() => {
           document.getElementById('section-guru').classList.add('d-none');
@@ -1437,6 +1535,7 @@
           document.getElementById('btnToggleSidebar').classList.add('d-none');
           document.getElementById('btnModeGuru').classList.remove('d-none');
           document.getElementById('section-identitas').classList.remove('d-none');
+          preloadSoalDiLatarBelakang();
         });
       }
     });
@@ -1608,7 +1707,6 @@
       const pageData = masterDataArsipSoal.slice(start, end);
       const totalPages = Math.ceil(masterDataArsipSoal.length / pageSize) || 1;
 
-      document.getElementById('pageInfoArsipSoal').innerText = `Hal ${page} dari 1`;
       document.getElementById('pageInfoArsipSoal').innerText = `Hal ${page} dari ${totalPages}`;
 
       let htmlArsipSoal = '';
@@ -1717,6 +1815,126 @@
   function kembaliKeDaftarSesiArsip() {
     document.getElementById('viewDetailSesiArsip').classList.add('d-none');
     document.getElementById('viewDaftarSesiArsip').classList.remove('d-none');
+  }
+
+  // --- FITUR CEKLIST & AKSI MASSAL SOAL ---
+  function toggleCeklistSoal(chk, itemId) {
+    const idStr = String(itemId);
+    const card = document.getElementById(`card-soal-${idStr}`);
+    if (chk.checked) {
+      selectedItemIds.add(idStr);
+      if (card) card.classList.add('soal-checked');
+    } else {
+      selectedItemIds.delete(idStr);
+      if (card) card.classList.remove('soal-checked');
+    }
+    updateBulkActionUI();
+  }
+
+  function togglePilihSemuaSoal(masterChk) {
+    const checkboxes = document.querySelectorAll('.chk-item-soal');
+    selectedItemIds.clear();
+    checkboxes.forEach(chk => {
+      chk.checked = masterChk.checked;
+      const idStr = String(chk.dataset.itemid);
+      const card = document.getElementById(`card-soal-${idStr}`);
+      if (masterChk.checked) {
+        selectedItemIds.add(idStr);
+        if (card) card.classList.add('soal-checked');
+      } else {
+        if (card) card.classList.remove('soal-checked');
+      }
+    });
+    updateBulkActionUI();
+  }
+
+  function batalPilihSemuaSoal() {
+    const masterChk = document.getElementById('chkPilihSemuaSoal');
+    if (masterChk) masterChk.checked = false;
+    togglePilihSemuaSoal({ checked: false });
+  }
+
+  function updateBulkActionUI() {
+    const bar = document.getElementById('bulkActionBar');
+    const lblCount = document.getElementById('lblJumlahTerpilih');
+    const masterChk = document.getElementById('chkPilihSemuaSoal');
+    const totalSoal = rawBankSoal ? rawBankSoal.length : 0;
+
+    if (lblCount) lblCount.innerText = selectedItemIds.size;
+
+    if (selectedItemIds.size > 0) {
+      bar.classList.remove('d-none');
+    } else {
+      bar.classList.add('d-none');
+    }
+
+    if (masterChk && totalSoal > 0) {
+      masterChk.checked = (selectedItemIds.size === totalSoal);
+      masterChk.indeterminate = (selectedItemIds.size > 0 && selectedItemIds.size < totalSoal);
+    }
+  }
+
+  function bulkUbahStatusSoal(setNonaktif) {
+    const ids = Array.from(selectedItemIds);
+    if (ids.length === 0) return;
+
+    const labelAksi = setNonaktif ? "Nonaktifkan" : "Aktifkan";
+    Swal.fire({
+      title: `${labelAksi} ${ids.length} Soal?`,
+      text: `Status ${ids.length} soal terpilih akan diubah secara bersamaan.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: setNonaktif ? '#eab308' : '#16a34a',
+      confirmButtonText: `Ya, ${labelAksi}!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({ title: 'Memproses...', text: `Mengubah status ${ids.length} soal...`, allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'bulkToggleSoalNonaktif', itemIds: ids, isNonaktif: setNonaktif })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: `${res.count} soal berhasil di-${labelAksi.toLowerCase()}.`, timer: 1600, showConfirmButton: false });
+            loadBankSoalGuru();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: res.error || 'Terjadi kesalahan.' });
+          }
+        });
+      }
+    });
+  }
+
+  function bulkHapusSoalTerpilih() {
+    const ids = Array.from(selectedItemIds);
+    if (ids.length === 0) return;
+
+    Swal.fire({
+      title: `Hapus ${ids.length} Soal Terpilih?`,
+      text: "Seluruh soal yang dicentang akan dihapus permanen dari Google Form & Firebase!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      confirmButtonText: `Ya, Hapus (${ids.length} Soal)`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({ title: 'Menghapus...', text: `Menghapus ${ids.length} soal terpilih...`, allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'bulkDeleteSoal', itemIds: ids })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            Swal.fire({ icon: 'success', title: 'Terhapus!', text: `${res.count} soal berhasil dihapus.`, timer: 1600, showConfirmButton: false });
+            loadBankSoalGuru();
+          } else {
+            Swal.fire({ icon: 'error', title: 'Gagal Menghapus', text: res.error || 'Terjadi kesalahan.' });
+          }
+        });
+      }
+    });
   }
 
   // --- FITUR TAMBAH SOAL BARU ---
@@ -1848,7 +2066,7 @@
           title: 'Soal Baru Ditambahkan!',
           text: 'Soal baru berhasil disimpan ke Google Form & Firebase.',
           confirmButtonColor: 'var(--primary-color)',
-          timer: 2000,
+          timer: 1800,
           timerProgressBar: true
         });
         loadBankSoalGuru();
@@ -1863,7 +2081,7 @@
     });
   }
 
-  // --- LOGIC FUNGSI IMPORT FILE WORD (.DOCX) - MENDUKUNG KUNCI TUNGGAL & JAMAK ---
+  // --- LOGIC FUNGSI IMPORT FILE WORD (.DOCX) ---
   function bukaModalImportWord() {
     document.getElementById('fileWordInput').value = '';
     document.getElementById('boxPreviewWord').classList.add('d-none');
@@ -2315,6 +2533,9 @@
   }
 
   function loadBankSoalGuru() {
+    selectedItemIds.clear();
+    updateBulkActionUI();
+
     Promise.all([
       fetch(`${API_URL}?action=getFormUrl`).then(r => r.json()).catch(() => ({})),
       fetch(`${API_URL}?action=getBankSoal&isGuru=true`).then(r => r.json())
@@ -2322,7 +2543,8 @@
       if(urlRes && urlRes.success) document.getElementById('btnEditFormDirect').href = urlRes.editUrl;
 
       const container = document.getElementById('listSoalGuruContainer');
-      const data = res.data;
+      const toolbarSeleksi = document.getElementById('toolbarSeleksiSoal');
+      const data = res.data || [];
       rawBankSoal = data;
 
       const chk = document.getElementById('switchStatusUjian');
@@ -2336,11 +2558,20 @@
         document.getElementById('textDurasiInformasi').innerText = globalConfig.durasi;
       }
 
-      if (!data || data.length === 0) {
+      if (data.length === 0) {
+        toolbarSeleksi.classList.add('d-none');
         container.innerHTML = `<div class="alert alert-warning card card-cbt">
           <b>Soal Aktif Tidak Ditemukan!</b> Klik <b>Tambah Soal Baru</b>, impor paket soal dari Word, arsip di atas, atau buat di Google Form.
         </div>`;
         return;
+      }
+
+      toolbarSeleksi.classList.remove('d-none');
+      document.getElementById('lblTotalSoalAktif').innerText = data.length;
+      const masterChk = document.getElementById('chkPilihSemuaSoal');
+      if (masterChk) {
+        masterChk.checked = false;
+        masterChk.indeterminate = false;
       }
 
       let html = '';
@@ -2349,7 +2580,7 @@
         let optionsHtml = '';
         item.pilihan.forEach((p, pIdx) => {
           let isBenar = kunciArr.includes(pIdx);
-          let imgOpsi = item.pilihanGambar && item.pilihanGambar[pIdx] ? `<br><img src="${item.pilihanGambar[pIdx]}" class="img-opsi-preview">` : '';
+          let imgOpsi = item.pilihanGambar && item.pilihanGambar[pIdx] ? `<br><img src="${item.pilihanGambar[pIdx]}" loading="lazy" class="img-opsi-preview">` : '';
           
           optionsHtml += `<div class="small mb-2 ${isBenar ? 'text-success fw-bold' : 'text-muted'}">
             ${String.fromCharCode(65 + pIdx)}. ${p} ${isBenar ? '<span class="badge bg-success ms-1">Kunci</span>' : ''}
@@ -2361,9 +2592,10 @@
         let statusBadge = item.isNonaktif ? `<span class="badge bg-warning text-dark me-2"><i class="bi bi-eye-slash-fill me-1"></i> NONAKTIF</span>` : `<span class="badge bg-success me-2"><i class="bi bi-check-circle-fill me-1"></i> AKTIF</span>`;
         let multiBadge = kunciArr.length > 1 ? `<span class="badge bg-info text-dark ms-2"><i class="bi bi-check2-square me-1"></i>PG Kompleks (${kunciArr.length} Kunci)</span>` : '';
 
-        html += `<div class="${cardClass}">
+        html += `<div id="card-soal-${item.itemId}" class="${cardClass}">
           <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-            <div class="d-flex align-items-center flex-wrap gap-1">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+              <input class="form-check-input mt-0 chk-item-soal" type="checkbox" data-itemid="${item.itemId}" onchange="toggleCeklistSoal(this, '${item.itemId}')" style="width: 1.2rem; height: 1.2rem; cursor: pointer;" title="Pilih soal ini">
               ${statusBadge}
               <h6 class="fw-bold mb-0" style="color:var(--primary-color)">Soal No. ${idx + 1}</h6>
               ${multiBadge}
@@ -2384,7 +2616,7 @@
             </div>
           </div>
           <p class="fw-medium mb-3 small fs-md-6">${item.soal}</p>
-          ${item.imageUrl ? `<div class="mb-3"><img src="${item.imageUrl}" class="img-fluid rounded border" style="max-height:180px"></div>` : ''}
+          ${item.imageUrl ? `<div class="mb-3"><img src="${item.imageUrl}" loading="lazy" class="img-fluid rounded border" style="max-height:180px"></div>` : ''}
           <div class="bg-light p-3 rounded">
             ${optionsHtml}
           </div>
@@ -2392,7 +2624,6 @@
       });
 
       container.innerHTML = html;
-      loadDataRekapGuru();
     });
   }
 
@@ -2628,7 +2859,7 @@
           title: 'Soal Berhasil Diperbarui!',
           text: 'Perubahan soal dan kunci jawaban telah tersimpan secara otomatis.',
           confirmButtonColor: 'var(--primary-color)',
-          timer: 2000,
+          timer: 1800,
           timerProgressBar: true
         });
 
@@ -2644,7 +2875,7 @@
     });
   }
 
-  // --- SISWA UJIAN LOGIC (FAST LOAD FIREBASE + MULTI-ANSWER) ---
+  // --- SISWA UJIAN LOGIC (INSTANT PRELOAD + FIREBASE + MULTI-ANSWER) ---
   function mulaiUjian(e) {
     e.preventDefault();
     const nama = document.getElementById('namaSiswa').value.trim();
@@ -2652,7 +2883,7 @@
 
     const btnMulai = document.getElementById('btnMulai');
     btnMulai.disabled = true;
-    btnMulai.innerText = "Memuat Soal Ujian...";
+    btnMulai.innerText = "Membuka Soal Ujian...";
 
     fetchMasterDataUjian()
     .then(res => {
@@ -2913,7 +3144,6 @@
 
     document.getElementById('section-ujian').innerHTML = `<div class="text-center py-5"><h4>Mengirim jawaban Anda... Mohon tunggu.</h4></div>`;
 
-    // 1. SIMPAN INSTAN KE FIREBASE (MENAMPUNG RIBUAN PESERTA BERSAMAAN)
     if (isFirebaseReady()) {
       try {
         await fetch(`${FIREBASE_DB_URL}/cbt_submissions/${submissionId}.json`, {
@@ -2935,7 +3165,6 @@
       } catch (e) {}
     }
 
-    // 2. SINKRONISASI KE GOOGLE SPREADSHEET (UNTUK REKAP & ANALISIS GURU)
     const payloadGAS = JSON.stringify({
       action: 'simpanHasil',
       nama: nama,
