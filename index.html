@@ -105,6 +105,38 @@
 
     .stat-card { background: #fff; border-radius: 10px; padding: 16px; border-left: 5px solid var(--primary-color); }
     
+    /* TAB JENJANG WORKSPACE */
+    .jenjang-tab-btn {
+      border: 2px solid #e2e8f0;
+      background: #fff;
+      color: #334155;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .jenjang-tab-btn:hover {
+      border-color: #a5b4fc;
+      background: #eef2ff;
+    }
+    .jenjang-tab-btn.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);
+    }
+    .jenjang-workspace-banner {
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      border-left: 5px solid var(--primary-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
     .soal-item-card { 
       border-left: 5px solid var(--primary-color); 
       background: #fff; 
@@ -478,7 +510,7 @@
         </button>
         <button class="sidebar-menu-btn" onclick="switchTabGuru('setting', this)">
           <i class="bi bi-sliders fs-5"></i>
-          <span class="menu-text">Setting Ujian & Jenjang</span>
+          <span class="menu-text">Setting Ujian &amp; Jenjang</span>
         </button>
         <button class="sidebar-menu-btn" onclick="switchTabGuru('arsip', this)">
           <i class="bi bi-archive fs-5"></i>
@@ -642,7 +674,7 @@
               <div class="form-check form-switch d-flex justify-content-between align-items-center ps-0 mb-2">
                 <label class="form-check-label fw-bold small text-primary" for="cfgMultiJenjangAktif">
                   <i class="bi bi-diagram-3-fill me-2"></i>Aktifkan Mode Multi-Jenjang / Multi-Kelas (1 Waktu Bersamaan)
-                  <div class="small text-muted fw-normal">Siswa memilih jenjang/tingkat kelas saat login, dan otomatis menerima paket soal &amp; durasi sesuai jenjangnya.</div>
+                  <div class="small text-muted fw-normal">Setiap jenjang memiliki halaman input/edit soal masing-masing serta durasi &amp; status ujian terpisah.</div>
                 </label>
                 <input class="form-check-input ms-auto" type="checkbox" id="cfgMultiJenjangAktif" checked onchange="toggleBoxDaftarJenjang()">
               </div>
@@ -836,31 +868,25 @@
 
       </div>
 
-      <!-- TAB BANK SOAL -->
+      <!-- TAB BANK SOAL (HALAMAN INPUT & EDIT SOAL PER JENJANG) -->
       <div id="tabGuruBankSoal" class="d-none">
-        <div class="card card-cbt p-3 p-md-4 mb-4">
+        
+        <!-- HEADER GLOBAL BANK SOAL -->
+        <div class="card card-cbt p-3 p-md-4 mb-3">
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-              <h6 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal &amp; Status Ujian</h6>
-              <p class="text-muted small mb-0">Geser/ubah urutan soal, atur soal per jenjang/kelas, ceklist massal, atau import dari Word.</p>
+              <h6 class="fw-bold mb-1"><i class="bi bi-journal-text me-2"></i>Manajemen Bank Soal Per Jenjang</h6>
+              <p class="text-muted small mb-0">Pilih tab jenjang di bawah untuk membuka halaman input, edit, dan pengaturan soal khusus jenjang tersebut.</p>
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
-              <button class="btn btn-success btn-sm fw-bold" onclick="bukaModalTambahSoal()">
-                <i class="bi bi-plus-circle-fill me-1"></i> Tambah Soal Baru
-              </button>
-
               <a href="https://docs.google.com/document/d/1CXso7Yn_-KWc6eqHGGSbE_Q1dnjFWFMJ/export?format=docx" 
                  target="_blank" 
                  class="btn btn-outline-success btn-sm fw-bold">
                 <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Template Word
               </a>
 
-              <button class="btn btn-primary btn-sm fw-bold" onclick="bukaModalImportWord()">
-                <i class="bi bi-file-earmark-word-fill me-1"></i> Import dari Word
-              </button>
-
               <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="prosesArsipBankSoal()">
-                <i class="bi bi-archive-fill me-1"></i> Arsipkan Soal
+                <i class="bi bi-archive-fill me-1"></i> Arsipkan Semua Soal
               </button>
 
               <div class="form-check form-switch bg-light border p-2 px-3 rounded d-flex align-items-center gap-2">
@@ -873,9 +899,100 @@
               </a>
             </div>
           </div>
+
+          <!-- TAB PILIH HALAMAN JENJANG -->
+          <div class="mt-3 pt-3 border-top">
+            <small class="fw-bold text-muted d-block mb-2"><i class="bi bi-layers-fill text-primary me-1"></i> PILIH HALAMAN JENJANG / TINGKAT KELAS:</small>
+            <div id="jenjangWorkspaceTabsContainer" class="d-flex flex-wrap gap-2"></div>
+          </div>
         </div>
 
-        <div class="card card-cbt p-3 p-md-4 mb-4">
+        <!-- BANNER HALAMAN WORKSPACE JENJANG AKTIF -->
+        <div id="jenjangWorkspaceBanner" class="jenjang-workspace-banner shadow-sm mb-3">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <h5 class="fw-bold text-primary mb-0" id="lblWorkspaceJenjangTitle">Halaman Soal: Kelas 7</h5>
+                <span class="badge bg-primary" id="lblWorkspaceSoalCount">0 Soal</span>
+                <span class="badge bg-white text-dark border" id="lblWorkspaceDurasi"><i class="bi bi-clock me-1"></i>60 Menit</span>
+              </div>
+              <small class="text-muted" id="lblWorkspaceSubtitle">Seluruh penambahan, pengeditan, dan pengurutan soal di halaman ini berlaku khusus untuk jenjang terpilih.</small>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+              <div id="boxSwitchStatusJenjangWorkspace" class="form-check form-switch bg-white border p-2 px-3 rounded d-flex align-items-center gap-2 shadow-sm">
+                <input class="form-check-input ms-0 mt-0" type="checkbox" role="switch" id="switchStatusJenjangAktif" onchange="toggleStatusJenjangDariWorkspace(this)">
+                <label class="form-check-label fw-bold small mb-0" for="switchStatusJenjangAktif" id="lblStatusJenjangWorkspace">Ujian Jenjang: AKTIF</label>
+              </div>
+
+              <button class="btn btn-success btn-sm fw-bold px-3 py-2 shadow-sm" onclick="bukaModalTambahSoal()">
+                <i class="bi bi-plus-circle-fill me-1"></i> <span id="btnLabelTambahSoalJenjang">Tambah Soal</span>
+              </button>
+
+              <button class="btn btn-primary btn-sm fw-bold px-3 py-2 shadow-sm" onclick="bukaModalImportWord()">
+                <i class="bi bi-file-earmark-word-fill me-1"></i> <span id="btnLabelImportWordJenjang">Import Word</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOOLBAR PILIH SEMUA & AKSI MASSAL SOAL -->
+        <div id="toolbarSeleksiSoal" class="card card-cbt p-3 mb-3 d-none">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="form-check d-flex align-items-center gap-2 mb-0">
+              <input class="form-check-input mt-0" type="checkbox" id="chkPilihSemuaSoal" onchange="togglePilihSemuaSoal(this)" style="width: 1.2rem; height: 1.2rem; cursor: pointer;">
+              <label class="form-check-label fw-bold small mb-0" for="chkPilihSemuaSoal" style="cursor: pointer;">
+                Pilih Semua Soal di Halaman Ini (<span id="lblTotalSoalAktif">0</span> Soal)
+              </label>
+            </div>
+
+            <div class="text-muted small">
+              <i class="bi bi-grip-vertical"></i> Tarik kartu soal atau klik <span class="badge bg-secondary">▲</span> <span class="badge bg-secondary">▼</span> untuk mengubah urutan
+            </div>
+          </div>
+
+          <div id="bulkActionBar" class="bulk-action-bar mt-3 d-none">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div class="fw-bold small">
+                <i class="bi bi-check2-all text-warning me-1"></i> <span id="lblJumlahTerpilih">0</span> soal dipilih
+              </div>
+              <div class="d-flex gap-2 flex-wrap align-items-center">
+                <div class="input-group input-group-sm" style="width: auto;">
+                  <select id="selectBulkJenjangTarget" class="form-select form-select-sm fw-bold">
+                    <option value="Semua">Semua Jenjang</option>
+                  </select>
+                  <button class="btn btn-info btn-sm fw-bold text-dark" onclick="bulkUbahJenjangSoal()">
+                    <i class="bi bi-arrow-left-right me-1"></i> Pindah Jenjang
+                  </button>
+                </div>
+
+                <button class="btn btn-success btn-sm fw-bold" onclick="bulkUbahStatusSoal(false)">
+                  <i class="bi bi-eye me-1"></i> Aktifkan
+                </button>
+                <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="bulkUbahStatusSoal(true)">
+                  <i class="bi bi-eye-slash me-1"></i> Nonaktifkan
+                </button>
+                <button class="btn btn-danger btn-sm fw-bold" onclick="bulkHapusSoalTerpilih()">
+                  <i class="bi bi-trash-fill me-1"></i> Hapus
+                </button>
+                <button class="btn btn-outline-light btn-sm" onclick="batalPilihSemuaSoal()">
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DAFTAR SOAL PADA HALAMAN JENJANG AKTIF -->
+        <div id="listSoalGuruContainer" class="mb-4">
+          <div class="text-center py-5 card card-cbt">
+            <div class="spinner-border text-primary mb-2" role="status"></div>
+            <div class="text-muted fw-bold">Memuat daftar soal...</div>
+          </div>
+        </div>
+
+        <!-- ARSIP PAKET SOAL TERDAHULU -->
+        <div class="card card-cbt p-3 p-md-4">
           <h6 class="fw-bold mb-3"><i class="bi bi-folder-symlink-fill text-warning me-2"></i>Daftar Arsip Paket Soal Terdahulu</h6>
           
           <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border flex-wrap gap-2">
@@ -915,68 +1032,6 @@
           </div>
         </div>
 
-        <!-- TOOLBAR FILTER JENJANG, PILIH SEMUA & AKSI MASSAL SOAL -->
-        <div id="toolbarSeleksiSoal" class="card card-cbt p-3 mb-3 d-none">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div class="d-flex align-items-center gap-3 flex-wrap">
-              <div class="form-check d-flex align-items-center gap-2 mb-0">
-                <input class="form-check-input mt-0" type="checkbox" id="chkPilihSemuaSoal" onchange="togglePilihSemuaSoal(this)" style="width: 1.2rem; height: 1.2rem; cursor: pointer;">
-                <label class="form-check-label fw-bold small mb-0" for="chkPilihSemuaSoal" style="cursor: pointer;">
-                  Pilih Semua (<span id="lblTotalSoalAktif">0</span> Soal)
-                </label>
-              </div>
-
-              <div class="d-flex align-items-center gap-2">
-                <small class="fw-bold text-muted"><i class="bi bi-funnel-fill text-primary"></i> Filter Jenjang:</small>
-                <select id="filterJenjangBankSoal" class="form-select form-select-sm fw-bold" style="width: auto;" onchange="renderDaftarSoalGuru()">
-                  <option value="ALL">Semua Soal</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="text-muted small">
-              <i class="bi bi-grip-vertical"></i> Tarik kartu soal atau klik <span class="badge bg-secondary">▲</span> <span class="badge bg-secondary">▼</span> untuk mengubah urutan
-            </div>
-          </div>
-
-          <div id="bulkActionBar" class="bulk-action-bar mt-3 d-none">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <div class="fw-bold small">
-                <i class="bi bi-check2-all text-warning me-1"></i> <span id="lblJumlahTerpilih">0</span> soal dipilih
-              </div>
-              <div class="d-flex gap-2 flex-wrap align-items-center">
-                <div class="input-group input-group-sm" style="width: auto;">
-                  <select id="selectBulkJenjangTarget" class="form-select form-select-sm fw-bold">
-                    <option value="Semua">Semua Jenjang</option>
-                  </select>
-                  <button class="btn btn-info btn-sm fw-bold text-dark" onclick="bulkUbahJenjangSoal()">
-                    <i class="bi bi-tag-fill me-1"></i> Set Jenjang
-                  </button>
-                </div>
-
-                <button class="btn btn-success btn-sm fw-bold" onclick="bulkUbahStatusSoal(false)">
-                  <i class="bi bi-eye me-1"></i> Aktifkan
-                </button>
-                <button class="btn btn-warning btn-sm fw-bold text-dark" onclick="bulkUbahStatusSoal(true)">
-                  <i class="bi bi-eye-slash me-1"></i> Nonaktifkan
-                </button>
-                <button class="btn btn-danger btn-sm fw-bold" onclick="bulkHapusSoalTerpilih()">
-                  <i class="bi bi-trash-fill me-1"></i> Hapus
-                </button>
-                <button class="btn btn-outline-light btn-sm" onclick="batalPilihSemuaSoal()">
-                  Batal
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="listSoalGuruContainer">
-          <div class="text-center py-5 card card-cbt">
-            <div class="spinner-border text-primary mb-2" role="status"></div>
-            <div class="text-muted fw-bold">Memuat daftar soal aktif...</div>
-          </div>
-        </div>
       </div>
 
     </div>
@@ -1014,7 +1069,9 @@
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content border-0 shadow">
       <div class="modal-header bg-success text-white">
-        <h6 class="modal-title fw-bold text-white"><i class="bi bi-plus-circle-fill me-1"></i> Tambah Soal Baru</h6>
+        <h6 class="modal-title fw-bold text-white">
+          <i class="bi bi-plus-circle-fill me-1"></i> Tambah Soal Baru <span id="badgeModalTambahJenjang" class="badge bg-light text-success ms-2">Kelas 7</span>
+        </h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-3 p-md-4">
@@ -1063,7 +1120,10 @@
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content border-0 shadow">
       <div class="modal-header text-white" style="background:var(--primary-color)">
-        <h6 class="modal-title fw-bold text-white"><i class="bi bi-pencil-square me-1"></i> Edit Soal No. <span id="modalNoSoal">1</span></h6>
+        <h6 class="modal-title fw-bold text-white">
+          <i class="bi bi-pencil-square me-1"></i> Edit Soal No. <span id="modalNoSoal">1</span>
+          <span id="badgeModalEditJenjang" class="badge bg-warning text-dark ms-2">Kelas 7</span>
+        </h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-3 p-md-4">
@@ -1140,7 +1200,10 @@
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content border-0 shadow">
       <div class="modal-header text-white" style="background:var(--primary-color)">
-        <h6 class="modal-title fw-bold text-white"><i class="bi bi-file-earmark-word-fill me-2"></i>Import Soal dari File Word (.docx)</h6>
+        <h6 class="modal-title fw-bold text-white">
+          <i class="bi bi-file-earmark-word-fill me-2"></i>Import Soal dari Word (.docx)
+          <span id="badgeModalImportJenjang" class="badge bg-warning text-dark ms-2">Kelas 7</span>
+        </h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-3 p-md-4">
@@ -1170,7 +1233,7 @@
           <div class="col-12 col-md-4">
             <label class="form-label fw-bold small">Opsi Pengunggahan</label>
             <select id="selectModeImportWord" class="form-select form-select-sm fw-bold">
-              <option value="tambah" selected>Tambahkan ke Bank Soal</option>
+              <option value="tambah" selected>Tambahkan ke Halaman Jenjang Ini</option>
               <option value="timpa">Timpa Soal pada Jenjang Terpilih</option>
             </select>
           </div>
@@ -1248,6 +1311,7 @@
   let selectedItemIds = new Set();
   let draggedItemId = null;
   let reorderSaveTimeout = null;
+  let activeBankSoalJenjang = "Kelas 7";
 
   let bankSoal = [];
   let jawabanSiswa = [];
@@ -1329,6 +1393,10 @@
       ? globalConfig.daftarJenjang
       : ["Kelas 7", "Kelas 8", "Kelas 9"];
 
+    if (!listJenjang.includes(activeBankSoalJenjang) && activeBankSoalJenjang !== "Semua") {
+      activeBankSoalJenjang = listJenjang[0];
+    }
+
     // 1. Dropdown Login Siswa
     const boxSiswa = document.getElementById('boxPilihJenjangSiswa');
     const selSiswa = document.getElementById('selectJenjangSiswa');
@@ -1359,15 +1427,12 @@
       if (prev && (prev === 'Semua' || listJenjang.includes(prev))) el.value = prev;
     });
 
-    // 3. Dropdown Filter Bank Soal, Rekap Nilai, Analisis Soal
-    ['filterJenjangBankSoal', 'filterJenjangRekap', 'filterJenjangAnalisis'].forEach(id => {
+    // 3. Dropdown Filter Rekap Nilai & Analisis Soal
+    ['filterJenjangRekap', 'filterJenjangAnalisis'].forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
       const prev = el.value;
       let opts = `<option value="ALL">Semua Jenjang</option>`;
-      if (id === 'filterJenjangBankSoal') {
-        opts += `<option value="Semua">Umum (Semua Jenjang)</option>`;
-      }
       listJenjang.forEach(j => { opts += `<option value="${j}">${j}</option>`; });
       el.innerHTML = opts;
       if (prev) el.value = prev;
@@ -2118,6 +2183,117 @@
     document.getElementById('viewDaftarSesiArsip').classList.remove('d-none');
   }
 
+  // --- TAB HALAMAN WORKSPACE PER JENJANG ---
+  function renderJenjangWorkspaceTabs() {
+    const container = document.getElementById('jenjangWorkspaceTabsContainer');
+    if (!container) return;
+
+    const listJenjang = Array.isArray(globalConfig.daftarJenjang) && globalConfig.daftarJenjang.length > 0
+      ? globalConfig.daftarJenjang
+      : ["Kelas 7", "Kelas 8", "Kelas 9"];
+
+    if (!listJenjang.includes(activeBankSoalJenjang) && activeBankSoalJenjang !== "Semua") {
+      activeBankSoalJenjang = listJenjang[0];
+    }
+
+    let html = '';
+    listJenjang.forEach(j => {
+      const count = rawBankSoal.filter(s => (s.jenjang || "Semua") === j).length;
+      const isActive = (activeBankSoalJenjang === j);
+      const isJenjangOn = !(globalConfig.statusPerJenjang && globalConfig.statusPerJenjang[j] === false);
+      const dotColor = isJenjangOn ? (isActive ? '#86efac' : '#16a34a') : '#ef4444';
+
+      html += `<button type="button" class="jenjang-tab-btn ${isActive ? 'active' : ''}" onclick="switchBankSoalJenjangTab('${j.replace(/'/g, "\\'")}')">
+        <span style="width:9px; height:9px; border-radius:50%; background:${dotColor}; display:inline-block;"></span>
+        <span>${j}</span>
+        <span class="badge ${isActive ? 'bg-white text-primary' : 'bg-secondary-subtle text-dark'} rounded-pill">${count}</span>
+      </button>`;
+    });
+
+    const countUmum = rawBankSoal.filter(s => !s.jenjang || s.jenjang === "Semua").length;
+    const isUmumActive = (activeBankSoalJenjang === "Semua");
+    html += `<button type="button" class="jenjang-tab-btn ${isUmumActive ? 'active' : ''}" onclick="switchBankSoalJenjangTab('Semua')">
+      <i class="bi bi-globe2"></i>
+      <span>Semua Jenjang (Umum)</span>
+      <span class="badge ${isUmumActive ? 'bg-white text-primary' : 'bg-secondary-subtle text-dark'} rounded-pill">${countUmum}</span>
+    </button>`;
+
+    container.innerHTML = html;
+    updateJenjangWorkspaceBanner();
+  }
+
+  function switchBankSoalJenjangTab(jenjangName) {
+    activeBankSoalJenjang = jenjangName;
+    renderJenjangWorkspaceTabs();
+    renderDaftarSoalGuru();
+  }
+
+  function updateJenjangWorkspaceBanner() {
+    const isUmum = (activeBankSoalJenjang === "Semua");
+    const labelTitle = isUmum ? "Semua Jenjang / Soal Umum" : activeBankSoalJenjang;
+    const count = rawBankSoal.filter(s => (s.jenjang || "Semua") === activeBankSoalJenjang).length;
+    const durasi = (!isUmum && globalConfig.durasiPerJenjang && globalConfig.durasiPerJenjang[activeBankSoalJenjang])
+      ? globalConfig.durasiPerJenjang[activeBankSoalJenjang]
+      : globalConfig.durasi;
+
+    document.getElementById('lblWorkspaceJenjangTitle').innerText = `Halaman Input & Edit Soal: ${labelTitle}`;
+    document.getElementById('lblWorkspaceSoalCount').innerText = `${count} Soal`;
+    document.getElementById('lblWorkspaceDurasi').innerHTML = `<i class="bi bi-clock me-1"></i>Durasi: ${durasi} Menit`;
+    document.getElementById('lblWorkspaceSubtitle').innerText = isUmum
+      ? "Soal di halaman ini akan muncul untuk seluruh siswa dari semua jenjang."
+      : `Soal di halaman ini khusus dikerjakan oleh peserta ${activeBankSoalJenjang}.`;
+
+    document.getElementById('btnLabelTambahSoalJenjang').innerText = isUmum ? "Tambah Soal Umum" : `Tambah Soal ${activeBankSoalJenjang}`;
+    document.getElementById('btnLabelImportWordJenjang').innerText = isUmum ? "Import Word (Umum)" : `Import Word (${activeBankSoalJenjang})`;
+
+    const boxSwitch = document.getElementById('boxSwitchStatusJenjangWorkspace');
+    const chkJ = document.getElementById('switchStatusJenjangAktif');
+    const lblJ = document.getElementById('lblStatusJenjangWorkspace');
+    if (isUmum) {
+      boxSwitch.classList.add('d-none');
+    } else {
+      boxSwitch.classList.remove('d-none');
+      const isOn = !(globalConfig.statusPerJenjang && globalConfig.statusPerJenjang[activeBankSoalJenjang] === false);
+      chkJ.checked = isOn;
+      lblJ.innerText = isOn ? `${activeBankSoalJenjang}: AKTIF` : `${activeBankSoalJenjang}: NONAKTIF`;
+      lblJ.className = isOn ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
+    }
+  }
+
+  function toggleStatusJenjangDariWorkspace(chk) {
+    if (activeBankSoalJenjang === "Semua") return;
+    const isOn = chk.checked;
+    const lblJ = document.getElementById('lblStatusJenjangWorkspace');
+    lblJ.innerText = "Menyimpan...";
+
+    if (!globalConfig.statusPerJenjang) globalConfig.statusPerJenjang = {};
+    globalConfig.statusPerJenjang[activeBankSoalJenjang] = isOn;
+
+    if (isFirebaseReady()) {
+      fetch(`${FIREBASE_DB_URL}/cbt_master/config.json`, {
+        method: 'PUT',
+        body: JSON.stringify(globalConfig)
+      }).catch(()=>{});
+    }
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveConfigUjian', ...globalConfig })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.success) {
+        renderJenjangWorkspaceTabs();
+        populateAllJenjangDropdowns();
+      } else {
+        chk.checked = !isOn;
+        globalConfig.statusPerJenjang[activeBankSoalJenjang] = !isOn;
+        updateJenjangWorkspaceBanner();
+        alert("Gagal mengubah status jenjang: " + res.error);
+      }
+    });
+  }
+
   // --- FITUR GESER / UBAH URUTAN SOAL (DRAG & DROP + TOMBOL NAIK/TURUN) ---
   function onDragStartSoal(e, itemId) {
     draggedItemId = String(itemId);
@@ -2172,7 +2348,6 @@
     const [movedItem] = newDisplayed.splice(fromIdx, 1);
     newDisplayed.splice(toIdx, 0, movedItem);
 
-    // Gabungkan kembali ke rawBankSoal agar urutan jenjang lain tetap terjaga
     const displayedIdsSet = new Set(displayedBankSoal.map(s => String(s.itemId)));
     let pointer = 0;
     rawBankSoal = rawBankSoal.map(item => {
@@ -2184,7 +2359,6 @@
 
     renderDaftarSoalGuru();
 
-    // Debounce penyimpanan urutan ke Google Form & Firebase agar cepat jika digeser berkali-kali
     clearTimeout(reorderSaveTimeout);
     reorderSaveTimeout = setTimeout(() => {
       const orderedItemIds = rawBankSoal.map(s => String(s.itemId));
@@ -2274,15 +2448,15 @@
     const targetJenjang = document.getElementById('selectBulkJenjangTarget').value;
 
     Swal.fire({
-      title: `Set ${ids.length} Soal ke "${targetJenjang}"?`,
-      text: `Soal terpilih akan dikelompokkan untuk jenjang "${targetJenjang}".`,
+      title: `Pindahkan ${ids.length} Soal ke "${targetJenjang}"?`,
+      text: `Soal terpilih akan dipindahkan ke halaman jenjang "${targetJenjang}".`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: 'var(--primary-color)',
-      confirmButtonText: 'Ya, Terapkan!'
+      confirmButtonText: 'Ya, Pindahkan!'
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({ title: 'Memproses...', text: `Mengatur jenjang ${ids.length} soal...`, allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        Swal.fire({ title: 'Memproses...', text: `Memindahkan ${ids.length} soal...`, allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         fetch(API_URL, {
           method: 'POST',
           body: JSON.stringify({ action: 'bulkSetJenjangSoal', itemIds: ids, jenjang: targetJenjang })
@@ -2363,15 +2537,19 @@
     });
   }
 
-  // --- FITUR TAMBAH SOAL BARU ---
+  // --- FITUR TAMBAH SOAL BARU (KONTEKSTUAL SESUAI HALAMAN JENJANG AKTIF) ---
   let jumlahOpsiTambah = 4;
 
   function bukaModalTambahSoal() {
     populateAllJenjangDropdowns();
-    const activeFilter = document.getElementById('filterJenjangBankSoal').value;
-    if (activeFilter && activeFilter !== "ALL") {
-      document.getElementById('tambahSoalJenjang').value = activeFilter;
+    const selJenjang = document.getElementById('tambahSoalJenjang');
+    selJenjang.value = activeBankSoalJenjang || "Semua";
+
+    const badge = document.getElementById('badgeModalTambahJenjang');
+    if (badge) {
+      badge.innerText = activeBankSoalJenjang === "Semua" ? "Semua Jenjang" : activeBankSoalJenjang;
     }
+
     document.getElementById('tambahSoalTeks').value = '';
     document.getElementById('tambahSoalGambar').value = '';
     jumlahOpsiTambah = 4;
@@ -2494,10 +2672,11 @@
 
       if (res.success) {
         modalTambahObj.hide();
+        activeBankSoalJenjang = payload.jenjang || activeBankSoalJenjang;
         Swal.fire({
           icon: 'success',
           title: 'Soal Baru Ditambahkan!',
-          text: 'Soal baru berhasil disimpan ke Google Form & Firebase.',
+          text: `Soal berhasil disimpan ke halaman ${activeBankSoalJenjang === 'Semua' ? 'Semua Jenjang' : activeBankSoalJenjang}.`,
           confirmButtonColor: 'var(--primary-color)',
           timer: 1800,
           timerProgressBar: true
@@ -2517,10 +2696,13 @@
   // --- LOGIC FUNGSI IMPORT FILE WORD (.DOCX) ---
   function bukaModalImportWord() {
     populateAllJenjangDropdowns();
-    const activeFilter = document.getElementById('filterJenjangBankSoal').value;
-    if (activeFilter && activeFilter !== "ALL") {
-      document.getElementById('selectJenjangImportWord').value = activeFilter;
+    document.getElementById('selectJenjangImportWord').value = activeBankSoalJenjang || "Semua";
+
+    const badge = document.getElementById('badgeModalImportJenjang');
+    if (badge) {
+      badge.innerText = activeBankSoalJenjang === "Semua" ? "Semua Jenjang" : activeBankSoalJenjang;
     }
+
     document.getElementById('fileWordInput').value = '';
     document.getElementById('boxPreviewWord').classList.add('d-none');
     document.getElementById('btnProsesImportWord').classList.add('d-none');
@@ -2686,6 +2868,7 @@
     .then(res => {
       if (res.success) {
         modalImportWordObj.hide();
+        activeBankSoalJenjang = jenjangTarget || activeBankSoalJenjang;
         Swal.fire({
           icon: 'success',
           title: 'Import Word Berhasil!',
@@ -2992,7 +3175,7 @@
       const chk = document.getElementById('switchStatusUjian');
       const lbl = document.getElementById('lblStatusUjian');
       chk.checked = res.isAktif;
-      lbl.innerText = res.isAktif ? "Status: AKTIF" : "Status: NONAKTIF";
+      lbl.innerText = res.isAktif ? "Status Global: AKTIF" : "Status Global: NONAKTIF";
       lbl.className = res.isAktif ? "form-check-label fw-bold small text-success mb-0" : "form-check-label fw-bold small text-danger mb-0";
 
       if(res.config) {
@@ -3000,6 +3183,7 @@
         populateAllJenjangDropdowns();
       }
 
+      renderJenjangWorkspaceTabs();
       renderDaftarSoalGuru();
     });
   }
@@ -3007,19 +3191,29 @@
   function renderDaftarSoalGuru() {
     selectedItemIds.clear();
     updateBulkActionUI();
+    updateJenjangWorkspaceBanner();
 
     const container = document.getElementById('listSoalGuruContainer');
     const toolbarSeleksi = document.getElementById('toolbarSeleksiSoal');
-    const filterJenjang = document.getElementById('filterJenjangBankSoal').value;
 
-    displayedBankSoal = filterJenjang === "ALL"
-      ? [...rawBankSoal]
-      : rawBankSoal.filter(s => (s.jenjang || "Semua") === filterJenjang);
+    displayedBankSoal = rawBankSoal.filter(s => (s.jenjang || "Semua") === activeBankSoalJenjang);
 
-    if (rawBankSoal.length === 0) {
+    const labelHalaman = activeBankSoalJenjang === "Semua" ? "Semua Jenjang (Umum)" : activeBankSoalJenjang;
+
+    if (displayedBankSoal.length === 0) {
       toolbarSeleksi.classList.add('d-none');
-      container.innerHTML = `<div class="alert alert-warning card card-cbt">
-        <b>Soal Aktif Tidak Ditemukan!</b> Klik <b>Tambah Soal Baru</b>, impor paket soal dari Word, arsip di atas, atau buat di Google Form.
+      container.innerHTML = `<div class="card card-cbt p-4 text-center border">
+        <i class="bi bi-journal-plus display-5 text-primary mb-2"></i>
+        <h6 class="fw-bold mb-1">Belum Ada Soal pada Halaman "${labelHalaman}"</h6>
+        <p class="text-muted small mb-3">Silakan buat soal baru atau impor file Word khusus untuk <b>${labelHalaman}</b>.</p>
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+          <button class="btn btn-success btn-sm fw-bold px-3" onclick="bukaModalTambahSoal()">
+            <i class="bi bi-plus-circle-fill me-1"></i> Buat Soal Pertama (${labelHalaman})
+          </button>
+          <button class="btn btn-primary btn-sm fw-bold px-3" onclick="bukaModalImportWord()">
+            <i class="bi bi-file-earmark-word-fill me-1"></i> Import Word (${labelHalaman})
+          </button>
+        </div>
       </div>`;
       return;
     }
@@ -3030,13 +3224,6 @@
     if (masterChk) {
       masterChk.checked = false;
       masterChk.indeterminate = false;
-    }
-
-    if (displayedBankSoal.length === 0) {
-      container.innerHTML = `<div class="alert alert-info card card-cbt">
-        Belum ada soal pada filter jenjang <b>${filterJenjang}</b>. Klik <b>Tambah Soal Baru</b> untuk menambahkan.
-      </div>`;
-      return;
     }
 
     let html = '';
@@ -3083,10 +3270,10 @@
             <button class="btn btn-sm ${item.isNonaktif ? 'btn-outline-success' : 'btn-outline-warning'} fw-bold" onclick="toggleStatusNonaktifSoal('${item.itemId}', ${!item.isNonaktif})">
               <i class="bi ${item.isNonaktif ? 'bi-eye' : 'bi-eye-slash'} me-1"></i> ${item.isNonaktif ? 'Aktifkan' : 'Nonaktifkan'}
             </button>
-            <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="previewSoal(${realIdx})">
+            <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="previewSoal(${realIdx}, ${dispIdx + 1})">
               <i class="bi bi-eye me-1"></i> Preview
             </button>
-            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEditSoal(${realIdx})">
+            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="bukaModalEditSoal(${realIdx}, ${dispIdx + 1})">
               <i class="bi bi-pencil-square me-1"></i> Edit
             </button>
             <button class="btn btn-sm btn-outline-danger fw-bold" onclick="deleteSatuSoal('${item.itemId}', ${dispIdx + 1})">
@@ -3147,12 +3334,12 @@
     });
   }
 
-  function previewSoal(idx) {
+  function previewSoal(idx, dispNo) {
     const item = rawBankSoal[idx];
     const kunciArr = normalizeKunci(item.jawabanBenar);
     const isMulti = kunciArr.length > 1;
 
-    document.getElementById('prevNoSoal').innerText = idx + 1;
+    document.getElementById('prevNoSoal').innerText = dispNo || (idx + 1);
     document.getElementById('prevSoalTeks').innerText = item.soal;
 
     const imgContainer = document.getElementById('prevSoalImgContainer');
@@ -3181,15 +3368,21 @@
     modalPreviewObj.show();
   }
 
-  function bukaModalEditSoal(idx) {
+  function bukaModalEditSoal(idx, dispNo) {
     populateAllJenjangDropdowns();
     const item = rawBankSoal[idx];
     const kunciArr = normalizeKunci(item.jawabanBenar);
+    const jenjangItem = item.jenjang || "Semua";
 
-    document.getElementById('modalNoSoal').innerText = idx + 1;
+    document.getElementById('modalNoSoal').innerText = dispNo || (idx + 1);
+    const badge = document.getElementById('badgeModalEditJenjang');
+    if (badge) {
+      badge.innerText = jenjangItem === "Semua" ? "Semua Jenjang" : jenjangItem;
+    }
+
     document.getElementById('editItemId').value = item.itemId;
     document.getElementById('editIndex').value = idx;
-    document.getElementById('editSoalJenjang').value = item.jenjang || "Semua";
+    document.getElementById('editSoalJenjang').value = jenjangItem;
     document.getElementById('editSoalTeks').value = item.soal;
     document.getElementById('editSoalGambar').value = '';
     document.getElementById('editRemoveSoalImage').value = 'false';
