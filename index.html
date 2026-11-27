@@ -980,6 +980,10 @@
                 <label class="form-check-label fw-bold small text-dark mb-0" for="switchStatusUjian" id="lblStatusUjian">Status: Checking...</label>
               </div>
 
+              <button type="button" class="btn btn-outline-danger btn-sm fw-bold" onclick="cekDanBersihkanDuplikat()" title="Pindai dan hapus soal yang ganda/duplikat">
+                <i class="bi bi-intersect me-1"></i> Cek Duplikat
+              </button>
+
               <button type="button" class="btn btn-outline-secondary btn-sm fw-bold" onclick="sinkronkanUlangBankSoal()" title="Sinkronkan ulang jika Anda mengedit soal langsung di Google Form">
                 <i class="bi bi-arrow-clockwise me-1"></i> Sinkron Form
               </button>
@@ -2186,6 +2190,104 @@
     Swal.fire({ title: "Menyinkronkan Google Form...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     await loadBankSoalGuru(true);
     Swal.fire("Tersinkron", `Total ${masterState.allSoal.length} soal berhasil disinkronkan dari Google Form.`, "success");
+  }
+
+  // --- PEMINDAI & PEMBERSIH SOAL DUPLIKAT ---
+  function normalizeTeksSoalClient(rawHtmlOrText) {
+    return String(rawHtmlOrText || "")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+  }
+
+  async function cekDanBersihkanDuplikat() {
+    const curJ = guruData.activeJenjangWorkspace;
+    const pool = curJ === "Semua"
+      ? masterState.allSoal
+      : masterState.allSoal.filter(s => s.jenjang === curJ || !s.jenjang || s.jenjang === "Semua");
+
+    const seenMap = {};
+    const duplicateItems = [];
+    const duplicateGroups = [];
+
+    pool.forEach((soal, idx) => {
+      const normKey = normalizeTeksSoalClient(soal.pertanyaan || soal.soal || "");
+      const groupKey = `${soal.jenjang || "Semua"}::${normKey}`;
+      if (!normKey) return;
+
+      if (seenMap[groupKey]) {
+        duplicateItems.push(soal);
+        seenMap[groupKey].duplikatList.push({ no: idx + 1, itemId: soal.itemId });
+      } else {
+        const entry = {
+          noAsli: idx + 1,
+          teks: normKey.slice(0, 90) + (normKey.length > 90 ? "..." : ""),
+          jenjang: soal.jenjang || "Semua",
+          duplikatList: []
+        };
+        seenMap[groupKey] = entry;
+        duplicateGroups.push(entry);
+      }
+    });
+
+    if (duplicateItems.length === 0) {
+      Swal.fire(
+        "Tidak Ada Duplikat",
+        `Seluruh ${pool.length} soal pada ${curJ === "Semua" ? "semua jenjang" : curJ} sudah unik (tidak ada soal yang ganda).`,
+        "success"
+      );
+      return;
+    }
+
+    const rincianList = duplicateGroups
+      .filter(g => g.duplikatList.length > 0)
+      .map(g => `
+        <li class="mb-2">
+          <b>[${escapeHtml(g.jenjang)}] Soal No. ${g.noAsli}</b> memiliki <b>${g.duplikatList.length}</b> duplikat (No. ${g.duplikatList.map(d => d.no).join(", ")})
+          <div class="text-muted small fst-italic">"${escapeHtml(g.teks)}"</div>
+        </li>
+      `).join("");
+
+    const konf = await Swal.fire({
+      title: `Ditemukan ${duplicateItems.length} Soal Duplikat!`,
+      html: `
+        <div class="text-start small" style="max-height:260px; overflow-y:auto;">
+          <p class="mb-2">Sistem menemukan soal dengan teks pertanyaan &amp; jenjang yang sama persis:</p>
+          <ul class="ps-3 mb-0">${rincianList}</ul>
+        </div>
+        <div class="alert alert-warning py-2 small mt-3 mb-0 text-start">
+          Klik <b>Hapus Duplikat</b> untuk mempertahankan 1 soal pertama dan menghapus ${duplicateItems.length} salinan gandanya dari Google Form.
+        </div>
+      `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      confirmButtonText: `Hapus ${duplicateItems.length} Duplikat`,
+      cancelButtonText: "Tutup"
+    });
+
+    if (!konf.isConfirmed) return;
+
+    const dupIds = duplicateItems.map(s => String(s.itemId));
+    const dupSet = new Set(dupIds);
+
+    Swal.fire({ title: "Membersihkan Soal Duplikat...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    try {
+      const res = await apiPost({ action: "bulkDeleteSoal", itemIds: dupIds });
+      if (res && res.success) {
+        const sisa = masterState.allSoal.filter(s => !dupSet.has(String(s.itemId)));
+        saveLocalMasterSafe({ allSoal: sisa, _allowEmpty: sisa.length === 0 });
+        dupIds.forEach(id => guruData.selectedSoalIds.delete(id));
+        renderWorkspaceBankSoal();
+        Swal.fire("Selesai", `${duplicateItems.length} soal duplikat berhasil dihapus.`, "success");
+      } else {
+        Swal.fire("Gagal", (res && res.error) || "Gagal menghapus soal duplikat.", "error");
+      }
+    } catch (err) {
+      Swal.fire("Error", err.message, "error");
+    }
   }
 
   async function loadDataGuru() {
