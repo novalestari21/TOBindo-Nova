@@ -412,7 +412,7 @@
 <div id="cheatOverlay" class="d-none">
   <i class="bi bi-exclamation-triangle-fill display-1 mb-3"></i>
   <h1 class="fw-extrabold display-5 mb-2">PERINGATAN KECURANGAN!</h1>
-  <p class="fs-5 max-w-lg mb-4">Anda terdeteksi meninggalkan layar ujian / membuka tab baru / keluar dari Fullscreen!</p>
+  <p class="fs-5 max-w-lg mb-4">Anda terdeteksi meninggalkan layar ujian / minimize / keluar dari Fullscreen!</p>
   <div class="card text-dark p-3 mb-4 shadow fw-bold">
     Sisa Toleransi Kesempatan: <span id="lblSisaKesempatan" class="text-danger fs-3 ms-2">3</span> Kali Lagi
   </div>
@@ -1124,7 +1124,6 @@
     </div>
   </div>
 </div>
-
 <!-- Modal Login Guru -->
 <div class="modal fade" id="modalLogin" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -1537,7 +1536,6 @@
 
   function saveLocalMasterSafe(newMaster) {
     if (!newMaster || typeof newMaster !== "object") return;
-    // PROTEKSI UTAMA: Jangan pernah menimpa bank soal lokal yang sudah terisi dengan array kosong kecuali explicitly dikosongkan lewat arsip
     if (Array.isArray(newMaster.allSoal) && newMaster.allSoal.length > 0) {
       masterState.allSoal = newMaster.allSoal;
       masterState.soalAktif = newMaster.allSoal.filter(s => s && s.isNonaktif !== true);
@@ -1593,7 +1591,7 @@
       const data = await res.json();
       if (!data || typeof data !== "object" || data.error) return null;
       const normAll = normalizeFbArray(data.allSoal);
-      if (normAll.length === 0) return null; // Tolak jika Firebase kosong agar fallback ke server Apps Script
+      if (normAll.length === 0) return null;
       return {
         isAktif: data.isAktif !== false,
         config: data.config || null,
@@ -1621,14 +1619,12 @@
       badge.textContent = "Menyinkronkan...";
     }
 
-    // 1. Coba Firebase dulu jika valid & tidak kosong
     const fbMaster = await fetchFirebaseMaster();
     if (fbMaster && hasValidSoal(fbMaster.allSoal)) {
       saveLocalMasterSafe(fbMaster);
       applyConfigToIdentitasUI();
     }
 
-    // 2. Selalu validasi ringan ke server Apps Script (Sheet DB_Master_CBT) agar tidak pernah 0 soal
     try {
       const res = await apiGet({ action: "getBankSoalGuru", forceFresh: "false" });
       if (res && res.success) {
@@ -1684,7 +1680,6 @@
       : Number(cfg.durasi || 60);
     document.getElementById("textDurasiInformasi").textContent = durasi;
 
-    // Update badge ketersediaan soal khusus jenjang terpilih
     const badge = document.getElementById("badgePreloadStatus");
     if (badge && hasValidSoal(masterState.soalAktif)) {
       const filtered = jenjang
@@ -1698,6 +1693,8 @@
   // --- ALUR UJIAN SISWA ---
   async function mulaiUjian(e) {
     e.preventDefault();
+    unlockAlarmAudio(); // Buka izin audio browser saat user klik tombol mulai ujian
+
     const nama = document.getElementById("namaSiswa").value.trim();
     const kelas = document.getElementById("kelasSiswa").value.trim();
     const cfg = masterState.config || {};
@@ -1714,7 +1711,6 @@
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Memeriksa Akses & Soal...`;
 
     try {
-      // 1. Cek apakah peserta sudah pernah ujian
       const cekRes = await apiGet({ action: "checkPeserta", nama, kelas, jenjang });
       if (cekRes && cekRes.sudahMengerjakan) {
         Swal.fire("Akses Ditolak", cekRes.message || "Anda sudah pernah menyelesaikan ujian ini.", "error");
@@ -1723,7 +1719,6 @@
         return;
       }
 
-      // 2. Ambil soal dari memori lokal dulu, jika kosong/tidak ada jenjangnya paksa tarik dari server Apps Script
       let poolSoal = (masterState.soalAktif || []).filter(s =>
         !jenjang || !s.jenjang || s.jenjang === "Semua" || s.jenjang === jenjang
       );
@@ -1747,7 +1742,6 @@
         return;
       }
 
-      // 3. Siapkan urutan soal & pilihan (acak jika diaktifkan)
       const activeCfg = masterState.config || cfg;
       let preparedSoal = poolSoal.map(s => {
         const opsiObjs = (s.pilihan || []).map((teks, idx) => ({
@@ -1967,6 +1961,7 @@
     if (examSession.isSubmitting) return;
     examSession.isSubmitting = true;
     examSession.active = false;
+    stopAlarmSiren();
     if (examSession.timerInterval) clearInterval(examSession.timerInterval);
 
     Swal.fire({
@@ -1988,7 +1983,6 @@
       jumlahPelanggaran: examSession.pelanggaran
     };
 
-    // Backup ke Firebase lebih dulu
     try {
       await fetch(`${FIREBASE_DB_URL}/cbt_submissions/${submissionId}.json`, {
         method: "PUT",
@@ -2023,55 +2017,168 @@
     }
   }
 
-  // --- ANTI CURANG & FULLSCREEN ---
+  // --- ANTI CURANG, SIRINE ALARM & FULLSCREEN ---
+  let alarmAudioCtx = null;
+  let alarmInterval = null;
+  let isEnteringFullscreen = false;
+  let lastViolationTime = 0;
+
+  function unlockAlarmAudio() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!alarmAudioCtx) {
+        alarmAudioCtx = new AudioCtx();
+      }
+      if (alarmAudioCtx.state === "suspended") {
+        alarmAudioCtx.resume();
+      }
+    } catch (e) {}
+  }
+
+  function startAlarmSiren() {
+    unlockAlarmAudio();
+    if (alarmInterval) return;
+
+    const bunyikanNada = () => {
+      try {
+        if (!alarmAudioCtx) return;
+        if (alarmAudioCtx.state === "suspended") alarmAudioCtx.resume();
+
+        const now = alarmAudioCtx.currentTime;
+        const osc = alarmAudioCtx.createOscillator();
+        const gain = alarmAudioCtx.createGain();
+
+        osc.type = "sawtooth";
+        // Sirine naik-turun nyaring agar terdengar jelas oleh guru pengawas
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.linearRampToValueAtTime(1320, now + 0.25);
+        osc.frequency.linearRampToValueAtTime(880, now + 0.5);
+
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.52);
+
+        osc.connect(gain);
+        gain.connect(alarmAudioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.53);
+      } catch (e) {}
+    };
+
+    bunyikanNada();
+    alarmInterval = setInterval(bunyikanNada, 600);
+  }
+
+  function stopAlarmSiren() {
+    if (alarmInterval) {
+      clearInterval(alarmInterval);
+      alarmInterval = null;
+    }
+  }
+
   function requestFullscreenSafe() {
+    isEnteringFullscreen = true;
+    setTimeout(() => { isEnteringFullscreen = false; }, 900);
     try {
       const el = document.documentElement;
       if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
       else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.msRequestFullscreen) el.msRequestFullscreen();
     } catch (e) {}
   }
 
   function exitFullscreenSafe() {
     try {
-      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
     } catch (e) {}
   }
 
   function handleViolationTrigger() {
     if (!examSession.active || examSession.isSubmitting) return;
+
+    // Cegah penghitungan ganda dalam jeda 1 detik saat blur & visibilitychange aktif bersamaan
+    const now = Date.now();
+    if (now - lastViolationTime < 1000) return;
+    lastViolationTime = now;
+
     examSession.pelanggaran++;
     simpanExamStateLokal();
+
     const sisa = examSession.maxPelanggaran - examSession.pelanggaran;
     if (sisa <= 0) {
+      stopAlarmSiren();
       document.getElementById("cheatOverlay").classList.add("d-none");
       kirimJawabanFinal(true);
       return;
     }
+
     document.getElementById("lblSisaKesempatan").textContent = sisa;
     document.getElementById("cheatOverlay").classList.remove("d-none");
+    startAlarmSiren();
   }
 
   function kembaliKeUjianFullscreen() {
+    stopAlarmSiren();
     document.getElementById("cheatOverlay").classList.add("d-none");
     requestFullscreenSafe();
   }
 
-  function onVisibilityChangeHandler() { if (document.hidden) handleViolationTrigger(); }
-  function onBlurHandler() { handleViolationTrigger(); }
+  function onVisibilityChangeHandler() {
+    if (document.hidden) handleViolationTrigger();
+  }
+
+  function onBlurHandler() {
+    handleViolationTrigger();
+  }
+
+  function onFullscreenChangeHandler() {
+    if (isEnteringFullscreen) return;
+    const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    if (!isFs && examSession.active && !examSession.isSubmitting) {
+      handleViolationTrigger();
+    }
+  }
+
+  function onContextMenuExamHandler(e) {
+    if (examSession.active) e.preventDefault();
+  }
+
+  function onKeydownExamHandler(e) {
+    if (!examSession.active) return;
+    // Blokir Ctrl+C, Ctrl+V, Ctrl+U, Ctrl+P, Ctrl+S, F12, PrintScreen
+    if ((e.ctrlKey || e.metaKey) && ["c", "v", "x", "u", "p", "s", "a"].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+    if (e.key === "F12" || e.key === "PrintScreen") {
+      e.preventDefault();
+    }
+  }
 
   function aktifkanAntiCurang() {
     document.addEventListener("visibilitychange", onVisibilityChangeHandler);
     window.addEventListener("blur", onBlurHandler);
+    document.addEventListener("fullscreenchange", onFullscreenChangeHandler);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChangeHandler);
+    document.addEventListener("contextmenu", onContextMenuExamHandler);
+    document.addEventListener("keydown", onKeydownExamHandler);
+    // Buka kunci audio pada interaksi sentuh/klik pertama (berguna saat resume ujian setelah refresh)
+    document.addEventListener("pointerdown", unlockAlarmAudio, { once: true });
   }
 
   function nonaktifkanAntiCurang() {
+    stopAlarmSiren();
     document.body.classList.remove("exam-mode-active");
     document.removeEventListener("visibilitychange", onVisibilityChangeHandler);
     window.removeEventListener("blur", onBlurHandler);
+    document.removeEventListener("fullscreenchange", onFullscreenChangeHandler);
+    document.removeEventListener("webkitfullscreenchange", onFullscreenChangeHandler);
+    document.removeEventListener("contextmenu", onContextMenuExamHandler);
+    document.removeEventListener("keydown", onKeydownExamHandler);
     document.getElementById("cheatOverlay").classList.add("d-none");
   }
-
   // --- PANEL GURU: LOGIN, NAVIGASI & SIDEBAR ---
   function showModalLogin() {
     new bootstrap.Modal(document.getElementById("modalLogin")).show();
@@ -2337,7 +2444,6 @@
     const btnForm = document.getElementById("btnEditFormDirect");
     if (btnForm && masterState.editUrl) btnForm.href = masterState.editUrl;
 
-    // Render Tab Jenjang dengan hitungan soal yang akurat dari masterState.allSoal
     const tabsContainer = document.getElementById("jenjangWorkspaceTabsContainer");
     const allTabs = [...daftar, "Semua"];
     tabsContainer.innerHTML = allTabs.map(j => {
@@ -2387,7 +2493,6 @@
       lblJ.textContent = `Ujian ${curJenjang}: ${stJ ? "AKTIF" : "NONAKTIF"}`;
     }
 
-    // Toolbar Seleksi Massal
     const toolbar = document.getElementById("toolbarSeleksiSoal");
     if (soalJenjang.length > 0) {
       toolbar.classList.remove("d-none");
@@ -2560,7 +2665,7 @@
     document.execCommand("insertHTML", false, "&nbsp;&nbsp;&nbsp;&nbsp;");
   }
 
-  // --- MODAL TAMBAH SOAL (OPSI MENDUKUNG ENTER / TEXTAREA) ---
+  // --- MODAL TAMBAH SOAL ---
   function renderOpsiRowHTML(prefix, idx, teksVal = "", isChecked = false, existingImgUrl = null) {
     const hurufs = ["A", "B", "C", "D", "E", "F"];
     const huruf = hurufs[idx] || String(idx + 1);
@@ -2701,7 +2806,7 @@
     }
   }
 
-  // --- MODAL EDIT SOAL (MENDUKUNG ENTER PADA OPSI & TAMBAH OPSI BARU) ---
+  // --- MODAL EDIT SOAL ---
   function bukaModalEditSoal(itemId, nomorTampil) {
     const soal = masterState.allSoal.find(s => String(s.itemId) === String(itemId));
     if (!soal) return;
@@ -3494,7 +3599,6 @@
 
   function formatTeksSoalAman(raw) {
     const str = String(raw ?? "");
-    // Jika sudah mengandung tag HTML format dari rich editor, tampilkan langsung
     if (/<(p|div|br|b|strong|i|em|u|s|strike|ul|ol|li|blockquote|span|font|sub|sup)\b/i.test(str)) {
       return str;
     }
