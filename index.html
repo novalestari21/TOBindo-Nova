@@ -1394,8 +1394,8 @@
           <div class="col-12 col-md-4">
             <label class="form-label fw-bold small">Opsi Pengunggahan</label>
             <select id="selectModeImportWord" class="form-select form-select-sm fw-bold">
-              <option value="tambah" selected>Tambahkan ke Halaman Jenjang Ini</option>
-              <option value="timpa">Timpa Soal pada Jenjang Terpilih</option>
+              <option value="tambah" selected>Tambahkan (Otomatis Timpa Soal yang Sama)</option>
+              <option value="timpa">Timpa Semua Soal pada Jenjang Terpilih</option>
             </select>
           </div>
         </div>
@@ -2570,14 +2570,24 @@
       });
 
       if (res && res.success) {
-        if (res.newSoal) {
+        if (res.overwritten && res.newSoal) {
+          const targetId = String(res.oldItemId || res.newSoal.itemId);
+          const updatedList = masterState.allSoal.map(s =>
+            String(s.itemId) === targetId ? { ...s, ...res.newSoal } : s
+          );
+          saveLocalMasterSafe({ allSoal: updatedList });
+        } else if (res.newSoal) {
           saveLocalMasterSafe({ allSoal: [...masterState.allSoal, res.newSoal] });
         } else {
           await loadBankSoalGuru(true);
         }
         bootstrap.Modal.getInstance(document.getElementById("modalTambahSoal")).hide();
         renderWorkspaceBankSoal();
-        Swal.fire("Berhasil", "Soal baru berhasil disimpan.", "success");
+        Swal.fire(
+          "Berhasil",
+          res.overwritten ? "Soal yang sama ditemukan dan otomatis ditimpa." : "Soal baru berhasil disimpan.",
+          "success"
+        );
       } else {
         Swal.fire("Gagal", (res && res.error) || "Gagal menyimpan soal.", "error");
       }
@@ -2973,7 +2983,10 @@
         }
         bootstrap.Modal.getInstance(document.getElementById("modalImportWord")).hide();
         renderWorkspaceBankSoal();
-        Swal.fire("Berhasil", `${res.count} soal berhasil diunggah.`, "success");
+        const msgInfo = (res.overwrittenCount > 0)
+          ? `${res.addedCount || 0} soal baru ditambahkan, ${res.overwrittenCount} soal yang sama otomatis ditimpa.`
+          : `${res.count} soal berhasil diunggah.`;
+        Swal.fire("Berhasil", msgInfo, "success");
       } else {
         Swal.fire("Gagal", (res && res.error) || "Gagal import soal.", "error");
       }
@@ -3291,7 +3304,10 @@
       if (hasValidSoal(res.allSoal)) saveLocalMasterSafe({ allSoal: res.allSoal });
       else await loadBankSoalGuru(true);
       renderWorkspaceBankSoal();
-      Swal.fire("Berhasil", `${res.count} soal berhasil dipulihkan.`, "success");
+      const msgInfo = (res.overwrittenCount > 0)
+        ? `${res.addedCount || 0} soal dipulihkan, ${res.overwrittenCount} soal yang sama ditimpa.`
+        : `${res.count} soal berhasil dipulihkan.`;
+      Swal.fire("Berhasil", msgInfo, "success");
     }
   }
 
